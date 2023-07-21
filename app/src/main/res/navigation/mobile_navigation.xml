@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.lmkr.prmscemployeeapp.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_timeoff"
+        android:name="com.lmkr.prmscemployeeapp.ui.timeoff.TimeoffFragment"
+        android:label="@string/title_timeoff"
+        tools:layout="@layout/fragment_timeoff" />
+
+    <fragment
+        android:id="@+id/navigation_bulletin"
+        android:name="com.lmkr.prmscemployeeapp.ui.bulletin.BulletinFragment"
+        android:label="@string/title_bulletin"
+        tools:layout="@layout/fragment_bulletin" />
+    <fragment
+        android:id="@+id/navigation_myinfo"
+        android:name="com.lmkr.prmscemployeeapp.ui.myinfo.myinfoFragment"
+        android:label="@string/title_myinfo"
+        tools:layout="@layout/fragment_myinfo" />
+</navigation>
