@@ -77,8 +77,8 @@ public class MainActivity extends BaseActivity {
                     latitude = SharedPreferenceHelper.getString("lat", MainActivity.this);
                     longitude = SharedPreferenceHelper.getString("long", MainActivity.this);
 
-                    AppUtils.makeNotification("Lat -> " + latitude + " , Long -> " + longitude, MainActivity.this);
-                    AppUtils.hideNotification(MainActivity.this);
+//                    AppUtils.makeNotification("Lat -> " + latitude + " , Long -> " + longitude, MainActivity.this);
+//                    AppUtils.hideNotification(MainActivity.this);
 
                     if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof HomeFragment) {
                         ((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).enableCheckinButton(true);
@@ -179,9 +179,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, PermissionsRequest.LOCATION_PERMISSIONS, PermissionsRequest.LOCATION_REQUEST_CODE);
         } else {
             bindService();

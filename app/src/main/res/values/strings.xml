@@ -36,5 +36,12 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="n_a">N/A</string>
+    <string name="leaves_summary">Leaves Summary</string>
+    <string name="casual_leaves">Casual Leaves</string>
+    <string name="sick_leaves">Sick Leaves</string>
+    <string name="annual_leaves">Annual Leaves</string>
+    <string name="checkin_history">Checkin History</string>
+    <string name="view_all">View All</string>
+    <string name="upcoming_holidays">Upcoming Holidays</string>
 
 </resources>
