@@ -84,7 +84,7 @@ public class MainActivity extends BaseActivity {
                         ((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).enableCheckinButton(true);
                     }
 
-                    unBindService();
+//                    unBindService();
                 }
             }
         }

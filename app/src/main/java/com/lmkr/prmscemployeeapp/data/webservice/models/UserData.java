@@ -1,5 +1,7 @@
 package com.lmkr.prmscemployeeapp.data.webservice.models;
 
+import android.location.Location;
+
 import java.util.List;
 
 public class UserData {
@@ -8,7 +10,16 @@ public class UserData {
     private List<LeaveCount> leaveCount;
     private List<LeaveRequestCount> leaveRequestCount;
     private List<TeamMemberCount> teamMemberCount;
+    private List<Locations> latLngArray;
     private String token;
+
+    public List<Locations> getLatLngArray() {
+        return latLngArray;
+    }
+
+    public void setLatLngArray(List<Locations> latLngArray) {
+        this.latLngArray = latLngArray;
+    }
 
     public List<UserObject> getBasicData() {
         return basicData;

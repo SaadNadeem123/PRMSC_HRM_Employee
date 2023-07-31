@@ -12,7 +12,8 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/app_green</item>
         <!-- Customize your theme here. -->
-        <item name="android:background">@color/app_green</item>
+                <item name="android:background">@color/app_green</item>
+<!--        <item name="android:background">@color/white</item>-->
     </style>
 
     <style name="Theme.PRMSCEmployeeApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

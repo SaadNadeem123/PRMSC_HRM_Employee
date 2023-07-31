@@ -14,20 +14,17 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveCount;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.databinding.FragmentHomeBinding;
-import com.lmkr.prmscemployeeapp.ui.activities.CameraXActivity;
 import com.lmkr.prmscemployeeapp.R;
-import com.lmkr.prmscemployeeapp.ui.activities.GeofenceMapsActivity;
-import com.lmkr.prmscemployeeapp.ui.activities.LoginActivity;
-import com.lmkr.prmscemployeeapp.ui.activities.MainActivity;
+import com.lmkr.prmscemployeeapp.ui.fragments.FullScreenMapFragment;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
@@ -59,9 +56,14 @@ public class HomeFragment extends Fragment {
         binding.checkin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().startActivity(new Intent(getActivity(), GeofenceMapsActivity.class));
-//                getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
                 AppUtils.hideNotification(getActivity());
+//                getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
+
+                FullScreenMapFragment fragment = FullScreenMapFragment.getInstance();
+                if(!fragment.isAdded()) {
+                    fragment.setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Dialog_NoTitle);
+                    fragment.show(getActivity().getSupportFragmentManager(), "MapFragment");
+                }
             }
         });
 

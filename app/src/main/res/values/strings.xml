@@ -46,5 +46,12 @@
     <string name="welcome_comma">"Welcome, "</string>
     <string name="checkedout">Checked Out</string>
     <string name="checkedin">CheckedIn</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="current_location">Current Location</string>
+    <string name="back">Back</string>
+    <string name="retry">Retry</string>
+    <string name="detecting_your_current_site_location">Detecting your current site location</string>
+    <string name="proceed">Proceed</string>
+    <string name="not_in_defined_area">You are not inside defined area! To proceed visit your site.</string>
 
 </resources>

@@ -1,5 +1,7 @@
 package com.lmkr.prmscemployeeapp;
 
+import static cat.ereza.customactivityoncrash.config.CaocConfig.BACKGROUND_MODE_SILENT;
+
 import android.app.Application;
 import android.database.CursorWindow;
 
@@ -33,7 +35,7 @@ public class App extends Application {
     }
 
     private void initCustomActivityOnCrashLibrary() {
-        CaocConfig.Builder.create().apply();
+        CaocConfig.Builder.create().backgroundMode(BACKGROUND_MODE_SILENT).apply();
 
         /*
         CaocConfig.Builder.create()

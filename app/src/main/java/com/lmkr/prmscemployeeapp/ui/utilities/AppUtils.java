@@ -51,13 +51,17 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.exifinterface.media.ExifInterface;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.firebase.components.BuildConfig;
 import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
@@ -2322,6 +2326,37 @@ public class AppUtils {
 
     public static float getFloatValue(String string) {
         return Float.valueOf(string.replaceAll(",", ""));
+    }
+
+    public static BitmapDescriptor BitmapFromVector(Context context, int vectorResId)
+    {
+        // below line is use to generate a drawable.
+        Drawable vectorDrawable = ContextCompat.getDrawable(
+                context, vectorResId);
+
+        // below line is use to set bounds to our vector
+        // drawable.
+        vectorDrawable.setBounds(
+                0, 0, vectorDrawable.getIntrinsicWidth(),
+                vectorDrawable.getIntrinsicHeight());
+
+        // below line is use to create a bitmap for our
+        // drawable which we have added.
+        Bitmap bitmap = Bitmap.createBitmap(
+                vectorDrawable.getIntrinsicWidth(),
+                vectorDrawable.getIntrinsicHeight(),
+                Bitmap.Config.ARGB_8888);
+
+        // below line is use to add bitmap in our canvas.
+        Canvas canvas = new Canvas(bitmap);
+
+        // below line is use to draw our
+        // vector drawable in canvas.
+        vectorDrawable.draw(canvas);
+
+        // after generating our bitmap we are returning our
+        // bitmap.
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }
 
