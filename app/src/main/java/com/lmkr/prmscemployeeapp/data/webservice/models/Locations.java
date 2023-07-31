@@ -1,6 +1,6 @@
-package com.lmkr.prmscemployeeapp.ui.models;
+package com.lmkr.prmscemployeeapp.data.webservice.models;
 
-public class ConsigneeLocations {
+public class Locations {
 
     private String userId;
     private String address;

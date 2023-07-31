@@ -61,9 +61,9 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.components.BuildConfig;
 import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
+import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.ui.fragments.ToastFragmentManager;
 import com.lmkr.prmscemployeeapp.ui.locationUtils.LocationAlertDialogFragment;
-import com.lmkr.prmscemployeeapp.ui.models.UserData;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -2141,7 +2141,7 @@ public class AppUtils {
     }
 
     public static String getStandardHeaders(UserData userData) {
-        return "Bearer " + userData.getUserToken();
+        return "Bearer " + userData.getToken();
     }
 
     public static String roundTo2DecimalPlaces(float totalFreightST) {

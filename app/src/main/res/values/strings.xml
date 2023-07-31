@@ -5,7 +5,6 @@
     <string name="stop_capture">Stop Capture</string>
 
 
-
     <string name="title_home">Home</string>
     <string name="title_timeoff">Time Off</string>
     <string name="title_bulletin">Bulletin</string>
@@ -43,5 +42,9 @@
     <string name="checkin_history">Checkin History</string>
     <string name="view_all">View All</string>
     <string name="upcoming_holidays">Upcoming Holidays</string>
+    <string name="title_activity_geofence_maps">GeofenceMapsActivity</string>
+    <string name="welcome_comma">"Welcome, "</string>
+    <string name="checkedout">Checked Out</string>
+    <string name="checkedin">CheckedIn</string>
 
 </resources>

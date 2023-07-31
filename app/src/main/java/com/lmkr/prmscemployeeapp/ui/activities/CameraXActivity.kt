@@ -1,4 +1,4 @@
-package com.lmkr.prmscemployeeapp
+package com.lmkr.prmscemployeeapp.ui.activities
 
 import android.content.ContentValues
 import android.content.pm.PackageManager

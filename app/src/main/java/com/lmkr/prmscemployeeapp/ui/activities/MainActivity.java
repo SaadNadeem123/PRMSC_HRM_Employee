@@ -1,4 +1,4 @@
-package com.lmkr.prmscemployeeapp;
+package com.lmkr.prmscemployeeapp.ui.activities;
 
 import static com.lmkr.prmscemployeeapp.ui.locationUtils.LocationAlertDialogFragment.LOACTION_ENABLE_REQUEST;
 
@@ -26,8 +26,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.databinding.ActivityMainBinding;
-import com.lmkr.prmscemployeeapp.ui.activities.BaseActivity;
 import com.lmkr.prmscemployeeapp.ui.home.HomeFragment;
 import com.lmkr.prmscemployeeapp.ui.locationUtils.LocationService;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;

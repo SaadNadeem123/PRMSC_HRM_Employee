@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
-import com.lmkr.prmscemployeeapp.ui.models.UserData;
+import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 
 public class SharedPreferenceHelper {
 
@@ -21,6 +21,8 @@ public class SharedPreferenceHelper {
     public static String ATTEMPTS_START_TIME = "attemptStartTime";
     public static String ATTEMPTS_COUNT = "attemptCount";
     public static String USERDATA = "userData";
+
+    public static String IS_CHECKED_IN = "isCheckedIn";
 
     public static final String ORIGIN_CITY = "origin";
     public static final String DESTINATION_CITY = "destination";
@@ -142,7 +144,13 @@ public class SharedPreferenceHelper {
 
     public static void setLoggedinUser(Context context, UserData userdata) {
         saveString(USERDATA, (new Gson()).toJson(userdata), context);
+        saveBoolean(SharedPreferenceHelper.IS_LOGGED_IN,true,context);
     }
 
+    public static boolean isCheckedIn(Context context) {
+        Boolean isCheckedIn = getBoolean(IS_CHECKED_IN, context);
+
+        return isCheckedIn;
+    }
 }
 
