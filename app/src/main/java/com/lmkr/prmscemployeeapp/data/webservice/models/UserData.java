@@ -13,6 +13,16 @@ public class UserData {
     private List<Locations> latLngArray;
     private String token;
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    private String message;
+
     public List<Locations> getLatLngArray() {
         return latLngArray;
     }

@@ -13,7 +13,7 @@
         <item name="android:statusBarColor">@color/app_green</item>
         <!-- Customize your theme here. -->
         <item name="android:background">@color/app_green</item>
-<!--        <item name="android:background">@color/white</item>-->
+        <!--        <item name="android:background">@color/white</item>-->
 
     </style>
 
@@ -80,11 +80,18 @@
     </style>
 
     <style name="CircularDeterminateProgressBarAntiClockWise">
-        <item name="android:indeterminateOnly">false </item>
+        <item name="android:indeterminateOnly">false</item>
         <item name="android:progressDrawable">@drawable/progress_drawable_anticlockwise</item>
     </style>
+
     <style name="CircularDeterminateProgressBarClockWise">
-        <item name="android:indeterminateOnly">false </item>
+        <item name="android:indeterminateOnly">false</item>
         <item name="android:progressDrawable">@drawable/progress_drawable_clockwise</item>
     </style>
+
+    <style name="SpinnerTheme" parent="android:Widget.Spinner">
+        <item name="android:background">@drawable/bg_spinner</item>
+    </style>
+
+
 </resources>

@@ -1,13 +1,12 @@
 package com.lmkr.prmscemployeeapp.ui.fragments;
 
-import static androidx.camera.core.impl.utils.ContextUtil.getApplicationContext;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,22 +32,31 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.gson.JsonObject;
 import com.google.maps.android.PolyUtil;
 import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
+import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
+import com.lmkr.prmscemployeeapp.data.webservice.api.JsonObjectResponse;
+import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.Locations;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
+import com.lmkr.prmscemployeeapp.ui.activities.CameraXActivity;
 import com.lmkr.prmscemployeeapp.ui.locationUtils.LocationService;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
+import com.lmkr.prmscemployeeapp.viewModel.AttendanceHistoryViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
-public class FullScreenMapFragment extends BaseDialogFragment implements OnMapReadyCallback,
-        GoogleMap.OnPolylineClickListener,
-        GoogleMap.OnPolygonClickListener {
+public class FullScreenMapFragment extends BaseDialogFragment implements OnMapReadyCallback, GoogleMap.OnPolylineClickListener, GoogleMap.OnPolygonClickListener {
     private static FullScreenMapFragment INSTANCE = null;
+    private final AttendanceHistoryViewModel attendanceHistoryViewModel = null;
     private SupportMapFragment mapFragment;
     private GoogleMap mMap;
     private UserData userdata = null;
@@ -58,8 +66,7 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
     private ImageView animationCross;
     private LottieAnimationView animation;
     private LinearLayout ll;
-
-
+    private String latitude = "", longitude = "";
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -67,6 +74,7 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             if (intent.hasExtra(LocationService.MESSAGE)) {
                 String s = intent.getStringExtra(LocationService.MESSAGE);
                 if (s == "1") {
+
                     updateCurrentLocation();
                 }
             }
@@ -84,9 +92,8 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
 
     private void updateCurrentLocation() {
 
-        String latitude = SharedPreferenceHelper.getString("lat", getActivity());
-        String longitude = SharedPreferenceHelper.getString("long", getActivity());
-
+        latitude = SharedPreferenceHelper.getString("lat", getActivity());
+        longitude = SharedPreferenceHelper.getString("long", getActivity());
 
         PolylineOptions options = new PolylineOptions();
         options.clickable(true);
@@ -106,7 +113,7 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             optionsPolygon.add(new LatLng(location.getLatitude(), location.getLongitude()));
         }
 
-        builder.include(new LatLng(Double.valueOf(latitude), Double.valueOf(longitude)));
+
         if (mMap != null) {
             mMap.clear();
 
@@ -117,10 +124,10 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             // Set listeners for click events.
             mMap.setOnPolylineClickListener(this);
             mMap.setOnPolygonClickListener(this);
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(Double.valueOf(latitude),Double.valueOf(longitude)))
-                    .icon(AppUtils.BitmapFromVector(getActivity(),R.drawable.baseline_my_location_24))
-                    .title(getString(R.string.current_location)));
+            if (!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude)) {
+                builder.include(new LatLng(Double.valueOf(latitude), Double.valueOf(longitude)));
+                mMap.addMarker(new MarkerOptions().position(new LatLng(Double.valueOf(latitude), Double.valueOf(longitude))).icon(AppUtils.BitmapFromVector(getActivity(), R.drawable.baseline_my_location_24)).title(getString(R.string.current_location)));
+            }
             try {
                 mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                     @Override
@@ -144,20 +151,22 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
 
         }
 
-        boolean isInGeofence = PolyUtil.containsLocation(Double.valueOf(latitude), Double.valueOf(longitude), optionsPolygon.getPoints(), true);
+        boolean isInGeofence = false;
+        if (!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude)) {
+             isInGeofence = PolyUtil.containsLocation(Double.valueOf(latitude), Double.valueOf(longitude), optionsPolygon.getPoints(), true);
+        }
+
         if (isInGeofence) {
             animationCross.setVisibility(View.GONE);
             animation.cancelAnimation();
             animation.setVisibility(View.GONE);
             proceed.setEnabled(true);
             title.setText("");
-            ll.setBackground(null);
         } else {
             animationCross.setVisibility(View.VISIBLE);
             animation.setVisibility(View.VISIBLE);
             animation.cancelAnimation();
             proceed.setEnabled(false);
-            ll.setBackgroundColor(getResources().getColor(R.color.grey_overlay_dark, null));
             title.setText(getResources().getText(R.string.not_in_defined_area));
         }
 
@@ -165,6 +174,7 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
 
     @Override
     public void initializeViews(View view) {
+
 
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         close = view.findViewById(R.id.btn_close);
@@ -186,7 +196,77 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferenceHelper.saveString(AppWideWariables.CHECKIN_LAT, "", getActivity());
+                SharedPreferenceHelper.saveString(AppWideWariables.CHECKIN_LONG, "", getActivity());
+
                 destroy();
+            }
+        });
+
+        proceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                SharedPreferenceHelper.saveString(AppWideWariables.CHECKIN_LAT, SharedPreferenceHelper.getString("lat", getActivity()), getActivity());
+                SharedPreferenceHelper.saveString(AppWideWariables.CHECKIN_LONG, SharedPreferenceHelper.getString("long", getActivity()), getActivity());
+
+                if (userdata.getBasicData().get(0).getFacelock().equals("yes")) {
+                    getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
+                } else {
+                    callCheckInApi();
+                }
+                destroy();
+            }
+        });
+
+    }
+
+
+    private void callCheckInApi() {
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+
+        Urls urls = retrofit.create(Urls.class);
+
+        JsonObject body = new JsonObject();
+
+        body.addProperty("employee_id", userdata.getBasicData().get(0).getId());
+        body.addProperty("checkin_time", AppUtils.getCurrentDateTimeGMT5String());
+        body.addProperty("lat", latitude);
+        body.addProperty("longitude", longitude);
+        body.addProperty("source", AppWideWariables.SOURCE_MOBILE);
+        body.addProperty("file_name", "");
+        body.addProperty("file_path", "");
+
+
+//        File file;// = // initialize file here
+
+//        MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
+
+
+        Call<JsonObjectResponse> call = urls.checkIn(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())), body);
+
+        call.enqueue(new Callback<JsonObjectResponse>() {
+            @Override
+            public void onResponse(Call<JsonObjectResponse> call, Response<JsonObjectResponse> response) {
+                Log.i("response", response.toString());
+
+                if (!response.isSuccessful()) {
+//                    tv.setText("Code :" + response.code());
+                    return;
+                }
+
+                AppUtils.makeNotification(response.body().getMessage(),getActivity());
+
+//                SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_CHECKED_IN, true, getActivity());
+            }
+
+            @Override
+            public void onFailure(Call<JsonObjectResponse> call, Throwable t) {
+                t.printStackTrace();
+                AppUtils.makeNotification(t.toString(), getActivity());
+                Log.i("response", t.toString());
+//                tv.setText(t.getMessage());
             }
         });
 
@@ -201,8 +281,7 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fullscreen_map_view, container, false);
         initializeViews(view);
@@ -255,7 +334,14 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                updateCurrentLocation();
+                try {
+                    updateCurrentLocation();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
             }
         }, 3000);
     }

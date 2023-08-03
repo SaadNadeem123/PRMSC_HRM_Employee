@@ -8,7 +8,7 @@
 
     <item
         android:id="@+id/navigation_timeoff"
-        android:icon="@drawable/timeoff"
+        android:icon="@drawable/leave_request"
         android:title="@string/title_timeoff" />
 
     <item

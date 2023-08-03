@@ -16,18 +16,31 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.gson.JsonObject;
+import com.lmkr.prmscemployeeapp.App;
+import com.lmkr.prmscemployeeapp.R;
+import com.lmkr.prmscemployeeapp.data.database.models.AttendanceHistory;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
+import com.lmkr.prmscemployeeapp.data.webservice.api.JsonObjectResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
-import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveCount;
+import com.lmkr.prmscemployeeapp.data.webservice.models.AttendanceHistoryResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.databinding.FragmentHomeBinding;
-import com.lmkr.prmscemployeeapp.R;
+import com.lmkr.prmscemployeeapp.ui.activities.CameraXActivity;
+import com.lmkr.prmscemployeeapp.ui.adapter.AttendanceHistoryRecyclerAdapter;
+import com.lmkr.prmscemployeeapp.ui.adapter.LeavesProgressRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.ui.fragments.FullScreenMapFragment;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
+import com.lmkr.prmscemployeeapp.viewModel.AttendanceHistoryViewModel;
+import com.lmkr.prmscemployeeapp.viewModel.AttendanceHistoryViewModelFactory;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,14 +49,31 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeFragment extends Fragment {
+    private static List<AttendanceHistory> attendanceHistories = null;
+    private Observer<? super List<AttendanceHistory>> attendanceHistoryObserver = new Observer<List<AttendanceHistory>>() {
+        @Override
+        public void onChanged(List<AttendanceHistory> attendanceHistories) {
+            HomeFragment.attendanceHistories = attendanceHistories;
+            loadAttendanceHistoryData();
+        }
+    };
+
+    private void loadAttendanceHistoryData() {
+        binding.contentHome.recyclerViewAttendanceHistory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        AttendanceHistoryRecyclerAdapter adapter = new AttendanceHistoryRecyclerAdapter(getActivity(), attendanceHistories);
+        binding.contentHome.recyclerViewAttendanceHistory.setAdapter(adapter);
+
+    }
+
     private FragmentHomeBinding binding;
+    private AttendanceHistoryViewModel attendanceHistoryViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+//        HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 //        final TextView textView = binding.textHome;
 //        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
@@ -53,16 +83,25 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        attendanceHistoryViewModel = new ViewModelProvider(this, new AttendanceHistoryViewModelFactory(App.getInstance(), "%" + AppUtils.getCurrentDate() + "%")).get(AttendanceHistoryViewModel.class);
+        attendanceHistoryViewModel.getAttendanceHistory().observe(getViewLifecycleOwner(), attendanceHistoryObserver);
+
+
         binding.checkin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AppUtils.hideNotification(getActivity());
-//                getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
 
-                FullScreenMapFragment fragment = FullScreenMapFragment.getInstance();
-                if(!fragment.isAdded()) {
-                    fragment.setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Dialog_NoTitle);
-                    fragment.show(getActivity().getSupportFragmentManager(), "MapFragment");
+                if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getGeofence().equals("yes")) {
+                    FullScreenMapFragment fragment = FullScreenMapFragment.getInstance();
+                    if (!fragment.isAdded()) {
+                        fragment.setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Dialog_NoTitle);
+                        fragment.show(getActivity().getSupportFragmentManager(), "MapFragment");
+                    }
+                } else if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getFacelock().equals("yes")) {
+                    getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
+                } else {
+                    callCheckInApi();
                 }
             }
         });
@@ -75,30 +114,78 @@ public class HomeFragment extends Fragment {
         getAttendanceHistory();
     }
 
+    private void callCheckInApi() {
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+
+        Urls urls = retrofit.create(Urls.class);
+
+        JsonObject body = new JsonObject();
+
+        UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
+
+        body.addProperty("employee_id", userData.getBasicData().get(0).getId());
+        body.addProperty("checkin_time", AppUtils.getCurrentDateTimeGMT5String());
+        body.addProperty("lat", 0);
+        body.addProperty("longitude", 0);
+        body.addProperty("source", AppWideWariables.SOURCE_MOBILE);
+        body.addProperty("file_name", "");
+        body.addProperty("file_path", "");
+
+//        File file;// = // initialize file here
+
+//        MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
+
+
+        Call<JsonObjectResponse> call = urls.checkIn(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())), body);
+
+        call.enqueue(new Callback<JsonObjectResponse>() {
+            @Override
+            public void onResponse(Call<JsonObjectResponse> call, Response<JsonObjectResponse> response) {
+                Log.i("response", response.toString());
+
+                if (!response.isSuccessful()) {
+//                    tv.setText("Code :" + response.code());
+                    return;
+                }
+
+//                SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_CHECKED_IN, true, getActivity());
+//                updateProgressBar();
+                getAttendanceHistory();
+            }
+
+            @Override
+            public void onFailure(Call<JsonObjectResponse> call, Throwable t) {
+                t.printStackTrace();
+                AppUtils.makeNotification(t.toString(), getActivity());
+                Log.i("response", t.toString());
+//                tv.setText(t.getMessage());
+            }
+        });
+
+    }
+
     private void getAttendanceHistory() {
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
 
         Urls urls = retrofit.create(Urls.class);
 
-        Call<UserData> call = urls.getAttendanceHistory(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())), String.valueOf(SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getId()));
+        Call<AttendanceHistoryResponse> call = urls.getAttendanceHistory(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())), String.valueOf(SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getId()));
 
-        call.enqueue(new Callback<UserData>() {
+        call.enqueue(new Callback<AttendanceHistoryResponse>() {
             @Override
-            public void onResponse(Call<UserData> call, Response<UserData> response) {
+            public void onResponse(Call<AttendanceHistoryResponse> call, Response<AttendanceHistoryResponse> response) {
                 Log.i("response", response.toString());
 
                 if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
                 }
 
-//                SharedPreferenceHelper.setLoggedinUser(getActivity(), response.body());
-//                AppUtils.switchActivity(LoginActivity.this, MainActivity.class, null);
-//                finish();
+                attendanceHistoryViewModel.insert(response.body().getResults());
             }
 
             @Override
-            public void onFailure(Call<UserData> call, Throwable t) {
+            public void onFailure(Call<AttendanceHistoryResponse> call, Throwable t) {
                 t.printStackTrace();
                 AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
@@ -109,11 +196,11 @@ public class HomeFragment extends Fragment {
 
     private void updateProgressBar() {
 
-        if(SharedPreferenceHelper.isCheckedIn(getActivity())) {
+        if (SharedPreferenceHelper.isCheckedIn(getActivity())) {
 
             binding.circleAnimation.setMax(1000);
             binding.checkedIn.setText(getResources().getText(R.string.checkedin));
-            binding.time.setText("10:00 AM");
+            binding.time.setText("na");
             binding.circleAnimation.setProgress(1000);
             binding.closeImg.setVisibility(View.GONE);
             binding.animationTick.cancelAnimation();
@@ -143,9 +230,7 @@ public class HomeFragment extends Fragment {
                 }
             });
             objectAnimator.start();
-        }
-        else
-        {
+        } else {
             binding.checkedIn.setText(getResources().getText(R.string.checkedout));
             binding.time.setText("");
             binding.circleAnimation.setProgress(0);
@@ -154,26 +239,9 @@ public class HomeFragment extends Fragment {
             binding.animationTick.setVisibility(View.GONE);
         }
 
-
-
-        for (LeaveCount leave: SharedPreferenceHelper.getLoggedinUser(getActivity()).getLeaveCount()) {
-
-            if(leave.getType().equals(AppWideWariables.LEAVE_TYPE_CASUAL))
-            {
-                binding.contentHome.layoutCasual.setVisibility(View.VISIBLE);
-                setProgressWithAnimation(leave.getTotal(),leave.getRemaining(),binding.contentHome.totalCasual,binding.contentHome.leftCasual,binding.contentHome.progressBarCasualLeaves,Math.round((leave.getRemaining()*100)/leave.getTotal()));
-            }
-            if(leave.getType().equals(AppWideWariables.LEAVE_TYPE_SICK))
-            {
-                binding.contentHome.layoutSick.setVisibility(View.VISIBLE);
-                setProgressWithAnimation(leave.getTotal(),leave.getRemaining(),binding.contentHome.totalSick,binding.contentHome.leftSick,binding.contentHome.progressBarSickLeaves,Math.round((leave.getRemaining()*100)/leave.getTotal()));
-            }
-            if(leave.getType().equals(AppWideWariables.LEAVE_TYPE_ANNUAL))
-            {
-                binding.contentHome.layoutAnnual.setVisibility(View.VISIBLE);
-                setProgressWithAnimation(leave.getTotal(),leave.getRemaining(),binding.contentHome.totalAnnual,binding.contentHome.leftAnnual,binding.contentHome.progressBarAnnualLeaves,Math.round((leave.getRemaining()*100)/leave.getTotal()));
-            }
-        }
+        binding.contentHome.recyclerviewLeaveProgress.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        LeavesProgressRecyclerAdapter adapter = new LeavesProgressRecyclerAdapter(getActivity(),SharedPreferenceHelper.getLoggedinUser(getActivity()).getLeaveCount());
+        binding.contentHome.recyclerviewLeaveProgress.setAdapter(adapter);
 
     }
 

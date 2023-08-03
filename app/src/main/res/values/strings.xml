@@ -53,5 +53,12 @@
     <string name="detecting_your_current_site_location">Detecting your current site location</string>
     <string name="proceed">Proceed</string>
     <string name="not_in_defined_area">You are not inside defined area! To proceed visit your site.</string>
+    <string name="choose_details_to_request_leaves">Choose Details To Request Leave</string>
+    <string name="leaves_type">Leave Type</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="note">Note</string>
+    <string name="request_time_off">Request Time Off</string>
+    <string name="leave_history">Leave History</string>
 
 </resources>

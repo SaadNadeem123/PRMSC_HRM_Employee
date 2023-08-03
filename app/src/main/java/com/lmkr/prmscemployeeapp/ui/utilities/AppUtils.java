@@ -130,6 +130,8 @@ public class AppUtils {
     public static final String FORMAT20 = "MM-yyyy"; //    11-2020
     public static final String FORMAT21 = "yyyy-MM-dd'T'HH:mm:ss.SSS";   //    2020-11-09T19:00:00.000
     public static final String FORMAT22 = "dd-MM-yyyy   hh:mm a"; //    20/08/2018 6:13 PM
+    public static final String FORMAT23 = "dd MMMM yyyy (EEEE)"; // 18 MARCH 2023 Wednesday
+    public static final String FORMAT24 = "MMMM dd"; // MARCH 12
     public static final int MY_IGNORE_OPTIMIZATION_REQUEST = 5;
     public static final int STARTING = 0;
     public static final int ENDING = 1;
@@ -1670,7 +1672,30 @@ public class AppUtils {
         return date1;
     }
 
+    public static String getCurrentDateTimeGMT5String() {
+
+        SimpleDateFormat sdf = new SimpleDateFormat(FORMAT14, Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+5"));
+        return sdf.format(new Date());
+    }
+
     public static Date getCurrentDateTimeGMT5() {
+
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+5"));
+
+        String currentUtcTime = sdf.format(new Date());
+        DateFormat inputFormatter1 = new SimpleDateFormat(FORMAT14);
+        Date date1 = null;
+        try {
+            date1 = inputFormatter1.parse(currentUtcTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date1;
+    }
+
+    public static Date getCurrentCheckinDateTimeGMT5() {
 
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("GMT+5"));

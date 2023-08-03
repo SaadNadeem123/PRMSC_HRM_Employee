@@ -8,14 +8,13 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.databinding.ActivityLoginBinding;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
 
 import retrofit2.Call;
@@ -78,6 +77,7 @@ public class LoginActivity extends BaseActivity {
         JsonObject body = new JsonObject();
         body.addProperty("email", binding.username.getText().toString());
         body.addProperty("password", binding.password.getText().toString());  //3132446990
+        body.addProperty("source", AppWideWariables.SOURCE_MOBILE);  //3132446990
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
 
@@ -91,13 +91,19 @@ public class LoginActivity extends BaseActivity {
                 Log.i("response", response.toString());
                 binding.loading.setVisibility(View.GONE);
 
-                if (!response.isSuccessful()) {
-//                    tv.setText("Code :" + response.code());
+                if (response.code() == 401 || response.code() == 403) {
+                    AppUtils.makeNotification(response.body().getMessage(), LoginActivity.this);
                 }
+                else {
+                    if (!response.isSuccessful()) {
+//                    tv.setText("Code :" + response.code());
+                        return;
+                    }
 
-                SharedPreferenceHelper.setLoggedinUser(getApplicationContext(), response.body());
-                AppUtils.switchActivity(LoginActivity.this, MainActivity.class, null);
-                finish();
+                    SharedPreferenceHelper.setLoggedinUser(getApplicationContext(), response.body());
+                    AppUtils.switchActivity(LoginActivity.this, MainActivity.class, null);
+                    finish();
+                }
             }
 
             @Override
@@ -105,8 +111,6 @@ public class LoginActivity extends BaseActivity {
                 t.printStackTrace();
                 AppUtils.makeNotification(t.toString(), LoginActivity.this);
                 binding.loading.setVisibility(View.GONE);
-                Log.i("response", t.toString());
-//                tv.setText(t.getMessage());
             }
         });
 

@@ -8,20 +8,19 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-/*import android.content.Context;
-
-import androidx.annotation.NonNull;
 import androidx.room.Database;
-import androidx.room.Room;
-import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {}, version = 1)
-//@TypeConverters(Converters.class)
-@TypeConverters({})*/
-public abstract class AppDatabase /*extends RoomDatabase*/ {
-/*
+import com.lmkr.prmscemployeeapp.data.database.dao.AttendanceHistoryDao;
+import com.lmkr.prmscemployeeapp.data.database.dao.LeaveRequestDao;
+import com.lmkr.prmscemployeeapp.data.database.models.AttendanceHistory;
+import com.lmkr.prmscemployeeapp.data.database.models.LeaveRequest;
+import com.lmkr.prmscemployeeapp.data.database.typeConverters.AttendanceHistoryConverter;
+
+@Database(entities = {AttendanceHistory.class, LeaveRequest.class}, version = 1)
+@TypeConverters({AttendanceHistoryConverter.class})
+public abstract class AppDatabase extends RoomDatabase {
+
     private static final Callback roomCallback = new Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
@@ -44,7 +43,9 @@ public abstract class AppDatabase /*extends RoomDatabase*/ {
 
     public static void deleteAllDatabase() {
     }
-*/
+
+    public abstract AttendanceHistoryDao attendanceDao();
+    public abstract LeaveRequestDao leaveRequestDao();
 
 }
 

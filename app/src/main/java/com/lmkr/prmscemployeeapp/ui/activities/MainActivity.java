@@ -70,7 +70,7 @@ public class MainActivity extends BaseActivity {
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("INTENT RECIEVED", " = INTENT RECIEVED");
+            Log.i("INTENT RECIEVED", " = INTENT REC IEVED");
             if (intent.hasExtra(LocationService.MESSAGE)) {
                 String s = intent.getStringExtra(LocationService.MESSAGE);
                 if (s == "1") {
@@ -116,6 +116,7 @@ public class MainActivity extends BaseActivity {
                 bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 
                 LocalBroadcastManager.getInstance(this).registerReceiver((receiver), new IntentFilter(LocationService.SERVICE_NAME));
+
                 Log.i("Service Binded", " true");
                 AppUtils.makeNotification(getResources().getString(R.string.wait_fetching_location), MainActivity.this);
                 isBinded = true;
