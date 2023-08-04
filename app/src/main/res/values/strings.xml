@@ -60,5 +60,14 @@
     <string name="note">Note</string>
     <string name="request_time_off">Request Time Off</string>
     <string name="leave_history">Leave History</string>
+    <string name="from_time">From Time</string>
+    <string name="to_time">To Time</string>
+    <string name="from_date">From Date</string>
+    <string name="to_date">To Date</string>
+    <string name="attachments">Attachments</string>
+    <string name="attachment">Attachment</string>
+    <string name="add_another">Add Another</string>
+    <string name="please_write_details_about_request">Please write details about request...</string>
+    <string name="please_try_again_later">Please try again later</string>
 
 </resources>

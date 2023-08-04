@@ -50,6 +50,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeFragment extends Fragment {
     private static List<AttendanceHistory> attendanceHistories = null;
+    private FragmentHomeBinding binding;
     private Observer<? super List<AttendanceHistory>> attendanceHistoryObserver = new Observer<List<AttendanceHistory>>() {
         @Override
         public void onChanged(List<AttendanceHistory> attendanceHistories) {
@@ -57,6 +58,7 @@ public class HomeFragment extends Fragment {
             loadAttendanceHistoryData();
         }
     };
+    private AttendanceHistoryViewModel attendanceHistoryViewModel;
 
     private void loadAttendanceHistoryData() {
         binding.contentHome.recyclerViewAttendanceHistory.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
@@ -64,9 +66,6 @@ public class HomeFragment extends Fragment {
         binding.contentHome.recyclerViewAttendanceHistory.setAdapter(adapter);
 
     }
-
-    private FragmentHomeBinding binding;
-    private AttendanceHistoryViewModel attendanceHistoryViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -181,7 +180,9 @@ public class HomeFragment extends Fragment {
 //                    tv.setText("Code :" + response.code());
                 }
 
-                attendanceHistoryViewModel.insert(response.body().getResults());
+                if (response.body() != null && response.body().getResults() != null) {
+                    attendanceHistoryViewModel.insert(response.body().getResults());
+                }
             }
 
             @Override
@@ -240,7 +241,7 @@ public class HomeFragment extends Fragment {
         }
 
         binding.contentHome.recyclerviewLeaveProgress.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        LeavesProgressRecyclerAdapter adapter = new LeavesProgressRecyclerAdapter(getActivity(),SharedPreferenceHelper.getLoggedinUser(getActivity()).getLeaveCount());
+        LeavesProgressRecyclerAdapter adapter = new LeavesProgressRecyclerAdapter(getActivity(), SharedPreferenceHelper.getLoggedinUser(getActivity()).getLeaveCount());
         binding.contentHome.recyclerviewLeaveProgress.setAdapter(adapter);
 
     }
@@ -269,5 +270,9 @@ public class HomeFragment extends Fragment {
 
     public void enableCheckinButton(boolean b) {
         binding.checkin.setEnabled(b);
+    }
+
+    public void refreshApiCalls() {
+        getAttendanceHistory();
     }
 }

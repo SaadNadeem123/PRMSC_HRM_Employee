@@ -14,4 +14,5 @@ public static final String LEAVE_TYPE_SICK="Medical";
     public static final String CHECKIN_SELFIE_URI = "checkinSelfieUri";
     public static final String IS_CHECKED_IN = "isCheckedIn" ;
     public static final String SOURCE_MOBILE = "mobile";
+    public static final String SOURCE_MOBILE_ENUM = "1";
 }

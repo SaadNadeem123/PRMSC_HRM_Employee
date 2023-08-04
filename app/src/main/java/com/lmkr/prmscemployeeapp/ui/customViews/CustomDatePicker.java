@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.lmkr.prmscemployeeapp.R;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -33,7 +34,7 @@ public class CustomDatePicker implements View.OnClickListener, DatePickerDialog.
     private int _month;
     private int _birthYear;
     private int dateType = DEFAULT;
-    private final long minimumDate = -1;
+    private final long minimumDate = System.currentTimeMillis();
 
     public CustomDatePicker(Context context, TextView textView) {
         Activity act = (Activity) context;
@@ -111,7 +112,7 @@ public class CustomDatePicker implements View.OnClickListener, DatePickerDialog.
         }
 
         //        dialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
-        dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+//        dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
 
         if (_textView != null && _textView.getText().toString() != null && (!_textView.getText().toString().equals("")) && _textView.getText().toString().contains("/")) {
             String[] date = _textView.getText().toString().trim().split("/");

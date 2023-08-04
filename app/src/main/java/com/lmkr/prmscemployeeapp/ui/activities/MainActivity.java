@@ -27,8 +27,10 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lmkr.prmscemployeeapp.R;
+import com.lmkr.prmscemployeeapp.data.webservice.TokenBoundService;
 import com.lmkr.prmscemployeeapp.databinding.ActivityMainBinding;
 import com.lmkr.prmscemployeeapp.ui.home.HomeFragment;
+import com.lmkr.prmscemployeeapp.ui.leaverequest.LeaveRequestFragment;
 import com.lmkr.prmscemployeeapp.ui.locationUtils.LocationService;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.PermissionsRequest;
@@ -43,7 +45,9 @@ public class MainActivity extends BaseActivity {
     private ActivityMainBinding binding;
     private String provider;
     private boolean mServiceBound = false;
+    private boolean mServiceBoundToken = false;
     private LocationService mBoundService;
+    private TokenBoundService mBoundServiceToken;
     private ServiceConnection mServiceConnection = new ServiceConnection() {
 
         @Override
@@ -90,6 +94,30 @@ public class MainActivity extends BaseActivity {
         }
         // do something here.
     };
+    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof HomeFragment) {
+                ((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
+            }
+            else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
+                ((LeaveRequestFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
+            }
+        }
+    };
+    private final ServiceConnection mServiceConnectionToken = new ServiceConnection() {
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mServiceBoundToken = false;
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            TokenBoundService.MyBinder myBinder = (TokenBoundService.MyBinder) service;
+            mBoundServiceToken = myBinder.getService();
+            mServiceBoundToken = true;
+        }
+    };
 
     public void unBindService() {
         try {
@@ -131,6 +159,14 @@ public class MainActivity extends BaseActivity {
         return isBinded;
     }
 
+    private void bindTokenService() {
+        Intent intentToken = new Intent(this, TokenBoundService.class);
+        startService(intentToken);
+        bindService(intentToken, mServiceConnectionToken, Context.BIND_AUTO_CREATE);
+        IntentFilter intentFilter = new IntentFilter(TokenBoundService.REFRESH_TOKEN);
+        registerReceiver(messageReceiver, intentFilter);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -161,6 +197,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         unBindService();
+        unbindServiceToken();
         super.onDestroy();
     }
 
@@ -179,6 +216,9 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        bindTokenService();
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, PermissionsRequest.LOCATION_PERMISSIONS, PermissionsRequest.LOCATION_REQUEST_CODE);
@@ -202,6 +242,23 @@ public class MainActivity extends BaseActivity {
 
         navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
 
+    }
+
+
+    private void unbindServiceToken() {
+
+        try {
+            if (mServiceBoundToken) {
+                unbindService(mServiceConnectionToken);
+                mServiceBoundToken = false;
+            }
+            Intent intent = new Intent(MainActivity.this, TokenBoundService.class);
+            stopService(intent);
+
+            unregisterReceiver(messageReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

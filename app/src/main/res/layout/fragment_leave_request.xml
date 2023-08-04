@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:layout_marginTop="@dimen/top_margin"
     android:background="@drawable/background_top_rounded_white"
     android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context=".ui.leaverequest.LeaveRequestFragment">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -96,7 +96,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="@string/from"
+                        android:text="@string/from_date"
                         android:textAlignment="center"
                         android:textColor="@color/app_green"
                         android:textSize="14sp" />
@@ -139,7 +139,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="@string/to"
+                        android:text="@string/to_date"
                         android:textAlignment="center"
                         android:textColor="@color/app_green"
                         android:textSize="14sp" />
@@ -150,6 +150,103 @@
 
                         <TextView
                             android:id="@+id/date_time_to"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/edit_text_background"
+                            android:clickable="true"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end|center_vertical"
+                            android:layout_marginEnd="10sp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/dropdown_arrow" />
+
+                    </FrameLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/label_time_from"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/from_time"
+                        android:textAlignment="center"
+                        android:textColor="@color/app_green"
+                        android:textSize="14sp" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize">
+
+                        <TextView
+                            android:id="@+id/time_from"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/edit_text_background"
+                            android:clickable="true"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="5dp"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end|center_vertical"
+                            android:layout_marginEnd="10sp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/dropdown_arrow" />
+
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/label_time_to"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/to_time"
+                        android:textAlignment="center"
+                        android:textColor="@color/app_green"
+                        android:textSize="14sp" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize">
+
+                        <TextView
+                            android:id="@+id/time_to"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@drawable/edit_text_background"
@@ -186,14 +283,78 @@
             <EditText
                 android:id="@+id/note"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
+                android:lines="8"
+                android:textColorHint="@color/grey_dark"
+                android:hint="@string/please_write_details_about_request"
+                android:textColor="@color/black"
+                android:textCursorDrawable="@null"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 android:background="@drawable/edit_text_background"
                 android:clickable="true" />
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:visibility="visible">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvAttachment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/recycler_item_attachment" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <Button
+                        android:id="@+id/attachment"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="0.3"
+                        android:backgroundTint="@color/app_blue"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:text="@string/attachment"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0.7"
+                        android:visibility="gone">
+
+                        <com.lmkr.prmscemployeeapp.ui.customViews.UnderlineTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="20dp"
+                            android:clickable="true"
+                            android:text="@string/add_another"
+                            android:textColor="@color/clickable_text_blue_to_grey"
+                            android:textSize="10sp"
+                            android:visibility="gone" />
+
+                    </FrameLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
             <Button
-                android:id="@+id/login"
+                android:id="@+id/request_time_off"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_gravity="start"
@@ -227,8 +388,9 @@
                 tools:itemCount="3"
                 tools:listitem="@layout/recycler_item_attendance_history" />
 
-            <View android:layout_width="match_parent"
-                android:layout_height="70dp"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="70dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

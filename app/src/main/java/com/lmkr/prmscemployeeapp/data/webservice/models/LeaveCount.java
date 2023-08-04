@@ -1,9 +1,18 @@
 package com.lmkr.prmscemployeeapp.data.webservice.models;
 
 public class LeaveCount {
+    private int id;
     private String type;
     private int total;
     private int remaining;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getType() {
         return type;

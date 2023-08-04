@@ -1187,7 +1187,27 @@ public class AppUtils {
             e.printStackTrace();
 
             return null;
-        }
+       }
+    }
+    public static String getCurrentHourOfDay() {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("hh");
+            return dateFormat.format(new Date());
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+       }
+    }
+    public static String getCurrentMinOfDay() {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("mm");
+            return dateFormat.format(new Date());
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+       }
     }
 
     public static String getCurrentTimeOnlyWithSeconds() {

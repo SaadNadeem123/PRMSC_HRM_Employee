@@ -79,6 +79,8 @@ public class LoginActivity extends BaseActivity {
         body.addProperty("password", binding.password.getText().toString());  //3132446990
         body.addProperty("source", AppWideWariables.SOURCE_MOBILE);  //3132446990
 
+        SharedPreferenceHelper.saveString(SharedPreferenceHelper.PASSWORD,binding.password.getText().toString(),LoginActivity.this);
+
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
 
         Urls urls = retrofit.create(Urls.class);
@@ -93,6 +95,7 @@ public class LoginActivity extends BaseActivity {
 
                 if (response.code() == 401 || response.code() == 403) {
                     AppUtils.makeNotification(response.body().getMessage(), LoginActivity.this);
+                    return;
                 }
                 else {
                     if (!response.isSuccessful()) {
@@ -100,9 +103,11 @@ public class LoginActivity extends BaseActivity {
                         return;
                     }
 
-                    SharedPreferenceHelper.setLoggedinUser(getApplicationContext(), response.body());
-                    AppUtils.switchActivity(LoginActivity.this, MainActivity.class, null);
-                    finish();
+                    if(response.body()!=null && response.body().getMessage()==null) {
+                        SharedPreferenceHelper.setLoggedinUser(getApplicationContext(), response.body());
+                        AppUtils.switchActivity(LoginActivity.this, MainActivity.class, null);
+                        finish();
+                    }
                 }
             }
 

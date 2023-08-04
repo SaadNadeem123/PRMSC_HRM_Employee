@@ -1,11 +1,35 @@
 
 package com.lmkr.prmscemployeeapp.data.webservice;
 
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
+import android.os.SystemClock;
+import android.text.TextUtils;
+import android.util.Log;
+import android.widget.Chronometer;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
+import com.lmkr.prmscemployeeapp.data.webservice.api.JsonObjectResponse;
+import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
+import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
+import com.lmkr.prmscemployeeapp.ui.broadcastReceivers.ConnectivityReceiver;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
+import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
 
 import java.util.Timer;
+import java.util.TimerTask;
 
-/*
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,9 +58,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-*/
-public class TokenBoundService /*extends Service*/ {
-  /*  public static final String REFRESH_TOKEN = "refreshToken";
+public class TokenBoundService extends Service {
+    public static final String REFRESH_TOKEN = "refreshToken";
     private static final String LOG_TAG = "BoundService";
     public static String RESET_TIMER = "resetTimer";
     private final IBinder mBinder = new MyBinder();
@@ -139,11 +162,9 @@ public class TokenBoundService /*extends Service*/ {
         UserData userData = SharedPreferenceHelper.getLoggedinUser(TokenBoundService.this);
 
         JsonObject body = new JsonObject();
-        body.addProperty("code", +92);
-        body.addProperty("phone", userData.setBasicData().get(0).getPhone());  //3132446990
-        body.addProperty("mobileAuth", "$2a$10$L2xd6WP8UZl9qXNF.qYNv.8If7U8O3hnbnBwkc47uQnz3727Qr.kC");
-//        body.addProperty("lat", latitude);
-//        body.addProperty("lng", longitude);
+        body.addProperty("email", userData.getBasicData().get(0).getEmail());
+        body.addProperty("password", SharedPreferenceHelper.getString(SharedPreferenceHelper.PASSWORD,TokenBoundService.this));  //3132446990
+        body.addProperty("source", AppWideWariables.SOURCE_MOBILE);  //3132446990
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
 
@@ -168,7 +189,7 @@ public class TokenBoundService /*extends Service*/ {
                 if (jsonObjectResponse != null && jsonObjectResponse.getResponse() != null) {
 
                     UserData userData = (new Gson()).fromJson(response.body().getResponse(), UserData.class);
-                    Log.i("response", userData.getUserToken());
+                    Log.i("response", userData.getToken());
                     SharedPreferenceHelper.setLoggedinUser(getApplicationContext(), userData);
 
                     SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, false, TokenBoundService.this);
@@ -230,5 +251,4 @@ public class TokenBoundService /*extends Service*/ {
             }
         }
     }
-   */
 }
