@@ -17,7 +17,6 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import com.google.gson.JsonObject
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls
 import com.lmkr.prmscemployeeapp.data.webservice.api.JsonObjectResponse
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls
@@ -26,10 +25,10 @@ import com.lmkr.prmscemployeeapp.databinding.ActivityCameraXBinding
 import com.lmkr.prmscemployeeapp.ui.cameraxUtils.FaceContourDetectionProcessor
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables
-import com.lmkr.prmscemployeeapp.ui.utilities.FileUtils
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper
 import okhttp3.MediaType
 import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,6 +39,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 
 class CameraXActivity : AppCompatActivity() {
@@ -89,6 +89,7 @@ class CameraXActivity : AppCompatActivity() {
             }
         }
 
+
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(
             contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
@@ -105,7 +106,7 @@ class CameraXActivity : AppCompatActivity() {
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val msg =
-                        "Photo capture succeeded: ${output.savedUri} , outputuri-> ${MediaStore.Images.Media.EXTERNAL_CONTENT_URI}"
+                        "Photo capture succeeded: ${output.savedUri}"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
 
 
@@ -119,9 +120,35 @@ class CameraXActivity : AppCompatActivity() {
             })
     }
 
+    // And to convert the image URI to the direct file system path of the image file
+    open fun getRealPathFromURI(contentUri: Uri?): String? {
+
+        // can post image
+        val proj = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = contentResolver.query(
+            contentUri!!,
+            proj,  // Which columns to return
+            null,  // WHERE clause; which rows to return (all rows)
+            null,  // WHERE clause selection arguments (none)
+            null
+        ) // Order-by clause (ascending by name)
+        val column_index = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        cursor!!.moveToFirst()
+        return cursor!!.getString(column_index)
+    }
+
     private fun callCheckInApi(name: String, savedUri: Uri?) {
 
-        val file = FileUtils.getPath(this@CameraXActivity, savedUri)
+        val user = SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)
+
+        /*
+         * Get the column indexes of the data in the Cursor,
+         * move to the first row in the Cursor, get the data,
+         * and display it.
+         */
+//        val file = File("/storage/emulated/0/Pictures/CameraX-Image/$name")
+//        val file = FileUtils.getPath(this@CameraXActivity, savedUri)
+        val file = getRealPathFromURI(savedUri)
 
         val filePart = MultipartBody.Part.createFormData(
             "file", name, RequestBody.create(
@@ -129,31 +156,83 @@ class CameraXActivity : AppCompatActivity() {
             )
         )
 
-        val retrofit = Retrofit.Builder().baseUrl(ApiCalls.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
+        val httpClient = OkHttpClient.Builder().retryOnConnectionFailure(true)
+            .connectTimeout(30, TimeUnit.MINUTES)
+            .readTimeout(30, TimeUnit.MINUTES)
+            .writeTimeout(
+                30,
+                TimeUnit.MINUTES
+            ) //                .addInterceptor(new NetInterceptor())
+            /*                .addInterceptor(new Interceptor() {
+                    @Override
+                    public okhttp3.Response intercept(Chain chain) throws IOException {
+                        Request request = chain.request();
+                        String token = user.getToken();
+                        request = request.newBuilder()
+                                .addHeader("Authorization", token)
+                                .build();
+                        return chain.proceed(request);
+                    }
+                })*/
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(ApiCalls.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(httpClient)
+            .build()
         val urls = retrofit.create(Urls::class.java)
-        val body = JsonObject()
-        body.addProperty("employee_id", userData!!.basicData[0].id)
-        body.addProperty("checkin_time", AppUtils.getCurrentDateTimeGMT5String())
-        body.addProperty("lat", SharedPreferenceHelper.getString("lat", this@CameraXActivity))
-        body.addProperty(
-            "longitude",
+        /* val body = JsonObject()
+         body.addProperty("employee_id", userData!!.basicData[0].id)
+         body.addProperty("checkin_time", AppUtils.getCurrentDateTimeGMT5String())
+         body.addProperty("lat", SharedPreferenceHelper.getString("lat", this@CameraXActivity))
+         body.addProperty(
+             "longitude", SharedPreferenceHelper.getString("long", this@CameraXActivity)
+         )
+         body.addProperty("source", AppWideWariables.SOURCE_MOBILE)
+         body.addProperty("file_name", name)
+         body.addProperty("file_path", "")*/
+
+        val employee_id: RequestBody = RequestBody.create(
+            MediaType.parse("text/plain"),
+            user.basicData.get(0).id.toString() + ""
+        )
+        val checkin_time: RequestBody = RequestBody.create(
+            MediaType.parse("text/plain"),
+            AppUtils.getCurrentDateTimeGMT5String()
+        )
+        val lat: RequestBody = RequestBody.create(
+            MediaType.parse("text/plain"),
+            SharedPreferenceHelper.getString("lat", this@CameraXActivity)
+        )
+        val longitude: RequestBody = RequestBody.create(
+            MediaType.parse("text/plain"),
             SharedPreferenceHelper.getString("long", this@CameraXActivity)
         )
-        body.addProperty("source", AppWideWariables.SOURCE_MOBILE)
-        body.addProperty("file_name", name)
-        body.addProperty("file_path", "")
+        val source: RequestBody =
+            RequestBody.create(MediaType.parse("text/plain"), AppWideWariables.SOURCE_MOBILE)
+        val file_name: RequestBody = RequestBody.create(MediaType.parse("text/plain"), name)
+        val file_path: RequestBody = RequestBody.create(MediaType.parse("text/plain"), "path")
+
 
         val call = urls.checkInMultipart(
             AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)),
             filePart,
-            body
+            employee_id,
+            checkin_time,
+            lat,
+            longitude,
+            source,
+            file_name,
+            file_path
         )
         call.enqueue(object : Callback<JsonObjectResponse?> {
             override fun onResponse(
                 call: Call<JsonObjectResponse?>, response: Response<JsonObjectResponse?>
             ) {
                 Log.i("response", response.toString())
+                AppUtils.makeNotification(response.message(), this@CameraXActivity)
+
                 if (!response.isSuccessful) {
 //                    tv.setText("Code :" + response.code());
                     return

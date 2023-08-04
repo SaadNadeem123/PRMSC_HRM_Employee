@@ -111,6 +111,7 @@ public class HomeFragment extends Fragment {
         binding.textHome.setText(SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getName());
         updateProgressBar();
         getAttendanceHistory();
+        enableCheckinButton(true);
     }
 
     private void callCheckInApi() {

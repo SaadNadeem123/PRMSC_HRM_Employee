@@ -37,6 +37,7 @@ import com.lmkr.prmscemployeeapp.data.database.models.LeaveRequest;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
 import com.lmkr.prmscemployeeapp.data.webservice.api.JsonObjectResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
+import com.lmkr.prmscemployeeapp.data.webservice.models.CreateLeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveCount;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
@@ -51,6 +52,7 @@ import com.lmkr.prmscemployeeapp.ui.customViews.CustomTimePicker;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.FileUtils;
+import com.lmkr.prmscemployeeapp.ui.utilities.NetInterceptor;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
 import com.lmkr.prmscemployeeapp.viewModel.LeaveRequestViewModel;
 import com.lmkr.prmscemployeeapp.viewModel.LeaveRequestViewModelFactory;
@@ -67,6 +69,7 @@ import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -153,11 +156,15 @@ public class LeaveRequestFragment extends Fragment {
 
     private void callRequestTimeOffApi() {
         FileModel fileModel = files != null && files.size() > 0 ? files.get(0) : null;
-        File file = new File(fileModel.getPath());
+        RequestBody fpath =null;
+        MultipartBody.Part body = null;
 
-        RequestBody fpath = RequestBody.create(MediaType.parse(fileModel.getMimeType()), file);
+        if(fileModel!=null) {
+            File file = new File(fileModel.getPath());
 
-        MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), fpath);
+            fpath = RequestBody.create(MediaType.parse(fileModel.getMimeType()), file);
+            body = MultipartBody.Part.createFormData("file", file.getName(), fpath);
+        }
 
         UserData user = SharedPreferenceHelper.getLoggedinUser(getActivity());
 
@@ -165,8 +172,8 @@ public class LeaveRequestFragment extends Fragment {
         RequestBody leave_type_id = RequestBody.create(MediaType.parse("text/plain"), leaveType.getId() + "");
         RequestBody from_date = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getConvertedDateFromOneFormatToOther(binding.dateTimeFrom.getText().toString(), AppUtils.FORMAT15, AppUtils.FORMAT3));
         RequestBody to_date = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getConvertedDateFromOneFormatToOther(binding.dateTimeTo.getText().toString(), AppUtils.FORMAT15, AppUtils.FORMAT3));
-        RequestBody from_time = RequestBody.create(MediaType.parse("text/plain"), !TextUtils.isEmpty(binding.timeFrom.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeFrom.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "");
-        RequestBody to_time = RequestBody.create(MediaType.parse("text/plain"), !TextUtils.isEmpty(binding.timeTo.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeTo.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "");
+        RequestBody from_time = RequestBody.create(MediaType.parse("text/plain"), !TextUtils.isEmpty(binding.timeFrom.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeFrom.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "00:00:00");
+        RequestBody to_time = RequestBody.create(MediaType.parse("text/plain"), !TextUtils.isEmpty(binding.timeTo.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeTo.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "00:00:00");
         RequestBody total_days = RequestBody.create(MediaType.parse("text/plain"), 2 + "");
         RequestBody reason = RequestBody.create(MediaType.parse("text/plain"), binding.note.getText().toString());
         RequestBody emergency_contact = RequestBody.create(MediaType.parse("text/plain"), "03001234567");
@@ -176,13 +183,32 @@ public class LeaveRequestFragment extends Fragment {
         RequestBody first_approver = RequestBody.create(MediaType.parse("text/plain"), user.getBasicData().get(0).getManager_id() + "");
         RequestBody status = RequestBody.create(MediaType.parse("text/plain"), "1");
 
+
+
+//       MultipartBody.Part employee_id = MultipartBody.Part.createFormData("employee_id",user.getBasicData().get(0).getId() + "");
+//       MultipartBody.Part leave_type_id = MultipartBody.Part.createFormData("leave_type_id",leaveType.getId() + "");
+//       MultipartBody.Part from_date = MultipartBody.Part.createFormData("from_date",AppUtils.getConvertedDateFromOneFormatToOther(binding.dateTimeFrom.getText().toString(), AppUtils.FORMAT15, AppUtils.FORMAT3));
+//       MultipartBody.Part to_date = MultipartBody.Part.createFormData("to_date",AppUtils.getConvertedDateFromOneFormatToOther(binding.dateTimeTo.getText().toString(), AppUtils.FORMAT15, AppUtils.FORMAT3));
+//       MultipartBody.Part from_time = MultipartBody.Part.createFormData("from_time", !TextUtils.isEmpty(binding.timeFrom.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeFrom.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "00:00:00");
+//       MultipartBody.Part to_time = MultipartBody.Part.createFormData("to_time", !TextUtils.isEmpty(binding.timeTo.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeTo.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "00:00:00");
+//       MultipartBody.Part total_days = MultipartBody.Part.createFormData("total_days", 2 + "");
+//       MultipartBody.Part reason = MultipartBody.Part.createFormData("reason",binding.note.getText().toString());
+//       MultipartBody.Part emergency_contact = MultipartBody.Part.createFormData("emergency_contact", "03001234567");
+//       MultipartBody.Part lat = MultipartBody.Part.createFormData("lat", 0 + "");
+//       MultipartBody.Part lng = MultipartBody.Part.createFormData("lng", 0 + "");
+//       MultipartBody.Part source = MultipartBody.Part.createFormData("source",AppWideWariables.SOURCE_MOBILE_ENUM);
+//       MultipartBody.Part first_approver = MultipartBody.Part.createFormData("first_approver",user.getBasicData().get(0).getManager_id() + "");
+//       MultipartBody.Part status = MultipartBody.Part.createFormData("status", "1");
+
+
+
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("employee_id",user.getBasicData().get(0).getId() + "");
         jsonObject.addProperty("leave_type_id",leaveType.getId() + "");
         jsonObject.addProperty("from_date",AppUtils.getConvertedDateFromOneFormatToOther(binding.dateTimeFrom.getText().toString(), AppUtils.FORMAT15, AppUtils.FORMAT3));
         jsonObject.addProperty("to_date",AppUtils.getConvertedDateFromOneFormatToOther(binding.dateTimeTo.getText().toString(), AppUtils.FORMAT15, AppUtils.FORMAT3));
-        jsonObject.addProperty("from_time", !TextUtils.isEmpty(binding.timeFrom.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeFrom.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "");
-        jsonObject.addProperty("to_time", !TextUtils.isEmpty(binding.timeTo.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeTo.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "");
+        jsonObject.addProperty("from_time", !TextUtils.isEmpty(binding.timeFrom.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeFrom.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "00:00:00");
+        jsonObject.addProperty("to_time", !TextUtils.isEmpty(binding.timeTo.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeTo.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "00:00:00");
         jsonObject.addProperty("total_days", 2 + "");
         jsonObject.addProperty("reason",binding.note.getText().toString());
         jsonObject.addProperty("emergency_contact", "03001234567");
@@ -194,17 +220,19 @@ public class LeaveRequestFragment extends Fragment {
 
         ProgressDialog mProgressDialog = new ProgressDialog(getActivity(), R.style.CustomProgressDialog);
         mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setMessage("File upload in progress please wait...");
+        mProgressDialog.setMessage("Please Wait...");
+//        mProgressDialog.setMessage("File upload in progress please wait...");
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.setCancelable(false);
         mProgressDialog.show();
+
 
         OkHttpClient httpClient = new OkHttpClient.Builder().retryOnConnectionFailure(true)
                 .connectTimeout(10, TimeUnit.MINUTES)
                 .readTimeout(10, TimeUnit.MINUTES)
                 .writeTimeout(10, TimeUnit.MINUTES)
 //                .addInterceptor(new NetInterceptor())
-                .addInterceptor(new Interceptor() {
+/*                .addInterceptor(new Interceptor() {
                     @Override
                     public okhttp3.Response intercept(Chain chain) throws IOException {
                         Request request = chain.request();
@@ -214,7 +242,8 @@ public class LeaveRequestFragment extends Fragment {
                                 .build();
                         return chain.proceed(request);
                     }
-                }).build();
+                })*/
+                .build();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ApiCalls.BASE_URL)
@@ -224,12 +253,14 @@ public class LeaveRequestFragment extends Fragment {
 
         Urls jsonPlaceHolderApi = retrofit.create(Urls.class);
 
-        Call<JsonObjectResponse> call = jsonPlaceHolderApi.leaveRequestMultipart(AppUtils.getStandardHeaders(user), body, jsonObject);
-//        Call<JsonObjectResponse> call = jsonPlaceHolderApi.leaveRequestMultipart(AppUtils.getStandardHeaders(user), body, employee_id, leave_type_id, from_date, to_date, from_time, to_time, total_days, reason, emergency_contact, lat, lng, source, first_approver, status);
+//        Call<CreateLeaveRequestResponse> call = jsonPlaceHolderApi.leaveRequest(AppUtils.getStandardHeaders(user),jsonObject);
+//        Call<JsonObjectResponse> call = jsonPlaceHolderApi.leaveRequestMultipart(AppUtils.getStandardHeaders(user), body, jsonObject);
+        Call<CreateLeaveRequestResponse> call = jsonPlaceHolderApi.leaveRequestMultipart(AppUtils.getStandardHeaders(user), body, employee_id, leave_type_id, from_date, to_date, from_time, to_time, total_days, reason, emergency_contact, lat, lng, source, first_approver, status);
+//        Call<CreateLeaveRequestResponse> call = jsonPlaceHolderApi.leaveRequestMultipart(AppUtils.getStandardHeaders(user), employee_id, leave_type_id, from_date, to_date, from_time, to_time, total_days, reason, emergency_contact, lat, lng, source, first_approver, status);
 
-        call.enqueue(new Callback<JsonObjectResponse>() {
+        call.enqueue(new Callback<CreateLeaveRequestResponse>() {
             @Override
-            public void onResponse(Call<JsonObjectResponse> call, Response<JsonObjectResponse> response) {
+            public void onResponse(Call<CreateLeaveRequestResponse> call, Response<CreateLeaveRequestResponse> response) {
                 Log.i("response", response.toString());
                 if (mProgressDialog.isShowing())
                     mProgressDialog.dismiss();
@@ -247,12 +278,6 @@ public class LeaveRequestFragment extends Fragment {
                         return;
                     }
 
-                    if (response.body().isStatus()) {
-                    } else {
-                        AppUtils.makeNotification(response.body().getMessage(), getActivity());
-                    }
-
-
 /*
                     JsonObjectResponse jsonObjectResponse = response.body();
 
@@ -266,7 +291,7 @@ public class LeaveRequestFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<JsonObjectResponse> call, Throwable t) {
+            public void onFailure(Call<CreateLeaveRequestResponse> call, Throwable t) {
                 t.printStackTrace();
                 if (mProgressDialog.isShowing())
                     mProgressDialog.dismiss();
@@ -410,6 +435,8 @@ public class LeaveRequestFragment extends Fragment {
          * move to the first row in the Cursor, get the data,
          * and display it.
          */
+
+
 
         int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
         int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);

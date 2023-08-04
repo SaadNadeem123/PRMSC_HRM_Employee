@@ -2,6 +2,7 @@ package com.lmkr.prmscemployeeapp.data.webservice.api;
 
 import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.data.webservice.models.AttendanceHistoryResponse;
+import com.lmkr.prmscemployeeapp.data.webservice.models.CreateLeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 
@@ -32,16 +33,9 @@ public interface Urls {
 
     @Multipart
     @POST("employee/leaverequest/create")
-    Call<JsonObjectResponse> leaveRequestMultipart(
+    Call<CreateLeaveRequestResponse> leaveRequestMultipart(
             @Header("Authorization") String standardHeaders,
-            @Part MultipartBody.Part filePart,
-            @Part("Body") JsonObject body);
-
-    @Multipart
-    @POST("employee/leaverequest/create")
-    Call<JsonObjectResponse> leaveRequestMultipart(
-            @Header("Authorization") String standardHeaders,
-            @Part MultipartBody.Part filePart,
+            @Part MultipartBody.Part file,
             @Part("employee_id")RequestBody employee_id,
             @Part("leave_type_id")RequestBody leave_type_id,
             @Part("from_date")RequestBody from_date,
@@ -57,10 +51,17 @@ public interface Urls {
             @Part("first_approver")RequestBody first_approver,
             @Part("status") RequestBody status);
 
-
     @Multipart
     @POST("attendance/attendance")
-    Call<JsonObjectResponse> checkInMultipart(@Header("Authorization") String standardHeaders, @Part MultipartBody.Part filePart, @Part JsonObject body);
+    Call<JsonObjectResponse> checkInMultipart(@Header("Authorization") String standardHeaders,
+                                              @Part MultipartBody.Part file,
+                                                      @Part("employee_id")RequestBody employee_id,
+                                                      @Part("checkin_time")RequestBody checkin_time,
+                                                      @Part("lat")RequestBody lat,
+                                                      @Part("longitude")RequestBody longitude,
+                                                      @Part("source")RequestBody source,
+                                                      @Part("file_name")RequestBody file_name,
+                                                      @Part("file_path")RequestBody file_path);
 
     @POST("attendance/attendance")
     Call<JsonObjectResponse> checkIn(@Header("Authorization") String standardHeaders, @Body JsonObject body);
