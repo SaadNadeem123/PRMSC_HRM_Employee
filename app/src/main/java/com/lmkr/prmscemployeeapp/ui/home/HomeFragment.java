@@ -65,6 +65,18 @@ public class HomeFragment extends Fragment {
         AttendanceHistoryRecyclerAdapter adapter = new AttendanceHistoryRecyclerAdapter(getActivity(), attendanceHistories);
         binding.contentHome.recyclerViewAttendanceHistory.setAdapter(adapter);
 
+        boolean isCheckedIn = false;
+        for (AttendanceHistory attendanceHistory : attendanceHistories) {
+            if (AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getDate(),AppUtils.FORMAT19,AppUtils.FORMAT3).equals(AppUtils.getCurrentDate())) {
+                isCheckedIn = true;
+            }
+        }
+
+        if (isCheckedIn) {
+            SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_CHECKED_IN, true, getActivity());
+        } else {
+            SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_CHECKED_IN, false, getActivity());
+        }
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
