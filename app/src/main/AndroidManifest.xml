@@ -28,7 +28,9 @@
         android:theme="@style/Theme.PRMSCEmployeeApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ui.bulletin.BulletinDetailActivity"
+            android:exported="false" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -42,7 +44,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${MAPS_API_KEY}" />
+            android:value="AIzaSyCtyNlpUoses3dSfqptLB_ZWwSwim2mVwM" />
 
         <activity
             android:name=".ui.activities.CameraXActivity"

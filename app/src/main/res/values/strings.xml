@@ -3,8 +3,6 @@
     <string name="take_photo">Take Photo</string>
     <string name="start_capture">Start Capture</string>
     <string name="stop_capture">Stop Capture</string>
-
-
     <string name="title_home">Home</string>
     <string name="title_timeoff">Time Off</string>
     <string name="title_bulletin">Bulletin</string>
@@ -25,8 +23,6 @@
     <string name="password">Password</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="checkin">Checkin</string>
-
-
     <string name="wait_fetching_location">Please wait fetching current location....</string>
     <string name="gps_not_enabled">GPS is not Enabled!</string>
     <string name="do_you_want_to_enable_gps">Do you want to turn on GPS?</string>
@@ -69,5 +65,36 @@
     <string name="add_another">Add Another</string>
     <string name="please_write_details_about_request">Please write details about request...</string>
     <string name="please_try_again_later">Please try again later</string>
+    <string name="there_is_no_benefits_right_now">There is no benefits right now!</string>
+    <string name="team">Team</string>
+    <string name="goals">Goals</string>
+    <string name="assesments">Assesments</string>
+    <string name="load_document">UPLOAD DOCUMENT</string>
+    <string name="search_document">Search Document</string>
+    <string name="add_contact">Add Contact</string>
+    <string name="primary_contact">Primary Contact</string>
+    <string name="relationship">Relationship</string>
+    <string name="home_phone">Home Phone</string>
+    <string name="email">Email</string>
+    <string name="address">Address</string>
+    <string name="contact">Contact</string>
+    <string name="work_phone">Work Phone</string>
+    <string name="add_home_phone">+Add Home Phone</string>
+    <string name="work_email">Work Email</string>
+    <string name="personal_email">Personal Email</string>
+    <string name="basic_info">Basic Information</string>
+    <string name="employee_id">Employee ID#</string>
+    <string name="first_name">First Name</string>
+    <string name="mobile_phone">Mobile Phone</string>
+    <string name="hire_date">Hire Date</string>
+    <string name="employee_status">Employment Status</string>
+    <string name="job_information">Job Information</string>
+    <string name="job_title">Job Title</string>
+    <string name="reports_to">Reports To</string>
+    <string name="department">Department</string>
+    <string name="division">Division</string>
+    <string name="location">Location</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="warning">Heat Wave Warning</string>
 
 </resources>

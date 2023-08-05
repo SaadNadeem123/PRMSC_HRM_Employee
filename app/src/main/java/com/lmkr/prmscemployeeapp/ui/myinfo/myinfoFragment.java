@@ -4,31 +4,31 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.lmkr.prmscemployeeapp.databinding.FragmentBulletinBinding;
-
+import com.lmkr.prmscemployeeapp.databinding.FragmentMyinfoBinding;
 
 public class myinfoFragment extends Fragment {
 
-    private FragmentBulletinBinding binding;
+    private FragmentMyinfoBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        myinfoViewModel myinfoViewModel =
-                new ViewModelProvider(this).get(myinfoViewModel.class);
 
-        binding = FragmentBulletinBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        binding = FragmentMyinfoBinding.inflate(inflater, container, false);
 
-        final TextView textView = binding.textNotifications;
-        myinfoViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-        return root;
+        setupViewPager();
+        return binding.getRoot();
     }
+
+    private void setupViewPager() {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
+        binding.viewPager.setAdapter(adapter);
+        binding.tabLayout.setupWithViewPager(binding.viewPager);
+    }
+
 
     @Override
     public void onDestroyView() {
