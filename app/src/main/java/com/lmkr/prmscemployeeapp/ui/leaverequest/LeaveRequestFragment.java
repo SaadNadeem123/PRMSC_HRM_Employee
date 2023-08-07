@@ -157,6 +157,11 @@ public class LeaveRequestFragment extends Fragment {
 
     private void callRequestTimeOffApi() {
 
+        if (!AppUtils.checkNetworkState(getActivity())) {
+            return;
+        }
+
+
         if(leaveType==null||leaveType.getType().equals(getString(R.string.select))||leaveType.getId()==-1)
         {
             AppUtils.makeNotification(getResources().getString(R.string.select_leave_type),getActivity());
@@ -489,6 +494,9 @@ public class LeaveRequestFragment extends Fragment {
 
 
     private void getLeaveRequest() {
+        if (!AppUtils.checkNetworkState(getActivity())) {
+            return;
+        }
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
 

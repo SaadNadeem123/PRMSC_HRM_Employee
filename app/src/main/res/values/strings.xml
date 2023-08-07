@@ -100,5 +100,6 @@
     <string name="requested_leaves_exceed_limit">Your selected leave days exceeds max leave limit.</string>
     <string name="select">Select</string>
     <string name="select_leave_type">Select Leave Type!</string>
+    <string name="check_internet_connection">Check internet Connectivity!</string>
 
 </resources>

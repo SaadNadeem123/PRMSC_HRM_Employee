@@ -20,6 +20,8 @@ import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -817,7 +819,8 @@ public class AppUtils {
         return null;
 
     }
-public static Date getDateFromString3(String date, String currentFormat) {
+
+    public static Date getDateFromString3(String date, String currentFormat) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat(currentFormat);
             Date c = null;
@@ -2050,45 +2053,35 @@ public static Date getDateFromString3(String date, String currentFormat) {
 
     }
 
-    public static float getDaysBetweenDates(String fromDate, String fromDateFormat,String fromTime, String fromTimeFormat, String toDate, String toDateFormat,String toTime, String toTimeFormat, Context context)
-    {
-        if(fromTime==null||TextUtils.isEmpty(fromTime))
-        {
+    public static float getDaysBetweenDates(String fromDate, String fromDateFormat, String fromTime, String fromTimeFormat, String toDate, String toDateFormat, String toTime, String toTimeFormat, Context context) {
+        if (fromTime == null || TextUtils.isEmpty(fromTime)) {
             fromTime = "00:00:00";
             fromTimeFormat = FORMAT18;
         }
-        if(toTime==null||TextUtils.isEmpty(toTime))
-        {
+        if (toTime == null || TextUtils.isEmpty(toTime)) {
             toTime = "00:00:00";
             toTimeFormat = FORMAT18;
         }
-        String fromDateTime = getConvertedDateFromOneFormatToOther(fromDate+" "+fromTime,fromDateFormat+" "+fromTimeFormat,FORMAT22);
-        String toDateTime = getConvertedDateFromOneFormatToOther(toDate+" "+toTime,toDateFormat+" "+toTimeFormat,FORMAT22);
+        String fromDateTime = getConvertedDateFromOneFormatToOther(fromDate + " " + fromTime, fromDateFormat + " " + fromTimeFormat, FORMAT22);
+        String toDateTime = getConvertedDateFromOneFormatToOther(toDate + " " + toTime, toDateFormat + " " + toTimeFormat, FORMAT22);
 
 
-        Date fd = getDateFromString3(fromDateTime,FORMAT22);
-        Date td = getDateFromString3(toDateTime,FORMAT22);
-        if(fd!=null && td!=null) {
+        Date fd = getDateFromString3(fromDateTime, FORMAT22);
+        Date td = getDateFromString3(toDateTime, FORMAT22);
+        if (fd != null && td != null) {
             long diff = td.getTime() - fd.getTime();
             long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-            if(days<1)
-            {
+            if (days < 1) {
                 long hours = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
-                if(hours<AppWideWariables.HALF_LEAVE_HOUR_LIMIT)
-                {
+                if (hours < AppWideWariables.HALF_LEAVE_HOUR_LIMIT) {
                     return 0.5f;
-                }
-                else {
+                } else {
                     return 1f;
                 }
-            }
-            else
-            {
+            } else {
                 return days;
             }
-        }
-        else
-        {
+        } else {
             return -1f;
         }
     }
@@ -2463,13 +2456,12 @@ public static Date getDateFromString3(String date, String currentFormat) {
     }
 
     public static boolean isErrorResponse(Response<?> response, Activity activity) {
-        if (response.code() != 200||response.code() != 201) {
+        if (response.code() != 200 || response.code() != 201) {
             if (response != null && response.message() != null && !TextUtils.isEmpty(response.message())) {
                 AppUtils.makeNotification(response.message(), activity);
             }
             return false;
-        }
-        else{
+        } else {
            /* if (response.code() == 401 || response.code() == 403) {
                 // launch login activity using `this.context`
                 SharedPreferenceHelper.saveSyncBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, activity);
@@ -2482,7 +2474,7 @@ public static Date getDateFromString3(String date, String currentFormat) {
 //                AppUtils.makeNotification(response.message(), activity);
 //            }
 
-            if(response!=null && response.errorBody()!=null) {
+            if (response != null && response.errorBody() != null) {
                 ApiBaseResponse message = new Gson().fromJson(response.errorBody().charStream(), ApiBaseResponse.class);
                 AppUtils.makeNotification(message.getMessage(), activity);
             }
@@ -2491,9 +2483,19 @@ public static Date getDateFromString3(String date, String currentFormat) {
         }
     }
 
-    public static String getFloatOrInteger(float value)
-    {
-        return value==(int)value?(int)value+"":value+"";
+    public static String getFloatOrInteger(float value) {
+        return value == (int) value ? (int) value + "" : value + "";
+    }
+
+    public static boolean checkNetworkState(Activity activity) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        boolean response =  networkInfo != null && networkInfo.isConnected();
+        if(!response)
+        {
+            makeNotification(activity.getResources().getString(R.string.check_internet_connection),activity);
+        }
+        return response;
     }
 }
 

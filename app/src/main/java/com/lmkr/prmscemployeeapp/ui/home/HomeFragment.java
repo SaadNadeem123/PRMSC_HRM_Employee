@@ -130,6 +130,12 @@ public class HomeFragment extends Fragment {
     }
 
     private void callCheckInApi() {
+
+        if (!AppUtils.checkNetworkState(getActivity())) {
+            return;
+        }
+
+
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
 
         Urls urls = retrofit.create(Urls.class);
@@ -181,6 +187,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void getAttendanceHistory() {
+
+        if (!AppUtils.checkNetworkState(getActivity())) {
+            return;
+        }
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
 

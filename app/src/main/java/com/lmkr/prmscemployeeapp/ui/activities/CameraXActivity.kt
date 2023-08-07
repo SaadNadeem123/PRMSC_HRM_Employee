@@ -18,7 +18,6 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls
-import com.lmkr.prmscemployeeapp.data.webservice.api.JsonObjectResponse
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData
@@ -139,6 +138,9 @@ class CameraXActivity : AppCompatActivity() {
     }
 
     private fun callCheckInApi(name: String, savedUri: Uri?) {
+        if (!AppUtils.checkNetworkState(this@CameraXActivity)) {
+            return
+        }
 
         val user = SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)
 

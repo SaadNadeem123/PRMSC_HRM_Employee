@@ -73,6 +73,12 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void callApi() {
+
+        if (!AppUtils.checkNetworkState(LoginActivity.this)) {
+            return;
+        }
+
+
         binding.loading.setVisibility(View.VISIBLE);
 
         JsonObject body = new JsonObject();
