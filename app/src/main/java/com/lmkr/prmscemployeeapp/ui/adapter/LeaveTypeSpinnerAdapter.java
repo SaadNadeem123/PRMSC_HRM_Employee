@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveCount;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 
 import java.util.List;
 
@@ -53,8 +54,14 @@ public class LeaveTypeSpinnerAdapter extends BaseAdapter {
         convertView = LayoutInflater.from(context).inflate(R.layout.dropdown_spinner_item_leave_type, null);
 
         TextView leaveType = convertView.findViewById(R.id.leave_type);
-        leaveType.setText(leaveCounts.get(position).getType()+" ( "+leaveCounts.get(position).getRemaining()+" ) ");
-
+        if(leaveCounts.get(position).getId()==-1||leaveCounts.get(position).getType().equals(context.getResources().getString(R.string.select)))
+        {
+            leaveType.setText(leaveCounts.get(position).getType());
+        }
+        else
+        {
+            leaveType.setText(leaveCounts.get(position).getType() + " ( " + AppUtils.getFloatOrInteger(leaveCounts.get(position).getRemaining()) + " ) ");
+        }
         return convertView;
     }
 }

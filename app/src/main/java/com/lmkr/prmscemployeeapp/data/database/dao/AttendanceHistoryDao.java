@@ -29,7 +29,7 @@ public interface AttendanceHistoryDao {
     @Query("Delete From attendancehistory")
     void deleteAllAttendanceHistory();
 
-    @Query("Select * From AttendanceHistory")
+    @Query("Select * From AttendanceHistory order by date desc")
     LiveData<List<AttendanceHistory>> getAttendanceHistory();
 
 }

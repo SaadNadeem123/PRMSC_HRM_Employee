@@ -1,10 +1,8 @@
 package com.lmkr.prmscemployeeapp.data.webservice.models;
 
-import android.location.Location;
-
 import java.util.List;
 
-public class UserData {
+public class UserData extends ApiBaseResponse{
 
     private List<UserObject> basicData;
     private List<LeaveCount> leaveCount;
@@ -12,16 +10,6 @@ public class UserData {
     private List<TeamMemberCount> teamMemberCount;
     private List<Locations> latLngArray;
     private String token;
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    private String message;
 
     public List<Locations> getLatLngArray() {
         return latLngArray;

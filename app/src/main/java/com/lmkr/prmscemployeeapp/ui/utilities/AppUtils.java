@@ -55,7 +55,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.exifinterface.media.ExifInterface;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -63,8 +62,10 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.firebase.components.BuildConfig;
+import com.google.gson.Gson;
 import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
+import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.ui.fragments.ToastFragmentManager;
 import com.lmkr.prmscemployeeapp.ui.locationUtils.LocationAlertDialogFragment;
@@ -94,7 +95,10 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import retrofit2.Response;
 
 public class AppUtils {
 
@@ -813,6 +817,17 @@ public class AppUtils {
         return null;
 
     }
+public static Date getDateFromString3(String date, String currentFormat) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat(currentFormat);
+            Date c = null;
+            c = sdf.parse(date);
+            return c;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public static Date getDateFromString2(String date) {
         if (date.contains("T")) {
@@ -1187,8 +1202,9 @@ public class AppUtils {
             e.printStackTrace();
 
             return null;
-       }
+        }
     }
+
     public static String getCurrentHourOfDay() {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("hh");
@@ -1197,8 +1213,9 @@ public class AppUtils {
             e.printStackTrace();
 
             return null;
-       }
+        }
     }
+
     public static String getCurrentMinOfDay() {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("mm");
@@ -1207,7 +1224,7 @@ public class AppUtils {
             e.printStackTrace();
 
             return null;
-       }
+        }
     }
 
     public static String getCurrentTimeOnlyWithSeconds() {
@@ -2033,6 +2050,48 @@ public class AppUtils {
 
     }
 
+    public static float getDaysBetweenDates(String fromDate, String fromDateFormat,String fromTime, String fromTimeFormat, String toDate, String toDateFormat,String toTime, String toTimeFormat, Context context)
+    {
+        if(fromTime==null||TextUtils.isEmpty(fromTime))
+        {
+            fromTime = "00:00:00";
+            fromTimeFormat = FORMAT18;
+        }
+        if(toTime==null||TextUtils.isEmpty(toTime))
+        {
+            toTime = "00:00:00";
+            toTimeFormat = FORMAT18;
+        }
+        String fromDateTime = getConvertedDateFromOneFormatToOther(fromDate+" "+fromTime,fromDateFormat+" "+fromTimeFormat,FORMAT22);
+        String toDateTime = getConvertedDateFromOneFormatToOther(toDate+" "+toTime,toDateFormat+" "+toTimeFormat,FORMAT22);
+
+
+        Date fd = getDateFromString3(fromDateTime,FORMAT22);
+        Date td = getDateFromString3(toDateTime,FORMAT22);
+        if(fd!=null && td!=null) {
+            long diff = td.getTime() - fd.getTime();
+            long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+            if(days<1)
+            {
+                long hours = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
+                if(hours<AppWideWariables.HALF_LEAVE_HOUR_LIMIT)
+                {
+                    return 0.5f;
+                }
+                else {
+                    return 1f;
+                }
+            }
+            else
+            {
+                return days;
+            }
+        }
+        else
+        {
+            return -1f;
+        }
+    }
 
     public static String getUTF8DecodedString(String text) {
         try {
@@ -2373,8 +2432,7 @@ public class AppUtils {
         return Float.valueOf(string.replaceAll(",", ""));
     }
 
-    public static BitmapDescriptor BitmapFromVector(Context context, int vectorResId)
-    {
+    public static BitmapDescriptor BitmapFromVector(Context context, int vectorResId) {
         // below line is use to generate a drawable.
         Drawable vectorDrawable = ContextCompat.getDrawable(
                 context, vectorResId);
@@ -2402,6 +2460,40 @@ public class AppUtils {
         // after generating our bitmap we are returning our
         // bitmap.
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    public static boolean isErrorResponse(Response<?> response, Activity activity) {
+        if (response.code() != 200||response.code() != 201) {
+            if (response != null && response.message() != null && !TextUtils.isEmpty(response.message())) {
+                AppUtils.makeNotification(response.message(), activity);
+            }
+            return false;
+        }
+        else{
+           /* if (response.code() == 401 || response.code() == 403) {
+                // launch login activity using `this.context`
+                SharedPreferenceHelper.saveSyncBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, activity);
+                AppUtils.makeNotification(getString(R.string.please_try_again_later), activity);
+                return true;
+            }*/
+
+
+//            if (response != null && response.message() != null && !TextUtils.isEmpty(response.message())) {
+//                AppUtils.makeNotification(response.message(), activity);
+//            }
+
+            if(response!=null && response.errorBody()!=null) {
+                ApiBaseResponse message = new Gson().fromJson(response.errorBody().charStream(), ApiBaseResponse.class);
+                AppUtils.makeNotification(message.getMessage(), activity);
+            }
+
+            return true;
+        }
+    }
+
+    public static String getFloatOrInteger(float value)
+    {
+        return value==(int)value?(int)value+"":value+"";
     }
 }
 

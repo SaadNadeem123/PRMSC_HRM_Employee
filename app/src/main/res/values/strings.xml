@@ -96,5 +96,9 @@
     <string name="location">Location</string>
     <string name="profile_image">Profile Image</string>
     <string name="warning">Heat Wave Warning</string>
+    <string name="app_access_denied">You dont have permissions to access the application!</string>
+    <string name="requested_leaves_exceed_limit">Your selected leave days exceeds max leave limit.</string>
+    <string name="select">Select</string>
+    <string name="select_leave_type">Select Leave Type!</string>
 
 </resources>

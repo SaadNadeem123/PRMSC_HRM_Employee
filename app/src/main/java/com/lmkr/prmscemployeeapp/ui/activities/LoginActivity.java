@@ -9,6 +9,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import com.google.gson.JsonObject;
+import com.lmkr.prmscemployeeapp.App;
+import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
@@ -73,40 +75,37 @@ public class LoginActivity extends BaseActivity {
     public void callApi() {
         binding.loading.setVisibility(View.VISIBLE);
 
-
         JsonObject body = new JsonObject();
         body.addProperty("email", binding.username.getText().toString());
         body.addProperty("password", binding.password.getText().toString());  //3132446990
         body.addProperty("source", AppWideWariables.SOURCE_MOBILE);  //3132446990
 
-        SharedPreferenceHelper.saveString(SharedPreferenceHelper.PASSWORD,binding.password.getText().toString(),LoginActivity.this);
-
+        SharedPreferenceHelper.saveString(SharedPreferenceHelper.PASSWORD, binding.password.getText().toString(), LoginActivity.this);
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-
         Urls urls = retrofit.create(Urls.class);
 
         Call<UserData> call = urls.loginUserApi(body);
-
         call.enqueue(new Callback<UserData>() {
             @Override
             public void onResponse(Call<UserData> call, Response<UserData> response) {
                 Log.i("response", response.toString());
                 binding.loading.setVisibility(View.GONE);
 
-                if (response.code() == 401 || response.code() == 403) {
-                    AppUtils.makeNotification(response.body().getMessage(), LoginActivity.this);
-                    return;
-                }
-                else {
+                if (!AppUtils.isErrorResponse(response, LoginActivity.this)) {
                     if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
                         return;
                     }
 
-                    if(response.body()!=null && response.body().getMessage()==null) {
-                        SharedPreferenceHelper.setLoggedinUser(getApplicationContext(), response.body());
-                        AppUtils.switchActivity(LoginActivity.this, MainActivity.class, null);
-                        finish();
+                    if (response.body() != null && response.body().getMessage() == null) {
+                        if(response.body().getBasicData()!=null && response.body().getBasicData().size()>0 && response.body().getBasicData().get(0).getApplication_access().equalsIgnoreCase("yes")) {
+                            SharedPreferenceHelper.setLoggedinUser(getApplicationContext(), response.body());
+                            AppUtils.switchActivity(LoginActivity.this, MainActivity.class, null);
+                            finish();
+                        }
+                        else {
+                            AppUtils.makeNotification(getString(R.string.app_access_denied),LoginActivity.this);
+                        }
                     }
                 }
             }

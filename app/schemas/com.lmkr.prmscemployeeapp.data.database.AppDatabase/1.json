@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "63b1412a1731334e9221d21765242441",
+    "identityHash": "3036fff15ecfc3d8ab1462d6e6e30974",
     "entities": [
       {
         "tableName": "AttendanceHistory",
@@ -56,7 +56,7 @@
       },
       {
         "tableName": "LeaveRequest",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `employee_id` INTEGER NOT NULL, `employee_name` TEXT, `leave_type_id` INTEGER NOT NULL, `leave_type_name` TEXT, `from_date` TEXT, `to_date` TEXT, `from_time` TEXT, `to_time` TEXT, `total_days` INTEGER NOT NULL, `attachment` TEXT, `attachment_name` TEXT, `reason` TEXT, `emergency_contact` TEXT, `lat` REAL NOT NULL, `lng` REAL NOT NULL, `status` TEXT, `first_approver_id` INTEGER NOT NULL, `approver_reason` TEXT, `first_approver_name` TEXT, `approved_at` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `employee_id` INTEGER NOT NULL, `employee_name` TEXT, `leave_type_id` INTEGER NOT NULL, `leave_type_name` TEXT, `from_date` TEXT, `to_date` TEXT, `from_time` TEXT, `to_time` TEXT, `total_days` REAL NOT NULL, `attachment` TEXT, `attachment_name` TEXT, `reason` TEXT, `emergency_contact` TEXT, `lat` REAL NOT NULL, `lng` REAL NOT NULL, `status` TEXT, `first_approver_id` INTEGER NOT NULL, `approver_reason` TEXT, `first_approver_name` TEXT, `approved_at` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -115,7 +115,7 @@
           {
             "fieldPath": "total_days",
             "columnName": "total_days",
-            "affinity": "INTEGER",
+            "affinity": "REAL",
             "notNull": true
           },
           {
@@ -198,7 +198,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '63b1412a1731334e9221d21765242441')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3036fff15ecfc3d8ab1462d6e6e30974')"
     ]
   }
 }

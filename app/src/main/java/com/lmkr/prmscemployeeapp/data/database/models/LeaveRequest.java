@@ -16,7 +16,7 @@ public class LeaveRequest {
     private String to_date;                      //": "2023-08-02T00:00:00.000Z",
     private String from_time;                        //": null,
     private String to_time;                      //": null,
-    private int total_days;                       //": 7,
+    private float total_days;                       //": 7,
     private String attachment;                       //": "123442424",
     private String attachment_name;                      //": null,
     private String reason;                       //": "ABCD ABCD ABCD ABCD ABCD ABCD ",
@@ -101,11 +101,11 @@ public class LeaveRequest {
         this.to_time = to_time;
     }
 
-    public int getTotal_days() {
+    public float getTotal_days() {
         return total_days;
     }
 
-    public void setTotal_days(int total_days) {
+    public void setTotal_days(float total_days) {
         this.total_days = total_days;
     }
 

@@ -133,6 +133,7 @@ public class LeaveRequestFragment extends Fragment {
                     importFile(uri);
                 }
             });
+    private List<LeaveCount> lc = new ArrayList<>();
 
     private void loadLeaveRequestData() {
         binding.recyclerViewLeaveRequest.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
@@ -155,6 +156,33 @@ public class LeaveRequestFragment extends Fragment {
 
 
     private void callRequestTimeOffApi() {
+
+        if(leaveType==null||leaveType.getType().equals(getString(R.string.select))||leaveType.getId()==-1)
+        {
+            AppUtils.makeNotification(getResources().getString(R.string.select_leave_type),getActivity());
+            return;
+        }
+
+        float days = AppUtils.getDaysBetweenDates(
+                binding.dateTimeFrom.getText().toString(),
+                AppUtils.FORMAT15,
+                binding.timeFrom.getText().toString(),
+                AppUtils.FORMAT5,
+                binding.dateTimeTo.getText().toString(),
+                AppUtils.FORMAT15,
+                binding.timeTo.getText().toString(),
+                AppUtils.FORMAT5,
+                getActivity());
+//        AppUtils.makeNotification("Days = "+days,getActivity());
+
+        if(days>=leaveType.getRemaining())
+        {
+            AppUtils.makeNotification(getString(R.string.requested_leaves_exceed_limit),getActivity());
+            return;
+        }
+
+
+
         FileModel fileModel = files != null && files.size() > 0 ? files.get(0) : null;
         RequestBody fpath =null;
         MultipartBody.Part body = null;
@@ -174,7 +202,7 @@ public class LeaveRequestFragment extends Fragment {
         RequestBody to_date = RequestBody.create(MediaType.parse("text/plain"), AppUtils.getConvertedDateFromOneFormatToOther(binding.dateTimeTo.getText().toString(), AppUtils.FORMAT15, AppUtils.FORMAT3));
         RequestBody from_time = RequestBody.create(MediaType.parse("text/plain"), !TextUtils.isEmpty(binding.timeFrom.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeFrom.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "00:00:00");
         RequestBody to_time = RequestBody.create(MediaType.parse("text/plain"), !TextUtils.isEmpty(binding.timeTo.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeTo.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "00:00:00");
-        RequestBody total_days = RequestBody.create(MediaType.parse("text/plain"), 2 + "");
+        RequestBody total_days = RequestBody.create(MediaType.parse("text/plain"), days + "");
         RequestBody reason = RequestBody.create(MediaType.parse("text/plain"), binding.note.getText().toString());
         RequestBody emergency_contact = RequestBody.create(MediaType.parse("text/plain"), "03001234567");
         RequestBody lat = RequestBody.create(MediaType.parse("text/plain"), 0 + "");
@@ -183,40 +211,6 @@ public class LeaveRequestFragment extends Fragment {
         RequestBody first_approver = RequestBody.create(MediaType.parse("text/plain"), user.getBasicData().get(0).getManager_id() + "");
         RequestBody status = RequestBody.create(MediaType.parse("text/plain"), "1");
 
-
-
-//       MultipartBody.Part employee_id = MultipartBody.Part.createFormData("employee_id",user.getBasicData().get(0).getId() + "");
-//       MultipartBody.Part leave_type_id = MultipartBody.Part.createFormData("leave_type_id",leaveType.getId() + "");
-//       MultipartBody.Part from_date = MultipartBody.Part.createFormData("from_date",AppUtils.getConvertedDateFromOneFormatToOther(binding.dateTimeFrom.getText().toString(), AppUtils.FORMAT15, AppUtils.FORMAT3));
-//       MultipartBody.Part to_date = MultipartBody.Part.createFormData("to_date",AppUtils.getConvertedDateFromOneFormatToOther(binding.dateTimeTo.getText().toString(), AppUtils.FORMAT15, AppUtils.FORMAT3));
-//       MultipartBody.Part from_time = MultipartBody.Part.createFormData("from_time", !TextUtils.isEmpty(binding.timeFrom.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeFrom.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "00:00:00");
-//       MultipartBody.Part to_time = MultipartBody.Part.createFormData("to_time", !TextUtils.isEmpty(binding.timeTo.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeTo.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "00:00:00");
-//       MultipartBody.Part total_days = MultipartBody.Part.createFormData("total_days", 2 + "");
-//       MultipartBody.Part reason = MultipartBody.Part.createFormData("reason",binding.note.getText().toString());
-//       MultipartBody.Part emergency_contact = MultipartBody.Part.createFormData("emergency_contact", "03001234567");
-//       MultipartBody.Part lat = MultipartBody.Part.createFormData("lat", 0 + "");
-//       MultipartBody.Part lng = MultipartBody.Part.createFormData("lng", 0 + "");
-//       MultipartBody.Part source = MultipartBody.Part.createFormData("source",AppWideWariables.SOURCE_MOBILE_ENUM);
-//       MultipartBody.Part first_approver = MultipartBody.Part.createFormData("first_approver",user.getBasicData().get(0).getManager_id() + "");
-//       MultipartBody.Part status = MultipartBody.Part.createFormData("status", "1");
-
-
-
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("employee_id",user.getBasicData().get(0).getId() + "");
-        jsonObject.addProperty("leave_type_id",leaveType.getId() + "");
-        jsonObject.addProperty("from_date",AppUtils.getConvertedDateFromOneFormatToOther(binding.dateTimeFrom.getText().toString(), AppUtils.FORMAT15, AppUtils.FORMAT3));
-        jsonObject.addProperty("to_date",AppUtils.getConvertedDateFromOneFormatToOther(binding.dateTimeTo.getText().toString(), AppUtils.FORMAT15, AppUtils.FORMAT3));
-        jsonObject.addProperty("from_time", !TextUtils.isEmpty(binding.timeFrom.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeFrom.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "00:00:00");
-        jsonObject.addProperty("to_time", !TextUtils.isEmpty(binding.timeTo.getText().toString()) ? AppUtils.getConvertedDateFromOneFormatToOther(binding.timeTo.getText().toString(), AppUtils.FORMAT5, AppUtils.FORMAT18) : "00:00:00");
-        jsonObject.addProperty("total_days", 2 + "");
-        jsonObject.addProperty("reason",binding.note.getText().toString());
-        jsonObject.addProperty("emergency_contact", "03001234567");
-        jsonObject.addProperty("lat", 0 + "");
-        jsonObject.addProperty("lng", 0 + "");
-        jsonObject.addProperty("source",AppWideWariables.SOURCE_MOBILE_ENUM);
-        jsonObject.addProperty("first_approver",user.getBasicData().get(0).getManager_id() + "");
-        jsonObject.addProperty("status", "1");
 
         ProgressDialog mProgressDialog = new ProgressDialog(getActivity(), R.style.CustomProgressDialog);
         mProgressDialog.setIndeterminate(true);
@@ -253,10 +247,7 @@ public class LeaveRequestFragment extends Fragment {
 
         Urls jsonPlaceHolderApi = retrofit.create(Urls.class);
 
-//        Call<CreateLeaveRequestResponse> call = jsonPlaceHolderApi.leaveRequest(AppUtils.getStandardHeaders(user),jsonObject);
-//        Call<JsonObjectResponse> call = jsonPlaceHolderApi.leaveRequestMultipart(AppUtils.getStandardHeaders(user), body, jsonObject);
         Call<CreateLeaveRequestResponse> call = jsonPlaceHolderApi.leaveRequestMultipart(AppUtils.getStandardHeaders(user), body, employee_id, leave_type_id, from_date, to_date, from_time, to_time, total_days, reason, emergency_contact, lat, lng, source, first_approver, status);
-//        Call<CreateLeaveRequestResponse> call = jsonPlaceHolderApi.leaveRequestMultipart(AppUtils.getStandardHeaders(user), employee_id, leave_type_id, from_date, to_date, from_time, to_time, total_days, reason, emergency_contact, lat, lng, source, first_approver, status);
 
         call.enqueue(new Callback<CreateLeaveRequestResponse>() {
             @Override
@@ -264,14 +255,10 @@ public class LeaveRequestFragment extends Fragment {
                 Log.i("response", response.toString());
                 if (mProgressDialog.isShowing())
                     mProgressDialog.dismiss();
-                AppUtils.makeNotification(response.message(), getActivity());
-                if (response.code() == 401 || response.code() == 403) {
-                    // launch login activity using `this.context`
-                    SharedPreferenceHelper.saveSyncBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, getActivity());
-                    if (mProgressDialog.isShowing())
-                        mProgressDialog.dismiss();
-                    AppUtils.makeNotification(getString(R.string.please_try_again_later),getActivity());
-                } else {
+
+
+                if (!AppUtils.isErrorResponse(response, getActivity())) {
+
 
                     if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
@@ -287,6 +274,8 @@ public class LeaveRequestFragment extends Fragment {
                         JsonObject jsonObject = (JsonObject) response.body().getResponse();
                     }
 */
+                    resetViews();
+                    getLeaveRequest();
                 }
             }
 
@@ -304,6 +293,16 @@ public class LeaveRequestFragment extends Fragment {
         });
     }
 
+    private void resetViews() {
+        binding.spinnerLeaveTypes.setSelection(0);
+        binding.dateTimeFrom.setText("");
+        binding.timeFrom.setText("");
+        binding.dateTimeTo.setText("");
+        binding.timeTo.setText("");
+        binding.note.setText("");
+        deleteAttachment();
+    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -313,8 +312,16 @@ public class LeaveRequestFragment extends Fragment {
         binding.rvAttachment.setAdapter(adapter);
         binding.rvAttachment.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-
         UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
+        lc.clear();
+        lc.add(new LeaveCount(-1,getString(R.string.select),0,0));
+        for (LeaveCount leaveCount: userData.getLeaveCount()) {
+            if(leaveCount.getRemaining()>0)
+            {
+                lc.add(leaveCount);
+            }
+        }
+
         binding.recyclerviewLeaveProgress.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         LeavesRemainingRecyclerAdapter adapter = new LeavesRemainingRecyclerAdapter(getActivity(), userData.getLeaveCount());
         binding.recyclerviewLeaveProgress.setAdapter(adapter);
@@ -324,7 +331,7 @@ public class LeaveRequestFragment extends Fragment {
         new CustomTimePicker(getActivity(), binding.timeFrom);
         new CustomTimePicker(getActivity(), binding.timeTo);
 
-        binding.spinnerLeaveTypes.setAdapter(new LeaveTypeSpinnerAdapter(SharedPreferenceHelper.getLoggedinUser(getActivity()).getLeaveCount(), getActivity()));
+        binding.spinnerLeaveTypes.setAdapter(new LeaveTypeSpinnerAdapter(lc, getActivity()));
 
         getLeaveRequest();
 
@@ -337,7 +344,7 @@ public class LeaveRequestFragment extends Fragment {
         binding.spinnerLeaveTypes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                leaveType = SharedPreferenceHelper.getLoggedinUser(getActivity()).getLeaveCount().get(position);
+                leaveType = lc.get(position);
             }
 
             @Override
@@ -460,7 +467,7 @@ public class LeaveRequestFragment extends Fragment {
     }
 
 
-    public void deleteAttachment(FileModel fileModel) {
+    public void deleteAttachment() {
         if (files != null && files.size() > 0) {
             adapter.removeItems(files);
             binding.attachment.setVisibility(View.VISIBLE);
@@ -494,12 +501,14 @@ public class LeaveRequestFragment extends Fragment {
             public void onResponse(Call<LeaveRequestResponse> call, Response<LeaveRequestResponse> response) {
                 Log.i("response", response.toString());
 
-                if (!response.isSuccessful()) {
+                if (!AppUtils.isErrorResponse(response, getActivity())) {
+                    if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
-                }
+                    }
 
-                if (response.body() != null && response.body().getLeaveRequest() != null) {
-                    leaveRequestViewModel.insert(response.body().getLeaveRequest());
+                    if (response.body() != null && response.body().getLeaveRequest() != null) {
+                        leaveRequestViewModel.insert(response.body().getLeaveRequest());
+                    }
                 }
             }
 

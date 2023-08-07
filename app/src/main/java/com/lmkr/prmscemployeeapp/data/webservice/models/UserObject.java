@@ -5,6 +5,7 @@ import android.location.Location;
 public class UserObject {
 
             private int id;                                       //": 1,
+            private String application_access;                                       //": "yes",
             private String name;                                     //": "Hassan",
             private String father_name;                                      //": "Tahir",
             private String cnic_number;                                      //": "0123456789101",
@@ -60,6 +61,14 @@ public class UserObject {
 
     public void setCnic_number(String cnic_number) {
         this.cnic_number = cnic_number;
+    }
+
+    public String getApplication_access() {
+        return application_access;
+    }
+
+    public void setApplication_access(String application_access) {
+        this.application_access = application_access;
     }
 
     public String getDesignation() {

@@ -29,7 +29,7 @@ public interface LeaveRequestDao {
     @Query("Delete From leaverequest")
     void deleteAllLeaveRequest();
 
-    @Query("Select * From leaverequest")
+    @Query("Select * From leaverequest Order by from_date Desc")
     LiveData<List<LeaveRequest>> getLeaveRequests();
 
 }

@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls
 import com.lmkr.prmscemployeeapp.data.webservice.api.JsonObjectResponse
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls
+import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData
 import com.lmkr.prmscemployeeapp.databinding.ActivityCameraXBinding
 import com.lmkr.prmscemployeeapp.ui.cameraxUtils.FaceContourDetectionProcessor
@@ -226,23 +227,25 @@ class CameraXActivity : AppCompatActivity() {
             file_name,
             file_path
         )
-        call.enqueue(object : Callback<JsonObjectResponse?> {
+        call.enqueue(object : Callback<ApiBaseResponse?> {
             override fun onResponse(
-                call: Call<JsonObjectResponse?>, response: Response<JsonObjectResponse?>
+                call: Call<ApiBaseResponse?>, response: Response<ApiBaseResponse?>
             ) {
                 Log.i("response", response.toString())
-                AppUtils.makeNotification(response.message(), this@CameraXActivity)
 
-                if (!response.isSuccessful) {
+                if (!AppUtils.isErrorResponse(response,this@CameraXActivity)) {
+
+                    if (!response.isSuccessful) {
 //                    tv.setText("Code :" + response.code());
-                    return
+                        return
+                    }
+                    SharedPreferenceHelper.saveBoolean(
+                        AppWideWariables.IS_CHECKED_IN, true, this@CameraXActivity
+                    )
                 }
-                SharedPreferenceHelper.saveBoolean(
-                    AppWideWariables.IS_CHECKED_IN, true, this@CameraXActivity
-                )
             }
 
-            override fun onFailure(call: Call<JsonObjectResponse?>, t: Throwable) {
+            override fun onFailure(call: Call<ApiBaseResponse?>, t: Throwable) {
                 t.printStackTrace()
                 AppUtils.makeNotification(t.toString(), this@CameraXActivity)
                 Log.i("response", t.toString())
@@ -267,8 +270,8 @@ class CameraXActivity : AppCompatActivity() {
 
             imageCapture = ImageCapture.Builder().build()
             // Select back camera as a default
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-//            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+//            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
 
 
             imageAnalyzer = ImageAnalysis.Builder()

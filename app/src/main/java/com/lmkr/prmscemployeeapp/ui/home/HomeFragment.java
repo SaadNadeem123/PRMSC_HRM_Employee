@@ -25,8 +25,8 @@ import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.database.models.AttendanceHistory;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
-import com.lmkr.prmscemployeeapp.data.webservice.api.JsonObjectResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
+import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.AttendanceHistoryResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.databinding.FragmentHomeBinding;
@@ -40,6 +40,7 @@ import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
 import com.lmkr.prmscemployeeapp.viewModel.AttendanceHistoryViewModel;
 import com.lmkr.prmscemployeeapp.viewModel.AttendanceHistoryViewModelFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -49,7 +50,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeFragment extends Fragment {
-    private static List<AttendanceHistory> attendanceHistories = null;
+    private static List<AttendanceHistory> attendanceHistories = new ArrayList<>();
     private FragmentHomeBinding binding;
     private Observer<? super List<AttendanceHistory>> attendanceHistoryObserver = new Observer<List<AttendanceHistory>>() {
         @Override
@@ -66,9 +67,10 @@ public class HomeFragment extends Fragment {
         binding.contentHome.recyclerViewAttendanceHistory.setAdapter(adapter);
 
         boolean isCheckedIn = false;
-        for (AttendanceHistory attendanceHistory : attendanceHistories) {
-            if (AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getDate(),AppUtils.FORMAT19,AppUtils.FORMAT3).equals(AppUtils.getCurrentDate())) {
+        for (AttendanceHistory attendance : attendanceHistories) {
+            if (AppUtils.getConvertedDateFromOneFormatToOther(attendance.getDate(), AppUtils.FORMAT19, AppUtils.FORMAT3).equals(AppUtils.getCurrentDate())) {
                 isCheckedIn = true;
+                break;
             }
         }
 
@@ -77,6 +79,7 @@ public class HomeFragment extends Fragment {
         } else {
             SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_CHECKED_IN, false, getActivity());
         }
+        updateProgressBar();
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -148,25 +151,26 @@ public class HomeFragment extends Fragment {
 //        MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
 
 
-        Call<JsonObjectResponse> call = urls.checkIn(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())), body);
+        Call<ApiBaseResponse> call = urls.checkIn(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())), body);
 
-        call.enqueue(new Callback<JsonObjectResponse>() {
+        call.enqueue(new Callback<ApiBaseResponse>() {
             @Override
-            public void onResponse(Call<JsonObjectResponse> call, Response<JsonObjectResponse> response) {
+            public void onResponse(Call<ApiBaseResponse> call, Response<ApiBaseResponse> response) {
                 Log.i("response", response.toString());
-
-                if (!response.isSuccessful()) {
+                if (!AppUtils.isErrorResponse(response, getActivity())) {
+                    if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
-                    return;
-                }
+                        return;
+                    }
 
 //                SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_CHECKED_IN, true, getActivity());
 //                updateProgressBar();
-                getAttendanceHistory();
+                    getAttendanceHistory();
+                }
             }
 
             @Override
-            public void onFailure(Call<JsonObjectResponse> call, Throwable t) {
+            public void onFailure(Call<ApiBaseResponse> call, Throwable t) {
                 t.printStackTrace();
                 AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
@@ -189,12 +193,16 @@ public class HomeFragment extends Fragment {
             public void onResponse(Call<AttendanceHistoryResponse> call, Response<AttendanceHistoryResponse> response) {
                 Log.i("response", response.toString());
 
-                if (!response.isSuccessful()) {
+                if (!AppUtils.isErrorResponse(response, getActivity())) {
+                    {
+                        if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
-                }
+                        }
 
-                if (response.body() != null && response.body().getResults() != null) {
-                    attendanceHistoryViewModel.insert(response.body().getResults());
+                        if (response.body() != null && response.body().getResults() != null) {
+                            attendanceHistoryViewModel.insert(response.body().getResults());
+                        }
+                    }
                 }
             }
 
@@ -210,12 +218,23 @@ public class HomeFragment extends Fragment {
 
     private void updateProgressBar() {
 
+        AttendanceHistory attendanceHistory = null;
+        for (AttendanceHistory attendance : attendanceHistories) {
+            if (AppUtils.getConvertedDateFromOneFormatToOther(attendance.getDate(), AppUtils.FORMAT19, AppUtils.FORMAT3).equals(AppUtils.getCurrentDate())) {
+                attendanceHistory = attendance;
+                break;
+            }
+        }
         if (SharedPreferenceHelper.isCheckedIn(getActivity())) {
 
             binding.circleAnimation.setMax(1000);
             binding.checkedIn.setText(getResources().getText(R.string.checkedin));
-            binding.time.setText("na");
-            binding.circleAnimation.setProgress(1000);
+            binding.checkin.setVisibility(View.GONE);
+            if(attendanceHistory!=null) {
+                binding.time.setText(AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getCheckin_time(),AppUtils.FORMAT19,AppUtils.FORMAT5));
+            }else{
+                binding.time.setText("");
+            }
             binding.closeImg.setVisibility(View.GONE);
             binding.animationTick.cancelAnimation();
             binding.animationTick.setVisibility(View.VISIBLE);
@@ -229,6 +248,10 @@ public class HomeFragment extends Fragment {
 
                 @Override
                 public void onAnimationEnd(@NonNull Animator animation) {
+                    if(binding==null||binding.animationTick==null)
+                    {
+                        return;
+                    }
                     binding.animationTick.setAnimation(R.raw.tick);
                     binding.animationTick.playAnimation();
                 }
@@ -246,6 +269,7 @@ public class HomeFragment extends Fragment {
             objectAnimator.start();
         } else {
             binding.checkedIn.setText(getResources().getText(R.string.checkedout));
+            binding.checkin.setVisibility(View.VISIBLE);
             binding.time.setText("");
             binding.circleAnimation.setProgress(0);
             binding.closeImg.setVisibility(View.VISIBLE);

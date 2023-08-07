@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveCount;
 import com.lmkr.prmscemployeeapp.databinding.RecyclerItemLeaveProgressBinding;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class LeavesProgressRecyclerAdapter extends RecyclerView.Adapter<LeavesPr
         LeaveCount leaveCount = list.get(position);
 
         holder.label.setText(leaveCount.getType());
-        holder.leftLeaves.setText(leaveCount.getRemaining()+"");
+        holder.leftLeaves.setText(AppUtils.getFloatOrInteger(leaveCount.getRemaining()));
         holder.totalLeaves.setText(leaveCount.getTotal()+"");
         holder.progressBar.setMax(100);
 

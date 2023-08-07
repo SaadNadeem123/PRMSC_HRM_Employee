@@ -39,6 +39,7 @@ import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
 import com.lmkr.prmscemployeeapp.data.webservice.api.JsonObjectResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
+import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.Locations;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.ui.activities.CameraXActivity;
@@ -244,25 +245,26 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
 //        MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
 
 
-        Call<JsonObjectResponse> call = urls.checkIn(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())), body);
+        Call<ApiBaseResponse> call = urls.checkIn(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())), body);
 
-        call.enqueue(new Callback<JsonObjectResponse>() {
+        call.enqueue(new Callback<ApiBaseResponse>() {
             @Override
-            public void onResponse(Call<JsonObjectResponse> call, Response<JsonObjectResponse> response) {
+            public void onResponse(Call<ApiBaseResponse> call, Response<ApiBaseResponse> response) {
                 Log.i("response", response.toString());
-
-                if (!response.isSuccessful()) {
+                if (!AppUtils.isErrorResponse(response, getActivity())) {
+                    if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
-                    return;
+                        return;
+                    }
+
+                    AppUtils.makeNotification(response.body().getMessage(), getActivity());
+
+//                SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_CHECKED_IN, true, getActivity());}
                 }
-
-                AppUtils.makeNotification(response.body().getMessage(),getActivity());
-
-//                SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_CHECKED_IN, true, getActivity());
             }
 
             @Override
-            public void onFailure(Call<JsonObjectResponse> call, Throwable t) {
+            public void onFailure(Call<ApiBaseResponse> call, Throwable t) {
                 t.printStackTrace();
                 AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());

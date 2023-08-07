@@ -90,7 +90,7 @@ public class AttachmentsRecyclerAdapter extends RecyclerView.Adapter<Attachments
         holder.deleteAttachment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((LeaveRequestFragment) context).deleteAttachment(fileModel);
+                ((LeaveRequestFragment) context).deleteAttachment();
             }
         });
 

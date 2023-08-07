@@ -4,7 +4,15 @@ public class LeaveCount {
     private int id;
     private String type;
     private int total;
-    private int remaining;
+
+    public LeaveCount(int id, String type, int total, float remaining) {
+        this.id = id;
+        this.type = type;
+        this.total = total;
+        this.remaining = remaining;
+    }
+
+    private float remaining;
 
     public int getId() {
         return id;
@@ -30,11 +38,11 @@ public class LeaveCount {
         this.total = total;
     }
 
-    public int getRemaining() {
+    public float getRemaining() {
         return remaining;
     }
 
-    public void setRemaining(int remaining) {
+    public void setRemaining(float remaining) {
         this.remaining = remaining;
     }
 }

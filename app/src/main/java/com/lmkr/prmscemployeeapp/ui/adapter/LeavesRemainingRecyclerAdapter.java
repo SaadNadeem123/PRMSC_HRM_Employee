@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveCount;
 import com.lmkr.prmscemployeeapp.databinding.RecyclerItemLeaveAvailableBinding;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class LeavesRemainingRecyclerAdapter extends RecyclerView.Adapter<LeavesR
         LeaveCount leaveCount = list.get(position);
 
         holder.label.setText(leaveCount.getType());
-        holder.leftLeaves.setText(leaveCount.getRemaining()+"");
+        holder.leftLeaves.setText(AppUtils.getFloatOrInteger(leaveCount.getRemaining()));
 
 
         switch (leaveCount.getType()) {
