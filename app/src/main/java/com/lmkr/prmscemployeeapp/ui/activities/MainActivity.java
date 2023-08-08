@@ -83,9 +83,13 @@ public class MainActivity extends BaseActivity {
 
 //                    AppUtils.makeNotification("Lat -> " + latitude + " , Long -> " + longitude, MainActivity.this);
 //                    AppUtils.hideNotification(MainActivity.this);
-
-                    if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof HomeFragment) {
-                        ((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).enableCheckinButton(true);
+                    try {
+                        if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof HomeFragment) {
+                            ((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).enableCheckinButton(true);
+                        }
+                    }catch(Exception e)
+                    {
+                        e.printStackTrace();
                     }
 
 //                    unBindService();
