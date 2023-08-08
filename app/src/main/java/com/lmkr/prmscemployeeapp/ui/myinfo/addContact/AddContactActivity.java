@@ -61,6 +61,9 @@ public class AddContactActivity extends AppCompatActivity {
             staticId = receivedBundle.getInt("staticId");
         }
 
+        binding.submitButton.setVisibility(View.VISIBLE);
+        binding.updateButton.setVisibility(View.GONE);
+
 
         if(staticId == 100){
 

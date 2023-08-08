@@ -19,8 +19,9 @@ public class EmergencyContactViewModel extends ViewModel {
     public LiveData<List<EmergencyContact>> getEmergencyContacts(String token, int employeeId) {
         if (emergencyContactsLiveData == null) {
             emergencyContactsLiveData = new MutableLiveData<>();
-            loadEmergencyContacts(token, employeeId);
         }
+
+        loadEmergencyContacts(token, employeeId);
         return emergencyContactsLiveData;
     }
 
