@@ -72,6 +72,7 @@
     <string name="load_document">UPLOAD DOCUMENT</string>
     <string name="search_document">Search Document</string>
     <string name="add_contact">Add Contact</string>
+    <string name="add_contacts">Add Contacts</string>
     <string name="primary_contact">Primary Contact</string>
     <string name="relationship">Relationship</string>
     <string name="home_phone">Home Phone</string>
@@ -101,5 +102,19 @@
     <string name="select">Select</string>
     <string name="select_leave_type">Select Leave Type!</string>
     <string name="check_internet_connection">Check internet Connectivity!</string>
+    <string name="wing">Wing</string>
+    <string name="prompt_contactname">Enter contact name...</string>
+    <string name="prompt_email_contact">Enter email...</string>
+    <string name="select_an_option">Select an option</string>
+    <string name="arrow_icon">Arrow icon</string>
+    <string name="select_relation">Select Relation</string>
+    <string name="prompt_mobile">Enter Mobile Number...</string>
+    <string name="prompt_work">Enter Work Number...</string>
+    <string name="prompt_home">Enter Home Number...</string>
+    <string name="prompt_address">Enter Your Address...</string>
+    <string name="action_save">Save</string>
+    <string name="arrow">ic_back_arrow</string>
+    <string name="header">Header</string>
+    <string name="action_update">Update</string>
 
 </resources>

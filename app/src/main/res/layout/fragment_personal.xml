@@ -95,6 +95,7 @@
                 android:background="@android:color/white"
                 android:maxLines="1"
                 android:text="Lahore (Head Office)"
+                android:visibility="gone"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/profileImage"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -213,22 +214,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text8" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/addHomePhone"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_28sdp"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="@dimen/_20sdp"
-                android:background="@color/white"
-                android:text="@string/add_home_phone"
-                android:textColor="@color/text_color"
-                android:textSize="16sp"
-                android:paddingStart="@dimen/_10sdp"
-                android:gravity="center_vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/mobilePhone"
-                tools:ignore="RtlSymmetry" />
-
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/text3"
@@ -240,7 +225,7 @@
                 android:textSize="16sp"
                 android:layout_marginStart="@dimen/_10sdp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addHomePhone" />
+                app:layout_constraintTop_toBottomOf="@+id/mobilePhone" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/workEmail"

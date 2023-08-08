@@ -112,4 +112,14 @@
         <item name="android:topBright">@color/white</item>
         <item name="android:topDark">@color/white</item>
     </style>
+
+    <style name="Theme.PRMSCEmployeeApp.AddContactActivity" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:actionBarStyle">
+            @style/Widget.Theme.PRMSCEmployeeApp.ActionBar.Fullscreen
+        </item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+
 </resources>
