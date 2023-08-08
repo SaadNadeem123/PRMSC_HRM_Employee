@@ -40,6 +40,15 @@ public class EmergencyFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(EmergencyContactViewModel.class);
 
 
+        callApi();
+        binding.addContact.setOnClickListener(v -> {
+            startActivity(new Intent(getActivity(), AddContactActivity.class));
+        });
+
+    }
+
+    public void callApi() {
+
         String token = AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity()));
         int employeeId = SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getId();
 
@@ -51,11 +60,6 @@ public class EmergencyFragment extends Fragment {
                 binding.recyclerView.setAdapter(adapter);
             }
         });
-
-        binding.addContact.setOnClickListener(v -> {
-            startActivity(new Intent(getActivity(), AddContactActivity.class));
-        });
-
     }
 
     @Override

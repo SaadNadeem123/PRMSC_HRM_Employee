@@ -29,9 +29,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.webservice.TokenBoundService;
 import com.lmkr.prmscemployeeapp.databinding.ActivityMainBinding;
+import com.lmkr.prmscemployeeapp.databinding.FragmentMyinfoBinding;
 import com.lmkr.prmscemployeeapp.ui.home.HomeFragment;
 import com.lmkr.prmscemployeeapp.ui.leaverequest.LeaveRequestFragment;
 import com.lmkr.prmscemployeeapp.ui.locationUtils.LocationService;
+import com.lmkr.prmscemployeeapp.ui.myinfo.MyInfoFragment;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.PermissionsRequest;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
@@ -186,6 +188,10 @@ public class MainActivity extends BaseActivity {
         else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
             ((LeaveRequestFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
         }
+        else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof MyInfoFragment) {
+            ((MyInfoFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
+        }
+
 
 
     }

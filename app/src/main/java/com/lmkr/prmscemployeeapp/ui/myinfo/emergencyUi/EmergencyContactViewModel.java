@@ -24,7 +24,7 @@ public class EmergencyContactViewModel extends ViewModel {
         return emergencyContactsLiveData;
     }
 
-    private void loadEmergencyContacts(String token, int employeeId) {
+    public void loadEmergencyContacts(String token, int employeeId) {
         EmployeeApi employeeApi = RetrofitClient.getRetrofitInstance().create(EmployeeApi.class);
         Call<ApiResponse> call = employeeApi.getEmergencyContact(token, employeeId);
         call.enqueue(new Callback<ApiResponse>() {
