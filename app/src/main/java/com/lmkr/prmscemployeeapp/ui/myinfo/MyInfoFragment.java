@@ -9,10 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.lmkr.prmscemployeeapp.databinding.FragmentMyinfoBinding;
+import com.lmkr.prmscemployeeapp.ui.myinfo.emergencyUi.EmergencyFragment;
 
-public class myinfoFragment extends Fragment {
+public class MyInfoFragment extends Fragment {
 
     private FragmentMyinfoBinding binding;
+    private ViewPagerAdapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -24,7 +26,7 @@ public class myinfoFragment extends Fragment {
     }
 
     private void setupViewPager() {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
+        adapter = new ViewPagerAdapter(getChildFragmentManager());
         binding.viewPager.setAdapter(adapter);
         binding.tabLayout.setupWithViewPager(binding.viewPager);
     }
@@ -34,5 +36,11 @@ public class myinfoFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    public void refreshApiCalls() {
+        if (adapter != null && adapter.getItem(3) != null && adapter.getItem(3) instanceof EmergencyFragment) {
+            ((EmergencyFragment) adapter.getItem(3)).callApi();
+        }
     }
 }
