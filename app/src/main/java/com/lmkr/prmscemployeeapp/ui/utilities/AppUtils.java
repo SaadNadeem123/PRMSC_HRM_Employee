@@ -2497,6 +2497,17 @@ public class AppUtils {
         }
         return response;
     }
+
+    public static String formatDate(String inputDate) {
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(inputDate);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM d yyyy");
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 }
 
 

@@ -31,6 +31,34 @@ public class UserObject {
             private String department_name;                                      //": "HR",
             private int created_by;                                       //": 1
 
+            private String hire_date;
+            private String employment_status;
+            private String wing_name;
+
+    public String getHire_date() {
+        return hire_date;
+    }
+
+    public void setHire_date(String hire_date) {
+        this.hire_date = hire_date;
+    }
+
+    public String getEmployment_status() {
+        return employment_status;
+    }
+
+    public void setEmployment_status(String employment_status) {
+        this.employment_status = employment_status;
+    }
+
+    public String getWing_name() {
+        return wing_name;
+    }
+
+    public void setWing_name(String wing_name) {
+        this.wing_name = wing_name;
+    }
+
     public int getId() {
         return id;
     }
