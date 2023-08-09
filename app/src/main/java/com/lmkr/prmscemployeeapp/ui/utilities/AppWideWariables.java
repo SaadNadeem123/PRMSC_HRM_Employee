@@ -16,4 +16,9 @@ public class AppWideWariables {
     public static final String SOURCE_MOBILE = "mobile";
     public static final String SOURCE_MOBILE_ENUM = "1";
     public static final long HALF_LEAVE_HOUR_LIMIT = 4;
+    public static final int API_METHOD_GET = 1;
+    public static final int API_METHOD_POST = 2;
+    public static final String IS_IN_GEOFENCE = "isInGeofence";
+    @Nullable
+    public static final String FACE_LOCK_PATH = "faceLockPath";
 }

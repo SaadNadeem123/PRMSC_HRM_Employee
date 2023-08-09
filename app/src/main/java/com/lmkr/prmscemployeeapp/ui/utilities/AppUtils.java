@@ -743,7 +743,6 @@ public class AppUtils {
 
     public static String getConvertedDateFromOneFormatToOther(String date, String currentFormat, String requiredFormat) {
         try {
-
             SimpleDateFormat sdf = new SimpleDateFormat(currentFormat);
             SimpleDateFormat sdf2 = new SimpleDateFormat(requiredFormat);
             Date c = null;
@@ -2427,21 +2426,15 @@ public class AppUtils {
 
     public static BitmapDescriptor BitmapFromVector(Context context, int vectorResId) {
         // below line is use to generate a drawable.
-        Drawable vectorDrawable = ContextCompat.getDrawable(
-                context, vectorResId);
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
 
         // below line is use to set bounds to our vector
         // drawable.
-        vectorDrawable.setBounds(
-                0, 0, vectorDrawable.getIntrinsicWidth(),
-                vectorDrawable.getIntrinsicHeight());
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
 
         // below line is use to create a bitmap for our
         // drawable which we have added.
-        Bitmap bitmap = Bitmap.createBitmap(
-                vectorDrawable.getIntrinsicWidth(),
-                vectorDrawable.getIntrinsicHeight(),
-                Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
 
         // below line is use to add bitmap in our canvas.
         Canvas canvas = new Canvas(bitmap);
@@ -2455,29 +2448,40 @@ public class AppUtils {
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
-    public static boolean isErrorResponse(Response<?> response, Activity activity) {
-        if (response.code() != 200 || response.code() != 201) {
-            if (response != null && response.message() != null && !TextUtils.isEmpty(response.message())) {
-                AppUtils.makeNotification(response.message(), activity);
+    public static boolean isErrorResponse(int methodType, Response<?> response, Activity activity) {
+        if (response == null) {
+            return true;
+        }
+
+        if (response.code() == 200 || response.code() == 201) {
+            if (methodType == AppWideWariables.API_METHOD_POST && response != null && response.body() != null && ((ApiBaseResponse) response.body()).getMessage() != null) {
+                try {
+                    String str = ((ApiBaseResponse) response.body()).getMessage();
+                    AppUtils.makeNotification(str, activity);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             return false;
         } else {
-           /* if (response.code() == 401 || response.code() == 403) {
-                // launch login activity using `this.context`
-                SharedPreferenceHelper.saveSyncBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, activity);
-                AppUtils.makeNotification(getString(R.string.please_try_again_later), activity);
-                return true;
-            }*/
-
-
-//            if (response != null && response.message() != null && !TextUtils.isEmpty(response.message())) {
+            if (methodType == AppWideWariables.API_METHOD_POST && response != null && response.errorBody() != null) {
+                try {
+                    ApiBaseResponse message = new Gson().fromJson(response.errorBody().charStream(), ApiBaseResponse.class);
+                    AppUtils.makeNotification(message.getMessage(), activity);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+//            else if (methodType == AppWideWariables.API_METHOD_POST && response.body() != null && ((ApiBaseResponse) response.body()).getMessage() != null) {
+//                try {
+//                    AppUtils.makeNotification(((ApiBaseResponse) response.body()).getMessage(), activity);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            } else if (methodType == AppWideWariables.API_METHOD_POST && response != null && response.message() != null && !TextUtils.isEmpty(response.message())) {
 //                AppUtils.makeNotification(response.message(), activity);
 //            }
-
-            if (response != null && response.errorBody() != null) {
-                ApiBaseResponse message = new Gson().fromJson(response.errorBody().charStream(), ApiBaseResponse.class);
-                AppUtils.makeNotification(message.getMessage(), activity);
-            }
 
             return true;
         }
@@ -2490,10 +2494,9 @@ public class AppUtils {
     public static boolean checkNetworkState(Activity activity) {
         ConnectivityManager connectivityManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        boolean response =  networkInfo != null && networkInfo.isConnected();
-        if(!response)
-        {
-            makeNotification(activity.getResources().getString(R.string.check_internet_connection),activity);
+        boolean response = networkInfo != null && networkInfo.isConnected();
+        if (!response) {
+            makeNotification(activity.getResources().getString(R.string.check_internet_connection), activity);
         }
         return response;
     }

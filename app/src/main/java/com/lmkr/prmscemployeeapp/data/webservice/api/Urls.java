@@ -15,6 +15,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 
@@ -31,6 +32,9 @@ public interface Urls {
 
     @POST("employee/login")
     Call<UserData> loginUserApi(@Body JsonObject body);
+
+    @PUT("attendance/attendance/{UserID}")
+    Call<ApiBaseResponse> checkout(@Header("Authorization") String standardHeaders,@Path("UserID") String user_id,@Body JsonObject body);
 
     @Multipart
     @POST("employee/leaverequest/create")

@@ -97,20 +97,19 @@ public class LoginActivity extends BaseActivity {
                 Log.i("response", response.toString());
                 binding.loading.setVisibility(View.GONE);
 
-                if (!AppUtils.isErrorResponse(response, LoginActivity.this)) {
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST, response, LoginActivity.this)) {
                     if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
                         return;
                     }
 
                     if (response.body() != null && response.body().getMessage() == null) {
-                        if(response.body().getBasicData()!=null && response.body().getBasicData().size()>0 && response.body().getBasicData().get(0).getApplication_access().equalsIgnoreCase("yes")) {
+                        if (response.body().getBasicData() != null && response.body().getBasicData().size() > 0 && response.body().getBasicData().get(0).getApplication_access().equalsIgnoreCase("yes")) {
                             SharedPreferenceHelper.setLoggedinUser(getApplicationContext(), response.body());
                             AppUtils.switchActivity(LoginActivity.this, MainActivity.class, null);
                             finish();
-                        }
-                        else {
-                            AppUtils.makeNotification(getString(R.string.app_access_denied),LoginActivity.this);
+                        } else {
+                            AppUtils.makeNotification(getString(R.string.app_access_denied), LoginActivity.this);
                         }
                     }
                 }
@@ -124,67 +123,7 @@ public class LoginActivity extends BaseActivity {
             }
         });
 
-    }/*
-    @Override
-    public void callApi() {
-        binding.loading.setVisibility(View.VISIBLE);
-
-
-        JsonObject body = new JsonObject();
-        body.addProperty("email", binding.username.getText().toString());
-        body.addProperty("password", binding.password.getText().toString());  //3132446990
-
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-
-        Urls urls = retrofit.create(Urls.class);
-
-        Call<JsonObjectResponse> call = urls.loginUser(body);
-
-        call.enqueue(new Callback<JsonObjectResponse>() {
-            @Override
-            public void onResponse(Call<JsonObjectResponse> call, Response<JsonObjectResponse> response) {
-                Log.i("response", response.toString());
-                binding.loading.setVisibility(View.GONE);
-
-
-
-                if (!response.isSuccessful()) {
-//                    tv.setText("Code :" + response.code());
-                    return;
-                }
-
-                JsonObjectResponse jsonObjectResponse = response.body();
-
-                Log.i("response", jsonObjectResponse.toString());
-
-                if (jsonObjectResponse != null && jsonObjectResponse.getResponse() != null) {
-                    if (response.body().isStatus()) {
-                        UserData userData = (new Gson()).fromJson(response.body().getResponse(), UserData.class);
-                        //                    Log.i("response", userData.getUserToken());
-                        SharedPreferenceHelper.setLoggedinUser(getApplicationContext(), userData);
-                        AppUtils.switchActivity(LoginActivity.this, MainActivity.class, null);
-                        finish();
-
-                    } else {
-//                        AppUtils.makeNotification(response.body().getMessage(),LoginActivity.this);
-                    }
-                } else {
-//                    AppUtils.makeNotification(jsonObjectResponse.getMessage(), LoginActivity.this);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObjectResponse> call, Throwable t) {
-                t.printStackTrace();
-                AppUtils.makeNotification(t.toString(), LoginActivity.this);
-                binding.loading.setVisibility(View.GONE);
-                Log.i("response", t.toString());
-//                tv.setText(t.getMessage());
-            }
-        });
-
-    }*/
-
+    }
     @Override
     public void internetConnectionChangeListener(boolean isConnected) {
 

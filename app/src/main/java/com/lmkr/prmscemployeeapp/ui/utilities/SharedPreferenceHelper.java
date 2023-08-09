@@ -2,6 +2,9 @@ package com.lmkr.prmscemployeeapp.ui.utilities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.gson.Gson;
 import com.lmkr.prmscemployeeapp.App;
@@ -11,6 +14,13 @@ import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 public class SharedPreferenceHelper {
 
     public static final String BID_ID = "bid_id";
+    public static final String ORIGIN_CITY = "origin";
+    public static final String DESTINATION_CITY = "destination";
+    public static final String VEHICLE_SIZE = "vehicleSize";
+    public static final String VEHICLE_TYPE = "vehicleType";
+    public static final String SHOULD_REFRESH_TOKEN = "shouldRefreshToken";
+    public static final String BID_STATUS = "bidStatus";
+    public static final String BID_COUNT = "bidCount";
     public static String TOKEN = "Token";
     public static String IS_LOGGED_IN = "isLoggedIn";
     public static String FIRE_BASE_TOKEN = "firebaseToken";
@@ -21,17 +31,7 @@ public class SharedPreferenceHelper {
     public static String ATTEMPTS_START_TIME = "attemptStartTime";
     public static String ATTEMPTS_COUNT = "attemptCount";
     public static String USERDATA = "userData";
-
     public static String IS_CHECKED_IN = "isCheckedIn";
-
-    public static final String ORIGIN_CITY = "origin";
-    public static final String DESTINATION_CITY = "destination";
-    public static final String VEHICLE_SIZE = "vehicleSize";
-    public static final String VEHICLE_TYPE = "vehicleType";
-    public static final String SHOULD_REFRESH_TOKEN = "shouldRefreshToken";
-    public static final String BID_STATUS = "bidStatus";
-    public static final String BID_COUNT = "bidCount";
-
 
     public static void saveFloat(String key, float value, Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
@@ -144,7 +144,7 @@ public class SharedPreferenceHelper {
 
     public static void setLoggedinUser(Context context, UserData userdata) {
         saveString(USERDATA, (new Gson()).toJson(userdata), context);
-        saveBoolean(SharedPreferenceHelper.IS_LOGGED_IN,true,context);
+        saveBoolean(SharedPreferenceHelper.IS_LOGGED_IN, true, context);
     }
 
     public static boolean isCheckedIn(Context context) {
@@ -152,5 +152,30 @@ public class SharedPreferenceHelper {
 
         return isCheckedIn;
     }
+
+    public static void setCheckedIn(boolean isCheckedIn,Context context) {
+        saveBoolean(IS_CHECKED_IN, isCheckedIn, context);
+    }
+
+    public static boolean isInGeofence(Context context) {
+        return getBoolean(AppWideWariables.IS_IN_GEOFENCE,context);
+    }
+
+    public static boolean hasFaceLockPath(Context context) {
+        String path = getString(AppWideWariables.FACE_LOCK_PATH,context);
+        return !TextUtils.isEmpty(path);
+    }
+
+    public static String getFaceLockPath(Context context) {
+        String path = getString(AppWideWariables.FACE_LOCK_PATH,context);
+        return path;
+    }
+
+    public static void resetGeofenceAndFaceLock(Context context)
+    {
+     remove(AppWideWariables.IS_IN_GEOFENCE,context);
+     remove(AppWideWariables.FACE_LOCK_PATH,context);
+    }
+
 }
 

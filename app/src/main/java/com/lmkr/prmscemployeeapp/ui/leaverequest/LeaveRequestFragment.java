@@ -29,20 +29,17 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.database.models.FileModel;
 import com.lmkr.prmscemployeeapp.data.database.models.LeaveRequest;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
-import com.lmkr.prmscemployeeapp.data.webservice.api.JsonObjectResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.CreateLeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveCount;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.databinding.FragmentLeaveRequestBinding;
-import com.lmkr.prmscemployeeapp.ui.activities.MainActivity;
 import com.lmkr.prmscemployeeapp.ui.adapter.AttachmentsRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.ui.adapter.LeaveRequestRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.ui.adapter.LeaveTypeSpinnerAdapter;
@@ -52,24 +49,19 @@ import com.lmkr.prmscemployeeapp.ui.customViews.CustomTimePicker;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.FileUtils;
-import com.lmkr.prmscemployeeapp.ui.utilities.NetInterceptor;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
 import com.lmkr.prmscemployeeapp.viewModel.LeaveRequestViewModel;
 import com.lmkr.prmscemployeeapp.viewModel.LeaveRequestViewModelFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -168,6 +160,34 @@ public class LeaveRequestFragment extends Fragment {
             return;
         }
 
+        if(TextUtils.isEmpty(binding.dateTimeFrom.getText()))
+        {
+            AppUtils.makeNotification(getResources().getString(R.string.provide_from_date),getActivity());
+            return;
+        }
+        if(TextUtils.isEmpty(binding.dateTimeTo.getText()))
+        {
+            AppUtils.makeNotification(getResources().getString(R.string.provide_to_date),getActivity());
+            return;
+        }
+        if(binding.dateTimeFrom.getText().toString().equals(binding.dateTimeTo.getText().toString()))
+        {
+            if(TextUtils.isEmpty(binding.timeFrom.getText()))
+            {
+                AppUtils.makeNotification(getResources().getString(R.string.provide_from_time),getActivity());
+                return;
+            }if(TextUtils.isEmpty(binding.timeTo.getText()))
+            {
+                AppUtils.makeNotification(getResources().getString(R.string.provide_to_time),getActivity());
+                return;
+            }
+        }
+        if(TextUtils.isEmpty(binding.note.getText()))
+        {
+            AppUtils.makeNotification(getResources().getString(R.string.provide_notes),getActivity());
+            return;
+        }
+
         float days = AppUtils.getDaysBetweenDates(
                 binding.dateTimeFrom.getText().toString(),
                 AppUtils.FORMAT15,
@@ -262,7 +282,7 @@ public class LeaveRequestFragment extends Fragment {
                     mProgressDialog.dismiss();
 
 
-                if (!AppUtils.isErrorResponse(response, getActivity())) {
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST,response, getActivity())) {
 
 
                     if (!response.isSuccessful()) {
@@ -338,7 +358,7 @@ public class LeaveRequestFragment extends Fragment {
 
         binding.spinnerLeaveTypes.setAdapter(new LeaveTypeSpinnerAdapter(lc, getActivity()));
 
-        getLeaveRequest();
+//        getLeaveRequest();
 
         setListeners();
     }
@@ -509,7 +529,7 @@ public class LeaveRequestFragment extends Fragment {
             public void onResponse(Call<LeaveRequestResponse> call, Response<LeaveRequestResponse> response) {
                 Log.i("response", response.toString());
 
-                if (!AppUtils.isErrorResponse(response, getActivity())) {
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_GET,response, getActivity())) {
                     if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
                     }

@@ -116,5 +116,11 @@
     <string name="arrow">ic_back_arrow</string>
     <string name="header">Header</string>
     <string name="action_update">Update</string>
+    <string name="checkout">Checkout</string>
+    <string name="provide_from_date">Provide From Date!</string>
+    <string name="provide_to_date">Provide To Date!</string>
+    <string name="provide_from_time">Provide From Time!</string>
+    <string name="provide_to_time">Provide To Time!</string>
+    <string name="provide_notes">Provide Notes!</string>
 
 </resources>

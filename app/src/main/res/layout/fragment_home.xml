@@ -115,6 +115,7 @@
                                 android:layout_gravity="bottom|center_horizontal"
                                 android:background="@android:color/transparent"
                                 android:scaleType="centerCrop"
+                                app:lottie_rawRes="@raw/tick"
                                 app:lottie_autoPlay="false"
                                 app:lottie_loop="false"/>
                         </FrameLayout>

@@ -17,6 +17,7 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import com.google.gson.JsonObject
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse
@@ -105,13 +106,14 @@ class CameraXActivity : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg =
-                        "Photo capture succeeded: ${output.savedUri}"
+                    val msg = "Photo capture succeeded: ${output.savedUri}"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-
-
                     try {
-                        callCheckInApi(name, output.savedUri)
+//                        callCheckInApi(name, output.savedUri)
+                        SharedPreferenceHelper.saveString(AppWideWariables.FACE_LOCK_PATH,output.savedUri.toString(),this@CameraXActivity)
+                        finish()
+
+//                        callCheckInApi();
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -126,15 +128,105 @@ class CameraXActivity : AppCompatActivity() {
         // can post image
         val proj = arrayOf(MediaStore.Images.Media.DATA)
         val cursor = contentResolver.query(
-            contentUri!!,
-            proj,  // Which columns to return
+            contentUri!!, proj,  // Which columns to return
             null,  // WHERE clause; which rows to return (all rows)
             null,  // WHERE clause selection arguments (none)
             null
         ) // Order-by clause (ascending by name)
         val column_index = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        cursor!!.moveToFirst()
-        return cursor!!.getString(column_index)
+        cursor.moveToFirst()
+        return cursor.getString(column_index)
+    }
+
+
+    private fun callCheckInApi() {
+        if (!AppUtils.checkNetworkState(this@CameraXActivity)) {
+            return
+        }
+        val retrofit = Retrofit.Builder().baseUrl(ApiCalls.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create()).build()
+        val urls = retrofit.create(Urls::class.java)
+        val body = JsonObject()
+        val userData = SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)
+        body.addProperty("employee_id", userData.basicData[0].id)
+        body.addProperty("checkin_time", AppUtils.getCurrentDateTimeGMT5String())
+        body.addProperty("lat", 0)
+        body.addProperty("longitude", 0)
+        body.addProperty("source", AppWideWariables.SOURCE_MOBILE)
+        body.addProperty("file_name", "")
+        body.addProperty("file_path", "")
+
+//        File file;// = // initialize file here
+
+//        MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
+        val call = urls.checkIn(
+            AppUtils.getStandardHeaders(
+                SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)
+            ), body
+        )
+        call.enqueue(object : Callback<ApiBaseResponse?> {
+            override fun onResponse(
+                call: Call<ApiBaseResponse?>, response: Response<ApiBaseResponse?>
+            ) {
+                Log.i("response", response.toString())
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST,response, this@CameraXActivity)) {
+                    if (!response.isSuccessful) {
+//                    tv.setText("Code :" + response.code());
+                        return
+                    }
+
+                    finish(); }
+            }
+
+            override fun onFailure(call: Call<ApiBaseResponse?>, t: Throwable) {
+                t.printStackTrace()
+                AppUtils.makeNotification(t.toString(), this@CameraXActivity)
+                Log.i("response", t.toString())
+                //                tv.setText(t.getMessage());
+            }
+        })
+    }
+
+
+    private fun callCheckOutApi() {
+        if (!AppUtils.checkNetworkState(this@CameraXActivity)) {
+            return
+        }
+        val retrofit = Retrofit.Builder().baseUrl(ApiCalls.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create()).build()
+        val urls = retrofit.create(Urls::class.java)
+        val body = JsonObject()
+        val userData = SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)
+        body.addProperty("checkout_time", AppUtils.getCurrentDateTimeGMT5String())
+        val call = urls.checkout(
+            AppUtils.getStandardHeaders(
+                SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)
+            ), userData.basicData[0].id.toString(), body
+        )
+        call.enqueue(object : Callback<ApiBaseResponse?> {
+            override fun onResponse(
+                call: Call<ApiBaseResponse?>,
+                response: Response<ApiBaseResponse?>
+            ) {
+                Log.i("response", response.toString())
+                if (!AppUtils.isErrorResponse(
+                        AppWideWariables.API_METHOD_POST,
+                        response,
+                        this@CameraXActivity
+                    )
+                ) {
+                    if (!response.isSuccessful) {
+                        return
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ApiBaseResponse?>, t: Throwable) {
+                t.printStackTrace()
+                AppUtils.makeNotification(t.toString(), this@CameraXActivity)
+                Log.i("response", t.toString())
+            }
+        })
     }
 
     private fun callCheckInApi(name: String, savedUri: Uri?) {
@@ -160,11 +252,8 @@ class CameraXActivity : AppCompatActivity() {
         )
 
         val httpClient = OkHttpClient.Builder().retryOnConnectionFailure(true)
-            .connectTimeout(30, TimeUnit.MINUTES)
-            .readTimeout(30, TimeUnit.MINUTES)
-            .writeTimeout(
-                30,
-                TimeUnit.MINUTES
+            .connectTimeout(30, TimeUnit.MINUTES).readTimeout(30, TimeUnit.MINUTES).writeTimeout(
+                30, TimeUnit.MINUTES
             ) //                .addInterceptor(new NetInterceptor())
             /*                .addInterceptor(new Interceptor() {
                     @Override
@@ -176,16 +265,11 @@ class CameraXActivity : AppCompatActivity() {
                                 .build();
                         return chain.proceed(request);
                     }
-                })*/
-            .build()
+                })*/.build()
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(ApiCalls.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(httpClient)
-            .build()
-        val urls = retrofit.create(Urls::class.java)
-        /* val body = JsonObject()
+        val retrofit = Retrofit.Builder().baseUrl(ApiCalls.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create()).client(httpClient).build()
+        val urls = retrofit.create(Urls::class.java)/* val body = JsonObject()
          body.addProperty("employee_id", userData!!.basicData[0].id)
          body.addProperty("checkin_time", AppUtils.getCurrentDateTimeGMT5String())
          body.addProperty("lat", SharedPreferenceHelper.getString("lat", this@CameraXActivity))
@@ -197,12 +281,10 @@ class CameraXActivity : AppCompatActivity() {
          body.addProperty("file_path", "")*/
 
         val employee_id: RequestBody = RequestBody.create(
-            MediaType.parse("text/plain"),
-            user.basicData.get(0).id.toString() + ""
+            MediaType.parse("text/plain"), user.basicData.get(0).id.toString() + ""
         )
         val checkin_time: RequestBody = RequestBody.create(
-            MediaType.parse("text/plain"),
-            AppUtils.getCurrentDateTimeGMT5String()
+            MediaType.parse("text/plain"), AppUtils.getCurrentDateTimeGMT5String()
         )
         val lat: RequestBody = RequestBody.create(
             MediaType.parse("text/plain"),
@@ -235,7 +317,7 @@ class CameraXActivity : AppCompatActivity() {
             ) {
                 Log.i("response", response.toString())
 
-                if (!AppUtils.isErrorResponse(response,this@CameraXActivity)) {
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST,response, this@CameraXActivity)) {
 
                     if (!response.isSuccessful) {
 //                    tv.setText("Code :" + response.code());

@@ -12,8 +12,10 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -26,17 +28,29 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.webservice.TokenBoundService;
+import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
+import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
+import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.databinding.ActivityMainBinding;
 import com.lmkr.prmscemployeeapp.databinding.FragmentMyinfoBinding;
 import com.lmkr.prmscemployeeapp.ui.home.HomeFragment;
 import com.lmkr.prmscemployeeapp.ui.leaverequest.LeaveRequestFragment;
 import com.lmkr.prmscemployeeapp.ui.locationUtils.LocationService;
 import com.lmkr.prmscemployeeapp.ui.myinfo.MyInfoFragment;
+import com.lmkr.prmscemployeeapp.ui.myinfo.emergencyUi.EmergencyFragment;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.PermissionsRequest;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends BaseActivity {
@@ -108,6 +122,8 @@ public class MainActivity extends BaseActivity {
             }
             else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
                 ((LeaveRequestFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
+            } else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof MyInfoFragment) {
+                ((MyInfoFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
             }
         }
     };
@@ -182,18 +198,79 @@ public class MainActivity extends BaseActivity {
             AppUtils.showLocationSettingsAlert(MainActivity.this);
         }
 
-        if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof HomeFragment) {
-            ((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
-        }
-        else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
-            ((LeaveRequestFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
-        }
-        else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof MyInfoFragment) {
-            ((MyInfoFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
-        }
 
 
+        bindTokenService();
 
+        refreshApiCalls();
+    }
+
+
+    @Override
+    public void callApi() {
+
+        if (!AppUtils.checkNetworkState(MainActivity.this)) {
+            return;
+        }
+
+        JsonObject body = new JsonObject();
+        body.addProperty("email", SharedPreferenceHelper.getLoggedinUser(MainActivity.this).getBasicData().get(0).getEmail());
+        body.addProperty("password", SharedPreferenceHelper.getString(SharedPreferenceHelper.PASSWORD,MainActivity.this));  //3132446990
+        body.addProperty("source", AppWideWariables.SOURCE_MOBILE);  //3132446990
+
+        SharedPreferenceHelper.saveString(SharedPreferenceHelper.PASSWORD, SharedPreferenceHelper.getString(SharedPreferenceHelper.PASSWORD,MainActivity.this), MainActivity.this);
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        Urls urls = retrofit.create(Urls.class);
+
+        Call<UserData> call = urls.loginUserApi(body);
+        call.enqueue(new Callback<UserData>() {
+            @Override
+            public void onResponse(Call<UserData> call, Response<UserData> response) {
+                Log.i("response", response.toString());
+
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_GET, response, MainActivity.this)) {
+                    if (!response.isSuccessful()) {
+//                    tv.setText("Code :" + response.code());
+                        return;
+                    }
+
+                    if (response.body() != null && response.body().getMessage() == null) {
+                        if (response.body().getBasicData() != null && response.body().getBasicData().size() > 0 && response.body().getBasicData().get(0).getApplication_access().equalsIgnoreCase("yes")) {
+                            SharedPreferenceHelper.setLoggedinUser(getApplicationContext(), response.body());
+                        } else {
+                            AppUtils.makeNotification(getString(R.string.app_access_denied), MainActivity.this);
+                        }
+                    }
+
+//                    refreshApiCalls();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserData> call, Throwable t) {
+                t.printStackTrace();
+                AppUtils.makeNotification(t.toString(), MainActivity.this);
+            }
+        });
+
+    }
+
+    private void refreshApiCalls() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof HomeFragment) {
+                    ((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
+                }
+                else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
+                    ((LeaveRequestFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
+                }
+                else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof MyInfoFragment) {
+                    ((MyInfoFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
+                }
+
+            }
+        },1000);
     }
 
     @Override
@@ -215,8 +292,12 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         unBindService();
-        unbindServiceToken();
         super.onDestroy();
+    }
+    @Override
+    protected void onPause() {
+        unbindServiceToken();
+        super.onPause();
     }
 
     @Override
@@ -235,8 +316,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        bindTokenService();
+//        callApi();
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, PermissionsRequest.LOCATION_PERMISSIONS, PermissionsRequest.LOCATION_REQUEST_CODE);
@@ -291,11 +371,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void handleIntent() {
-
-    }
-
-    @Override
-    public void callApi() {
 
     }
 

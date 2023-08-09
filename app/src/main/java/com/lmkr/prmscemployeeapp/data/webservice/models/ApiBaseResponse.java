@@ -10,4 +10,13 @@ public class ApiBaseResponse {
     }
 
     private String message;
+    private ApiBaseResponse body;
+
+    public ApiBaseResponse getBody() {
+        return body;
+    }
+
+    public void setBody(ApiBaseResponse body) {
+        this.body = body;
+    }
 }

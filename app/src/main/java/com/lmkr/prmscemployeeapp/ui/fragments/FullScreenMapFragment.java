@@ -187,7 +187,6 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
 
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver((receiver), new IntentFilter(LocationService.SERVICE_NAME));
 
-
         mapFragment.getMapAsync(this);
         setListeners();
     }
@@ -199,7 +198,6 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             public void onClick(View v) {
                 SharedPreferenceHelper.saveString(AppWideWariables.CHECKIN_LAT, "", getActivity());
                 SharedPreferenceHelper.saveString(AppWideWariables.CHECKIN_LONG, "", getActivity());
-
                 destroy();
             }
         });
@@ -214,7 +212,8 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
                 if (userdata.getBasicData().get(0).getFacelock().equals("yes")) {
                     getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
                 } else {
-                    callCheckInApi();
+                    SharedPreferenceHelper.saveBoolean(AppWideWariables.IS_IN_GEOFENCE,true,getActivity());
+//                    callCheckInApi();
                 }
                 destroy();
             }
@@ -256,7 +255,7 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             @Override
             public void onResponse(Call<ApiBaseResponse> call, Response<ApiBaseResponse> response) {
                 Log.i("response", response.toString());
-                if (!AppUtils.isErrorResponse(response, getActivity())) {
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST,response, getActivity())) {
                     if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
                         return;
@@ -277,6 +276,43 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             }
         });
 
+    }
+
+    private void callCheckOutApi() {
+        if (!AppUtils.checkNetworkState(getActivity())) {
+            return;
+        }
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+
+        Urls urls = retrofit.create(Urls.class);
+
+        JsonObject body = new JsonObject();
+
+        UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
+
+        body.addProperty("checkout_time", AppUtils.getCurrentDateTimeGMT5String());
+
+        Call<ApiBaseResponse> call = urls.checkout(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())), String.valueOf(userData.getBasicData().get(0).getId()), body);
+
+        call.enqueue(new Callback<ApiBaseResponse>() {
+            @Override
+            public void onResponse(Call<ApiBaseResponse> call, Response<ApiBaseResponse> response) {
+                Log.i("response", response.toString());
+
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST, response, getActivity())) {
+                    if (!response.isSuccessful()) {
+                        return;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiBaseResponse> call, Throwable t) {
+                t.printStackTrace();
+                AppUtils.makeNotification(t.toString(), getActivity());
+                Log.i("response", t.toString());
+            }
+        });
     }
 
     private void destroy() {
