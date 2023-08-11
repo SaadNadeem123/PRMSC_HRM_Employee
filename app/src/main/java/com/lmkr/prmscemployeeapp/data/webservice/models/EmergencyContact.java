@@ -1,8 +1,14 @@
 package com.lmkr.prmscemployeeapp.data.webservice.models;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
+@Entity(tableName = "EmergencyContact")
 public class EmergencyContact {
+
+    @PrimaryKey(autoGenerate = false)
     @SerializedName("id")
     private int id;
     @SerializedName("name")

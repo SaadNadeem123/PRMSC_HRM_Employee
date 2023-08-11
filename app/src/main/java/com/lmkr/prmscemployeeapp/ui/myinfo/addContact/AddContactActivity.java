@@ -13,11 +13,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import com.lmkr.prmscemployeeapp.data.webservice.models.AddContactModel;
+import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.databinding.ActivityAddContactBinding;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
-import com.lmkr.prmscemployeeapp.viewModel.ContactViewModel;
+import com.lmkr.prmscemployeeapp.viewModel.EmergencyContactViewModel;
+import com.lmkr.prmscemployeeapp.viewModel.EmergencyContactViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AddContactActivity extends AppCompatActivity {
+
 
     private ActivityAddContactBinding binding;
     private int dropDownValue;
@@ -42,6 +44,7 @@ public class AddContactActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding= ActivityAddContactBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
 
         contactViewModel = new ViewModelProvider(this).get(ContactViewModel.class);
 
@@ -219,6 +222,7 @@ public class AddContactActivity extends AppCompatActivity {
                         binding.progressBar.setVisibility(View.GONE);
                         if (response.isSuccessful()) {
                             Toast.makeText(AddContactActivity.this, "Updated Successfully!", Toast.LENGTH_SHORT).show();
+                            new EmergencyContactViewModel(getApplication()).loadEmergencyContacts(token,employeeId);
                         } else {
                             Toast.makeText(AddContactActivity.this, "Updation Error!", Toast.LENGTH_SHORT).show();
                         }
@@ -250,34 +254,33 @@ public class AddContactActivity extends AppCompatActivity {
         newContact.setAddress(Objects.requireNonNull(binding.address.getText()).toString());
 
 
+        contactViewModel.createEmergencyContact(token, newContact, new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
 
-        contactViewModel.createEmergencyContact(
-                token,
-                employeeId,
-                newContact,
-                new Callback<Void>() {
-                    @Override
-                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                binding.progressBar.setVisibility(View.GONE);
+                if (response.isSuccessful()) {
+                    Toast.makeText(AddContactActivity.this, "Insertion Successfully!", Toast.LENGTH_SHORT).show();
+                       new EmergencyContactViewModel(getApplication()).loadEmergencyContacts(token,employeeId);
+                } else {
 
-                        binding.progressBar.setVisibility(View.GONE);
-                        if (response.isSuccessful()) {
-                            Toast.makeText(AddContactActivity.this, "Insertion Successfully!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(AddContactActivity.this, "Insertion Error!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-
-                        binding.progressBar.setVisibility(View.GONE);
-
-                        AppUtils.makeNotification(t.toString(), AddContactActivity.this);
-                        Log.d("ErrorMsg", t.toString());
-
-                    }
+                    Toast.makeText(AddContactActivity.this, "Insertion Error!", Toast.LENGTH_SHORT).show();
+                    Log.d("ResponseMsg:", response.toString());
                 }
-        );
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+
+                binding.progressBar.setVisibility(View.GONE);
+
+                AppUtils.makeNotification(t.toString(), AddContactActivity.this);
+                Log.d("ErrorMsg", t.toString());
+
+            }
+        });
+
+
 
     }
 

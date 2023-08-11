@@ -1,4 +1,4 @@
-package com.lmkr.prmscemployeeapp.data.webservice.models;
+package com.lmkr.prmscemployeeapp.ui.myinfo.addContact;
 
 
 import com.google.gson.annotations.SerializedName;
@@ -16,6 +16,7 @@ public class AddContactModel {
     @SerializedName("home_number")
     private String homeNumber;
     private String address;
+
 
 
     public int getEmployeeId() {
