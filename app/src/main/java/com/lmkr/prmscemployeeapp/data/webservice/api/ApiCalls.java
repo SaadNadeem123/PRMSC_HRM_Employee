@@ -8,4 +8,8 @@ public class ApiCalls {
     public static final String BASE_DOCUMENT_URL_DEV = "http://20.55.70.106:8000/api/" + API_VERSION+ "/";
     public static final String BASE_DOCUMENT_URL_LIVE = "http://20.55.70.106:8000/api/" + API_VERSION+ "/";
     public static final String BASE_DOCUMENT_URL = BASE_DOCUMENT_URL_LIVE;
+    public static final String BASE_EMERGENCY_URL= "http://20.55.70.106:8000/api/" + API_VERSION+ "/";
+
+    public static final String BASE_ADD_EMERGENCY_URL= "http://20.55.70.106:8000/api/" + API_VERSION+ "/";
+
 }

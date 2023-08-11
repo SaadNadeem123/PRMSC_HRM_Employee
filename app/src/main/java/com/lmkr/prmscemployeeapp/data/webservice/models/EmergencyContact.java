@@ -1,8 +1,14 @@
-package com.lmkr.prmscemployeeapp.ui.myinfo.emergencyUi;
+package com.lmkr.prmscemployeeapp.data.webservice.models;
+
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
+@Entity(tableName = "EmergencyContact")
 public class EmergencyContact {
+
+    @PrimaryKey(autoGenerate = false)
     @SerializedName("id")
     private int id;
     @SerializedName("name")
@@ -20,7 +26,6 @@ public class EmergencyContact {
     @SerializedName("address")
     private String address;
 
-    // Constructor
     public EmergencyContact(int id, String name, String email, String relation, String mobile,
                             String work, String home, String address) {
         this.id = id;

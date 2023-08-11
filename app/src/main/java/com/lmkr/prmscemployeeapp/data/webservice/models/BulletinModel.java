@@ -1,9 +1,17 @@
-package com.lmkr.prmscemployeeapp.ui.bulletin;
+package com.lmkr.prmscemployeeapp.data.webservice.models;
+
+import androidx.room.ColumnInfo;
+
+import com.google.gson.annotations.SerializedName;
 
 public class BulletinModel {
 
+    @SerializedName("title")
     private String title;
+
+    @SerializedName("description")
     private String description;
+    @SerializedName("created_at")
     private String date;
     private String pic_url;
 

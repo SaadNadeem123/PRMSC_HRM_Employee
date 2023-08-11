@@ -13,7 +13,7 @@ import com.lmkr.prmscemployeeapp.databinding.FragmentJobBinding;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
 
-public class jobFragment extends Fragment {
+public class JobFragment extends Fragment {
 
     private FragmentJobBinding binding;
 

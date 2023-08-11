@@ -14,6 +14,8 @@ import com.lmkr.prmscemployeeapp.databinding.FragmentPersonalBinding;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
 
+import java.util.Objects;
+
 public class personalFragment extends Fragment {
 
     private FragmentPersonalBinding binding;
@@ -23,8 +25,10 @@ public class personalFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentPersonalBinding.inflate(inflater, container, false);
         bindViews();
+        listeners();
         return binding.getRoot();
     }
+
 
     @Override
     public void onDestroyView() {
@@ -43,5 +47,23 @@ public class personalFragment extends Fragment {
         binding.personalEmail.setText(SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getEmail());
         binding.employeeId.setText(String.valueOf(SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getId()));
         binding.firstName.setText(SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getName());
+    }
+
+    private void listeners() {
+
+        binding.copyButton.setOnClickListener(v ->{
+            if(!binding.mobilePhone.getText().toString().isEmpty())
+                AppUtils.copyTextToClipboard(binding.mobilePhone.getText().toString(), requireContext());
+        });
+        binding.messageButton.setOnClickListener(v ->{
+            if(!binding.mobilePhone.getText().toString().isEmpty())
+                AppUtils.sendSMS(binding.mobilePhone.getText().toString(), requireContext());
+        });
+
+        binding.phoneButton.setOnClickListener(v ->{
+
+            if(!binding.mobilePhone.getText().toString().isEmpty())
+                AppUtils.callPhoneNumber(binding.mobilePhone.getText().toString(), requireContext());
+        });
     }
 }

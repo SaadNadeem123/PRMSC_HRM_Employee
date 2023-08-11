@@ -12,11 +12,22 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.lmkr.prmscemployeeapp.App;
+import com.lmkr.prmscemployeeapp.data.database.models.AttendanceHistory;
+import com.lmkr.prmscemployeeapp.data.webservice.models.EmergencyContact;
 import com.lmkr.prmscemployeeapp.databinding.FragmentEmergencyBinding;
+import com.lmkr.prmscemployeeapp.ui.adapter.EmergencyContactAdapter;
+import com.lmkr.prmscemployeeapp.ui.home.HomeFragment;
 import com.lmkr.prmscemployeeapp.ui.myinfo.addContact.AddContactActivity;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
+import com.lmkr.prmscemployeeapp.viewModel.AttendanceHistoryViewModel;
+import com.lmkr.prmscemployeeapp.viewModel.AttendanceHistoryViewModelFactory;
+import com.lmkr.prmscemployeeapp.viewModel.EmergencyContactViewModel;
+import com.lmkr.prmscemployeeapp.viewModel.EmergencyContactViewModelFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmergencyFragment extends Fragment {
@@ -25,8 +36,10 @@ public class EmergencyFragment extends Fragment {
     private EmergencyContactAdapter adapter;
     private EmergencyContactViewModel viewModel;
 
+
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentEmergencyBinding.inflate(inflater, container, false);
         return binding.getRoot();
@@ -37,7 +50,8 @@ public class EmergencyFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        viewModel = new ViewModelProvider(this).get(EmergencyContactViewModel.class);
+        viewModel = new ViewModelProvider(this, new EmergencyContactViewModelFactory(App.getInstance(),""))
+                .get(EmergencyContactViewModel.class);
 
 
         callApi();
@@ -47,12 +61,14 @@ public class EmergencyFragment extends Fragment {
 
     }
 
+
+
     public void callApi() {
 
         String token = AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity()));
         int employeeId = SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getId();
 
-        viewModel.getEmergencyContacts(token, employeeId).observe(getViewLifecycleOwner(), new Observer<List<EmergencyContact>>() {
+        viewModel.getEmergencyContacts(token,employeeId).observe(getViewLifecycleOwner(), new Observer<List<EmergencyContact>>() {
             @Override
             public void onChanged(List<EmergencyContact> emergencyContacts) {
                 Log.d("EmergencyContactFragment", "Number of items in the list: " + emergencyContacts.size());

@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lmkr.prmscemployeeapp.databinding.FragmentBulletinBinding;
+import com.lmkr.prmscemployeeapp.ui.adapter.BulletinRecyclerAdapter;
+import com.lmkr.prmscemployeeapp.viewModel.BulletinViewModel;
 
 import java.util.ArrayList;
 
 public class BulletinFragment extends Fragment {
 
-    private BulletinAdapter adapter;
+    private BulletinRecyclerAdapter adapter;
     private BulletinViewModel bulletinViewModel;
     private FragmentBulletinBinding binding;
 
@@ -27,7 +29,7 @@ public class BulletinFragment extends Fragment {
 
         RecyclerView recyclerView = binding.recyclerView;
 
-        adapter = new BulletinAdapter(new ArrayList<>(),getActivity());
+        adapter = new BulletinRecyclerAdapter(new ArrayList<>(),getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 

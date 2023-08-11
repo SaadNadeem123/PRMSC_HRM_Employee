@@ -1,4 +1,4 @@
-package com.lmkr.prmscemployeeapp.ui.myinfo.benefitsUi;
+package com.lmkr.prmscemployeeapp.ui.myinfo.documentsUi;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,19 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.lmkr.prmscemployeeapp.databinding.FragmentBenefitsBinding;
+import com.lmkr.prmscemployeeapp.databinding.FragmentDocumentsBinding;
 
-public class benefitsFragment extends Fragment {
+public class DocumentsFragment extends Fragment {
 
-
-
-    private FragmentBenefitsBinding binding;
-
+    private FragmentDocumentsBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentBenefitsBinding.inflate(inflater, container, false);
+        binding = FragmentDocumentsBinding.inflate(inflater, container, false);
 
         return binding.getRoot();
     }
@@ -32,3 +29,4 @@ public class benefitsFragment extends Fragment {
         binding = null;
     }
 }
+

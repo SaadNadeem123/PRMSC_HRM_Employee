@@ -6,6 +6,9 @@ import com.lmkr.prmscemployeeapp.data.webservice.models.AttendanceHistoryRespons
 import com.lmkr.prmscemployeeapp.data.webservice.models.CreateLeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
+import com.lmkr.prmscemployeeapp.data.webservice.models.EmergencyApiResponse;
+import com.lmkr.prmscemployeeapp.data.webservice.models.BulletinResponse;
+import com.lmkr.prmscemployeeapp.ui.myinfo.addContact.AddContactModel;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -70,5 +73,29 @@ public interface Urls {
 
     @POST("attendance/attendance")
     Call<ApiBaseResponse> checkIn(@Header("Authorization") String standardHeaders, @Body JsonObject body);
+
+    @GET("employee/emergencycontact/{id}")
+    Call<EmergencyApiResponse> getEmergencyContact(
+            @Header("Authorization") String token,
+            @Path("id") int employeeId
+    );
+
+
+    @PUT("employee/emergencycontact/{contactId}")
+    Call<Void> updateEmergencyContact(
+            @Header("Authorization") String bearerToken,
+            @Path("contactId") int contactId,
+            @Body AddContactModel contact
+    );
+
+    @POST("employee/emergencycontact/create/{id}")
+    Call<Void> createEmergencyContact(
+            @Header("Authorization") String bearerToken,
+            @Path("id") int employeeId,
+            @Body AddContactModel data
+    );
+
+    @GET("employee/news")
+    Call<BulletinResponse> getBulletinList();
 
 }

@@ -4,12 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
 import com.lmkr.prmscemployeeapp.databinding.FragmentMyinfoBinding;
-import com.lmkr.prmscemployeeapp.ui.myinfo.emergencyUi.EmergencyFragment;
+import com.lmkr.prmscemployeeapp.ui.adapter.ViewPagerAdapter;
 
 public class MyInfoFragment extends Fragment {
 
@@ -38,9 +36,9 @@ public class MyInfoFragment extends Fragment {
         binding = null;
     }
 
-    public void refreshApiCalls() {
+ /*   public void refreshApiCalls() {
         if (adapter != null && adapter.getItem(3) != null && adapter.getItem(3) instanceof EmergencyFragment) {
             ((EmergencyFragment) adapter.getItem(3)).callApi();
         }
-    }
+    }*/
 }
