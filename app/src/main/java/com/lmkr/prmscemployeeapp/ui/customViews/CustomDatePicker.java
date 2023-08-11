@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.lmkr.prmscemployeeapp.R;
-import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -25,60 +24,66 @@ public class CustomDatePicker implements View.OnClickListener, DatePickerDialog.
     public static final int END_DATE = 2;
     private static final int DEFAULT = -1;
     private final Context _context;
-    TextView _textView;
-    EditText _editText;
-    TextInputEditText _textInputEditText;
+    TextView _textView, _textView2;
+    EditText _editText, _editText2;
+    TextInputEditText _textInputEditText, _textInputEditText2;
     //    int datePickerThemeResId = AlertDialog.THEME_DEVICE_DEFAULT_LIGHT;
     int datePickerThemeResId = R.style.MyDatePickerDialogTheme;
     private int _day;
     private int _month;
     private int _birthYear;
-    private int dateType = DEFAULT;
+    private int remaining_leave_count = DEFAULT;
     private final long minimumDate = System.currentTimeMillis();
 
-    public CustomDatePicker(Context context, TextView textView) {
+    public CustomDatePicker(Context context, TextView textView, TextView textView2) {
         Activity act = (Activity) context;
         this._textView = textView;
+        this._textView2 = textView2;
         this._textView.setOnClickListener(this);
         this._context = context;
     }
 
-    public CustomDatePicker(Context context, EditText editText) {
+    public CustomDatePicker(Context context, EditText editText,EditText editText2) {
         Activity act = (Activity) context;
         this._editText = editText;
+        this._editText2 = editText2;
         this._editText.setOnClickListener(this);
         this._context = context;
     }
 
-    public CustomDatePicker(Context context, TextInputEditText editText) {
+    public CustomDatePicker(Context context, TextInputEditText editText, TextInputEditText editText2) {
         Activity act = (Activity) context;
         this._textInputEditText = editText;
+        this._textInputEditText2 = editText2;
         this._textInputEditText.setOnClickListener(this);
         this._context = context;
     }
 
-    public CustomDatePicker(Context context, TextView textView, int dateType) {
+    public CustomDatePicker(Context context, TextView textView,TextView textView2, int remaining_leave_count) {
         Activity act = (Activity) context;
         this._textView = textView;
+        this._textView2 = textView2;
         this._textView.setOnClickListener(this);
         this._context = context;
-        this.dateType = dateType;
+        this.remaining_leave_count = remaining_leave_count;
     }
 
-    public CustomDatePicker(Context context, EditText editText, int dateType) {
+    public CustomDatePicker(Context context, EditText editText,EditText editText2, int remaining_leave_count) {
         Activity act = (Activity) context;
         this._editText = editText;
+        this._editText2 = editText2;
         this._editText.setOnClickListener(this);
         this._context = context;
-        this.dateType = dateType;
+        this.remaining_leave_count = remaining_leave_count;
     }
 
-    public CustomDatePicker(Context context, TextInputEditText editText, int dateType) {
+    public CustomDatePicker(Context context, TextInputEditText editText,TextInputEditText editText2, int remaining_leave_count) {
         Activity act = (Activity) context;
         this._textInputEditText = editText;
+        this._textInputEditText2 = editText2;
         this._textInputEditText.setOnClickListener(this);
         this._context = context;
-        this.dateType = dateType;
+        this.remaining_leave_count = remaining_leave_count;
     }
 
     @Override
@@ -110,6 +115,7 @@ public class CustomDatePicker implements View.OnClickListener, DatePickerDialog.
         if (minimumDate != -1) {
             dialog.getDatePicker().setMinDate(minimumDate);
         }
+
 
         //        dialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
 //        dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
@@ -152,10 +158,10 @@ public class CustomDatePicker implements View.OnClickListener, DatePickerDialog.
         int month = _month + 1; // Month is 0 based so add 1
         int day = _day;
         StringBuilder dateTimeStamp = new StringBuilder();
-        if (dateType == START_DATE) {
+        if (remaining_leave_count == START_DATE) {
             dateTimeStamp.append(year).append("-").append(month < 10 ? "0" + month : month).append("-").append(day < 10 ? "0" + day : day);
             dateTimeStamp.append(" 00:00:00");
-        } else if (dateType == END_DATE) {
+        } else if (remaining_leave_count == END_DATE) {
             dateTimeStamp.append(year).append("-").append(month < 10 ? "0" + month : month).append("-").append(day < 10 ? "0" + day : day);
             dateTimeStamp.append(" 23:59:59");
         } else {

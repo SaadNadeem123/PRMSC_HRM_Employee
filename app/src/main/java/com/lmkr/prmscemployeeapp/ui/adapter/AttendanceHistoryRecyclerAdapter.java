@@ -36,7 +36,7 @@ public class AttendanceHistoryRecyclerAdapter extends RecyclerView.Adapter<Atten
 
         AttendanceHistory attendanceHistory = list.get(position);
 
-        holder.date.setText(AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getDate(),AppUtils.FORMAT19,AppUtils.FORMAT23));
+        holder.date.setText(AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getCheckin_time(),AppUtils.FORMAT19,AppUtils.FORMAT23));
         holder.time.setText(AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getCheckin_time(),AppUtils.FORMAT19,AppUtils.FORMAT5));
     }
 

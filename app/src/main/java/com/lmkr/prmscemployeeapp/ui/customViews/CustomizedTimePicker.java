@@ -22,6 +22,7 @@ public class CustomizedTimePicker extends TimePickerDialog {
     private final Calendar calendar = Calendar.getInstance();
     private final DateFormat dateFormat;
 
+
     public CustomizedTimePicker(Context context, int timePickerThemeResId, OnTimeSetListener callBack, int hourOfDay, int minute, boolean is24HourView) {
         super(context, timePickerThemeResId,callBack, hourOfDay, minute, is24HourView);
         currentHour = hourOfDay;

@@ -1,12 +1,16 @@
 package com.lmkr.prmscemployeeapp.ui.activities
 
 import android.content.ContentValues
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.Image
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
+import android.util.Size
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +30,7 @@ import com.lmkr.prmscemployeeapp.databinding.ActivityCameraXBinding
 import com.lmkr.prmscemployeeapp.ui.cameraxUtils.FaceContourDetectionProcessor
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables
+import com.lmkr.prmscemployeeapp.ui.utilities.FileUtils
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -107,7 +112,7 @@ class CameraXActivity : AppCompatActivity() {
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     try {
 //                        callCheckInApi(name, output.savedUri)
                         SharedPreferenceHelper.saveString(AppWideWariables.FACE_LOCK_PATH,output.savedUri.toString(),this@CameraXActivity)
@@ -120,6 +125,47 @@ class CameraXActivity : AppCompatActivity() {
                     Log.d(TAG, msg)
                 }
             })
+    }
+
+
+    fun importFile(returnIntent: Intent) {
+        Thread {
+            val returnUri = returnIntent.data
+            //        String fileName = getFileName(returnUri);
+
+            /*
+                 * Get the file's content URI from the incoming Intent,
+                 * then query the server app to get the file's display name
+                 * and size.
+                 */
+            val returnCursor = contentResolver.query(returnUri!!, null, null, null, null)
+            /*
+                 * Get the column indexes of the data in the Cursor,
+                 * move to the first row in the Cursor, get the data,
+                 * and display it.
+                 */
+            val nameIndex = returnCursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            val sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE)
+            returnCursor.moveToFirst()
+            val fileName = returnCursor.getString(nameIndex)
+            val mimeType = contentResolver.getType(returnUri)
+            val size = java.lang.Long.toString(returnCursor.getLong(sizeIndex))
+           /* val image = Image()
+            image.setFileName(fileName)
+            image.setUri(returnUri)
+            image.setThumbnailBase64(FileUtils.fileUriToThumbnail(returnUri, contentResolver))
+            //                image.setFileContentBase64(FileUtils.fileUriToBase64refined(returnUri, getContentResolver()));
+//                image.setBytes(FileUtils.fileUriTobytesrefined(returnUri, getContentResolver()));
+            image.setFileContentBase64(FileUtils.fileUriToBase64(returnUri, contentResolver))
+            image.setBytes(FileUtils.fileUriToBytes(returnUri, contentResolver))
+            image.setOrderId(orderId)
+            image.setOrderDetailId(detailId)
+            image.setShipperId(shipperId)
+            image.setProductId(orderSku.getProductId())
+            image.setImageType(AppWideWariables.IMAGE_TYPE_SKU)
+            images.add(image)
+            updateImages()*/
+        }.run()
     }
 
     // And to convert the image URI to the direct file system path of the image file
@@ -348,11 +394,16 @@ class CameraXActivity : AppCompatActivity() {
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
             // Preview
-            val preview = Preview.Builder().build().also {
+            val preview = Preview.Builder()
+                .setTargetResolution(Size(720,1280))
+                .build().also {
+
                 it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
             }
 
-            imageCapture = ImageCapture.Builder().build()
+            imageCapture = ImageCapture.Builder()
+                .setTargetResolution(Size(720,1280))
+                .build()
             // Select back camera as a default
 //            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
             val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA

@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -35,12 +34,10 @@ import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.databinding.ActivityMainBinding;
-import com.lmkr.prmscemployeeapp.databinding.FragmentMyinfoBinding;
 import com.lmkr.prmscemployeeapp.ui.home.HomeFragment;
 import com.lmkr.prmscemployeeapp.ui.leaverequest.LeaveRequestFragment;
 import com.lmkr.prmscemployeeapp.ui.locationUtils.LocationService;
 import com.lmkr.prmscemployeeapp.ui.myinfo.MyInfoFragment;
-import com.lmkr.prmscemployeeapp.ui.myinfo.emergencyUi.EmergencyFragment;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.PermissionsRequest;
@@ -64,6 +61,19 @@ public class MainActivity extends BaseActivity {
     private boolean mServiceBoundToken = false;
     private LocationService mBoundService;
     private TokenBoundService mBoundServiceToken;
+    private final ServiceConnection mServiceConnectionToken = new ServiceConnection() {
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mServiceBoundToken = false;
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            TokenBoundService.MyBinder myBinder = (TokenBoundService.MyBinder) service;
+            mBoundServiceToken = myBinder.getService();
+            mServiceBoundToken = true;
+        }
+    };
     private ServiceConnection mServiceConnection = new ServiceConnection() {
 
         @Override
@@ -103,8 +113,7 @@ public class MainActivity extends BaseActivity {
                         if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof HomeFragment) {
                             ((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).enableCheckinButton(true);
                         }
-                    }catch(Exception e)
-                    {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
@@ -119,25 +128,11 @@ public class MainActivity extends BaseActivity {
         public void onReceive(Context context, Intent intent) {
             if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof HomeFragment) {
                 ((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
-            }
-            else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
+            } else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
                 ((LeaveRequestFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
             } else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof MyInfoFragment) {
                 ((MyInfoFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
             }
-        }
-    };
-    private final ServiceConnection mServiceConnectionToken = new ServiceConnection() {
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mServiceBoundToken = false;
-        }
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            TokenBoundService.MyBinder myBinder = (TokenBoundService.MyBinder) service;
-            mBoundServiceToken = myBinder.getService();
-            mServiceBoundToken = true;
         }
     };
 
@@ -168,7 +163,7 @@ public class MainActivity extends BaseActivity {
                 LocalBroadcastManager.getInstance(this).registerReceiver((receiver), new IntentFilter(LocationService.SERVICE_NAME));
 
                 Log.i("Service Binded", " true");
-                AppUtils.makeNotification(getResources().getString(R.string.wait_fetching_location), MainActivity.this);
+//                AppUtils.makeNotification(getResources().getString(R.string.wait_fetching_location), MainActivity.this);
                 isBinded = true;
             } else {
                 Log.i("Service Binded", " already");
@@ -182,11 +177,17 @@ public class MainActivity extends BaseActivity {
     }
 
     private void bindTokenService() {
-        Intent intentToken = new Intent(this, TokenBoundService.class);
-        startService(intentToken);
-        bindService(intentToken, mServiceConnectionToken, Context.BIND_AUTO_CREATE);
-        IntentFilter intentFilter = new IntentFilter(TokenBoundService.REFRESH_TOKEN);
-        registerReceiver(messageReceiver, intentFilter);
+        try {
+            Intent intentToken = new Intent(this, TokenBoundService.class);
+            startService(intentToken);
+            bindService(intentToken, mServiceConnectionToken, Context.BIND_AUTO_CREATE);
+            IntentFilter intentFilter = new IntentFilter(TokenBoundService.REFRESH_TOKEN);
+            registerReceiver(messageReceiver, intentFilter);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -197,7 +198,6 @@ public class MainActivity extends BaseActivity {
         if (!AppUtils.canGetLocation(MainActivity.this)) {
             AppUtils.showLocationSettingsAlert(MainActivity.this);
         }
-
 
 
         bindTokenService();
@@ -215,10 +215,10 @@ public class MainActivity extends BaseActivity {
 
         JsonObject body = new JsonObject();
         body.addProperty("email", SharedPreferenceHelper.getLoggedinUser(MainActivity.this).getBasicData().get(0).getEmail());
-        body.addProperty("password", SharedPreferenceHelper.getString(SharedPreferenceHelper.PASSWORD,MainActivity.this));  //3132446990
+        body.addProperty("password", SharedPreferenceHelper.getString(SharedPreferenceHelper.PASSWORD, MainActivity.this));  //3132446990
         body.addProperty("source", AppWideWariables.SOURCE_MOBILE);  //3132446990
 
-        SharedPreferenceHelper.saveString(SharedPreferenceHelper.PASSWORD, SharedPreferenceHelper.getString(SharedPreferenceHelper.PASSWORD,MainActivity.this), MainActivity.this);
+        SharedPreferenceHelper.saveString(SharedPreferenceHelper.PASSWORD, SharedPreferenceHelper.getString(SharedPreferenceHelper.PASSWORD, MainActivity.this), MainActivity.this);
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         Urls urls = retrofit.create(Urls.class);
 
@@ -261,16 +261,14 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof HomeFragment) {
                     ((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
-                }
-                else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
+                } else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
                     ((LeaveRequestFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
-                }
-                else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof MyInfoFragment) {
+                } else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof MyInfoFragment) {
                     ((MyInfoFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
                 }
 
             }
-        },1000);
+        }, 1000);
     }
 
     @Override
@@ -294,6 +292,7 @@ public class MainActivity extends BaseActivity {
         unBindService();
         super.onDestroy();
     }
+
     @Override
     protected void onPause() {
         unbindServiceToken();

@@ -33,7 +33,6 @@ import com.lmkr.prmscemployeeapp.data.webservice.models.AttendanceHistoryRespons
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.databinding.FragmentHomeBinding;
 import com.lmkr.prmscemployeeapp.ui.activities.CameraXActivity;
-import com.lmkr.prmscemployeeapp.ui.activities.MainActivity;
 import com.lmkr.prmscemployeeapp.ui.adapter.AttendanceHistoryRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.ui.adapter.LeavesProgressRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.ui.fragments.FullScreenMapFragment;
@@ -77,10 +76,11 @@ public class HomeFragment extends Fragment {
         boolean isCheckedOut = false;
         AttendanceHistory attendanceHistory = null;
         for (AttendanceHistory attendance : attendanceHistories) {
-            if (AppUtils.getConvertedDateFromOneFormatToOther(attendance.getDate(), AppUtils.FORMAT19, AppUtils.FORMAT3).equals(AppUtils.getCurrentDate())) {
+            if (attendance.getCheckin_time() != null && !TextUtils.isEmpty(attendance.getCheckin_time()) && AppUtils.getConvertedDateFromOneFormatToOther(attendance.getCheckin_time(), AppUtils.FORMAT19, AppUtils.FORMAT3).equals(AppUtils.getCurrentDate())) {
                 if (attendance.getCheckin_time() != null && !TextUtils.isEmpty(attendance.getCheckin_time())) {
                     isCheckedIn = true;
-                } if (attendance.getCheckout_time() != null && !TextUtils.isEmpty(attendance.getCheckout_time())) {
+                }
+                if (attendance.getCheckout_time() != null && !TextUtils.isEmpty(attendance.getCheckout_time())) {
                     isCheckedOut = true;
                 }
                 attendanceHistory = attendance;
@@ -96,7 +96,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void updateCheckInCheckOutProgress(boolean isCheckedIn, boolean isCheckedOut, AttendanceHistory attendanceHistory) {
-        if (isCheckedIn&&!isCheckedOut) {
+        if (isCheckedIn && !isCheckedOut) {
             if (!oneTimeCheckinAnimationCompleted) {
 
 
@@ -161,8 +161,8 @@ public class HomeFragment extends Fragment {
                 binding.checkin.setText(getResources().getText(R.string.checkout));
                 binding.time.setText(AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getCheckin_time(), AppUtils.FORMAT19, AppUtils.FORMAT5));
                 binding.closeImg.setVisibility(View.GONE);
-                binding.animationTick.cancelAnimation();
-                binding.animationTick.setAnimation(R.raw.tick);
+//                binding.animationTick.cancelAnimation();
+//                binding.animationTick.setAnimation(R.raw.tick);
                 binding.animationTick.setVisibility(View.VISIBLE);
             }
         } else if (isCheckedIn && isCheckedOut) {
@@ -178,8 +178,8 @@ public class HomeFragment extends Fragment {
                 binding.circleAnimation.setProgress(0);
                 binding.circleAnimation.setMax(1000);
                 binding.checkedIn.setText(getResources().getText(R.string.checkedout));
-                binding.checkin.setVisibility(View.GONE);
-                binding.checkin.setText(getResources().getText(R.string.checkout));
+                binding.checkin.setVisibility(View.VISIBLE);
+                binding.checkin.setText(getResources().getText(R.string.checkin));
                 binding.time.setText(AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getCheckout_time(), AppUtils.FORMAT19, AppUtils.FORMAT5));
                 binding.closeImg.setVisibility(View.GONE);
                 binding.animationTick.cancelAnimation();
@@ -222,12 +222,12 @@ public class HomeFragment extends Fragment {
             } else {
                 binding.circleAnimation.setProgress(1000);
                 binding.checkedIn.setText(getResources().getText(R.string.checkedout));
-                binding.checkin.setVisibility(View.GONE);
-                binding.checkin.setText(getResources().getText(R.string.checkout));
+                binding.checkin.setVisibility(View.VISIBLE);
+                binding.checkin.setText(getResources().getText(R.string.checkin));
                 binding.time.setText(AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getCheckout_time(), AppUtils.FORMAT19, AppUtils.FORMAT5));
                 binding.closeImg.setVisibility(View.GONE);
-                binding.animationTick.cancelAnimation();
-                binding.animationTick.setAnimation(R.raw.tick);
+//                binding.animationTick.cancelAnimation();
+//                binding.animationTick.setAnimation(R.raw.tick);
                 binding.animationTick.setVisibility(View.VISIBLE);
             }
         } else {
@@ -266,31 +266,37 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 AppUtils.hideNotification(getActivity());
 
-                try {
-                    if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getGeofence().equals("yes")) {
-                        FullScreenMapFragment fragment = FullScreenMapFragment.getInstance();
-                        if (!fragment.isAdded()) {
-                            fragment.setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Dialog_NoTitle);
-                            fragment.show(getActivity().getSupportFragmentManager(), "MapFragment");
-                        }
-                    } else if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getFacelock().equals("yes")) {
-                        getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
-                    } else {
-                        if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
-                            callCheckOutApi();
-                        } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
-                            callCheckInApi();
+                if (AppUtils.isDateTimeAuto(getActivity())) {
+                    try {
+                        if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getGeofence().equals("yes")) {
+                            FullScreenMapFragment fragment = FullScreenMapFragment.getInstance();
+                            if (!fragment.isAdded()) {
+                                fragment.setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Dialog_NoTitle);
+                                fragment.show(getActivity().getSupportFragmentManager(), "MapFragment");
+                            }
+                        } else if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getFacelock().equals("yes")) {
+                            getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
                         } else {
+                            if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
+                                callCheckOutApi();
+                            } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
+                                callCheckInApi();
+                            } else {
 
+                            }
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
                 }
             }
         });
+
+        UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
+
+        binding.contentHome.recyclerviewLeaveProgress.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        LeavesProgressRecyclerAdapter adapter = new LeavesProgressRecyclerAdapter(getActivity(), userData.getLeaveCount());
+        binding.contentHome.recyclerviewLeaveProgress.setAdapter(adapter);
 
 
         // updateProgressBar() method sets
@@ -329,6 +335,7 @@ public class HomeFragment extends Fragment {
                         return;
                     }
                     SharedPreferenceHelper.resetGeofenceAndFaceLock(getActivity());
+                    oneTimeCheckoutAnimationCompleted = false;
                     getAttendanceHistory();
                 }
             }
@@ -363,8 +370,8 @@ public class HomeFragment extends Fragment {
 
         body.addProperty("employee_id", userData.getBasicData().get(0).getId());
         body.addProperty("checkin_time", AppUtils.getCurrentDateTimeGMT5String());
-        body.addProperty("lat", TextUtils.isEmpty(latitude)?"0":latitude);
-        body.addProperty("longitude", TextUtils.isEmpty(longitude)?"0":longitude);
+        body.addProperty("lat", TextUtils.isEmpty(latitude) ? "0" : latitude);
+        body.addProperty("longitude", TextUtils.isEmpty(longitude) ? "0" : longitude);
         body.addProperty("source", AppWideWariables.SOURCE_MOBILE);
         body.addProperty("file_name", "");
         body.addProperty("file_path", "");
@@ -387,6 +394,8 @@ public class HomeFragment extends Fragment {
                     }
 
                     SharedPreferenceHelper.resetGeofenceAndFaceLock(getActivity());
+                    oneTimeCheckinAnimationCompleted = false;
+                    oneTimeCheckoutAnimationCompleted = false;
                     getAttendanceHistory();
                 }
             }
@@ -471,8 +480,7 @@ public class HomeFragment extends Fragment {
 
     public void refreshApiCalls() {
 
-        if(SharedPreferenceHelper.isInGeofence(getActivity())||SharedPreferenceHelper.hasFaceLockPath(getActivity()))
-        {
+        if (SharedPreferenceHelper.isInGeofence(getActivity()) || SharedPreferenceHelper.hasFaceLockPath(getActivity())) {
             if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
                 callCheckOutApi();
             } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {

@@ -1,9 +1,11 @@
 package com.lmkr.prmscemployeeapp.ui.utilities;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -11,10 +13,13 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 public class FileUtils {
@@ -371,6 +376,92 @@ public class FileUtils {
 
     private static boolean isGoogleDriveUri(Uri uri) {
         return "com.google.android.apps.docs.storage".equals(uri.getAuthority()) || "com.google.android.apps.docs.storage.legacy".equals(uri.getAuthority());
+    }
+
+    public static String fileUriToBase64(Uri uri, ContentResolver resolver) {
+        String encodedBase64 = "";
+        try {
+            byte[] bytes = readBytes(uri, resolver);
+            encodedBase64 = Base64.encodeToString(bytes, 0);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return encodedBase64;
+    }
+
+    public static byte[] fileUriToBytes(Uri uri, ContentResolver resolver) {
+        try {
+            byte[] bytes = readBytes(uri, resolver);
+            return bytes;
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String fileUriToBase64refined(Uri uri, ContentResolver resolver) {
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(resolver, uri);
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            String base64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            return base64;
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return null;
+    }
+
+    public static byte[] fileUriTobytesrefined(Uri uri, ContentResolver resolver) {
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(resolver, uri);
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            return byteArray;
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String fileUriToThumbnail(Uri uri, ContentResolver resolver) {
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(resolver, uri);
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 20, stream);
+            byte[] byteArray = stream.toByteArray();
+            String base64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            return base64;
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return null;
+    }
+
+    private static byte[] readBytes(Uri uri, ContentResolver resolver)
+            throws IOException {
+        // this dynamically extends to take the bytes you read
+        InputStream inputStream = resolver.openInputStream(uri);
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+
+        // this is storage overwritten on each iteration with bytes
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        // we need to know how may bytes were read to write them to the
+        // byteBuffer
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+
+        // and then we can return your byte array.
+        return byteBuffer.toByteArray();
     }
 
 

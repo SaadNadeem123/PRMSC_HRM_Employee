@@ -44,7 +44,7 @@ import com.lmkr.prmscemployeeapp.ui.adapter.AttachmentsRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.ui.adapter.LeaveRequestRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.ui.adapter.LeaveTypeSpinnerAdapter;
 import com.lmkr.prmscemployeeapp.ui.adapter.LeavesRemainingRecyclerAdapter;
-import com.lmkr.prmscemployeeapp.ui.customViews.CustomDatePicker;
+import com.lmkr.prmscemployeeapp.ui.customViews.CustomDatePickerDialog;
 import com.lmkr.prmscemployeeapp.ui.customViews.CustomTimePicker;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
@@ -85,6 +85,7 @@ public class LeaveRequestFragment extends Fragment {
             }
         }
     });
+    private final List<LeaveCount> lc = new ArrayList<>();
     private boolean fromAttachment = false;
     private FragmentLeaveRequestBinding binding;
     private final Observer<? super List<LeaveRequest>> leaveRequestObserver = new Observer<List<LeaveRequest>>() {
@@ -94,7 +95,9 @@ public class LeaveRequestFragment extends Fragment {
             loadLeaveRequestData();
         }
     };
-    private final TextWatcher textChangeListener = new TextWatcher() {
+    private LeaveRequestViewModel leaveRequestViewModel;
+    private LeaveCount leaveType = null;
+    private final TextWatcher textChangeListenerFromDate = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -102,10 +105,16 @@ public class LeaveRequestFragment extends Fragment {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (binding.dateTimeFrom.getText().toString().equals(binding.dateTimeTo.getText().toString())) {
-                binding.layoutTime.setVisibility(View.VISIBLE);
+            binding.dateTimeTo.setText("");
+            binding.timeFrom.setText("");
+            binding.timeFrom.setTag("");
+            binding.timeTo.setText("");
+            binding.timeTo.setTag("");
+            binding.layoutTime.setVisibility(View.GONE);
+            if (!TextUtils.isEmpty(binding.dateTimeFrom.getText())) {
+                new CustomDatePickerDialog(getActivity(), binding.dateTimeTo, binding.dateTimeFrom, leaveType.getRemaining(), CustomDatePickerDialog.END_DATE);
             } else {
-                binding.layoutTime.setVisibility(View.GONE);
+                binding.dateTimeTo.setOnClickListener(null);
             }
         }
 
@@ -114,18 +123,60 @@ public class LeaveRequestFragment extends Fragment {
 
         }
     };
-    private LeaveRequestViewModel leaveRequestViewModel;
-    private LeaveCount leaveType = null;
+    private final TextWatcher textChangeListenerToDate = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (!TextUtils.isEmpty(binding.dateTimeFrom.getText()) && !TextUtils.isEmpty(binding.dateTimeTo.getText()) && binding.dateTimeFrom.getText().toString().equals(binding.dateTimeTo.getText().toString())) {
+                binding.layoutTime.setVisibility(View.VISIBLE);
+                binding.timeFrom.setText("");
+                binding.timeTo.setText("");
+                new CustomTimePicker(getActivity(), binding.timeFrom, binding.timeTo, CustomTimePicker.START_TIME, leaveType.getRemaining());
+            } else {
+                binding.layoutTime.setVisibility(View.GONE);
+
+                binding.timeFrom.setOnClickListener(null);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+    private final TextWatcher textChangeListenerFromTime = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            binding.timeTo.setText("");
+            if (!TextUtils.isEmpty(binding.timeFrom.getText())) {
+                new CustomTimePicker(getActivity(), binding.timeTo, binding.timeFrom, CustomTimePicker.END_TIME, leaveType.getRemaining());
+            } else {
+                binding.timeTo.setOnClickListener(null);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
     private AttachmentsRecyclerAdapter adapter;
-    ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
-            new ActivityResultCallback<Uri>() {
-                @Override
-                public void onActivityResult(Uri uri) {
-                    // Handle the returned Uri
-                    importFile(uri);
-                }
-            });
-    private List<LeaveCount> lc = new ArrayList<>();
+    ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
+        @Override
+        public void onActivityResult(Uri uri) {
+            // Handle the returned Uri
+            importFile(uri);
+        }
+    });
 
     private void loadLeaveRequestData() {
         binding.recyclerViewLeaveRequest.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
@@ -154,65 +205,56 @@ public class LeaveRequestFragment extends Fragment {
         }
 
 
-        if(leaveType==null||leaveType.getType().equals(getString(R.string.select))||leaveType.getId()==-1)
-        {
-            AppUtils.makeNotification(getResources().getString(R.string.select_leave_type),getActivity());
+        if (leaveType == null || leaveType.getType().equals(getString(R.string.select)) || leaveType.getId() == -1) {
+            AppUtils.makeNotification(getResources().getString(R.string.select_leave_type), getActivity());
             return;
         }
 
-        if(TextUtils.isEmpty(binding.dateTimeFrom.getText()))
-        {
-            AppUtils.makeNotification(getResources().getString(R.string.provide_from_date),getActivity());
+        if (TextUtils.isEmpty(binding.dateTimeFrom.getText())) {
+            AppUtils.makeNotification(getResources().getString(R.string.provide_from_date), getActivity());
             return;
         }
-        if(TextUtils.isEmpty(binding.dateTimeTo.getText()))
-        {
-            AppUtils.makeNotification(getResources().getString(R.string.provide_to_date),getActivity());
+        if (TextUtils.isEmpty(binding.dateTimeTo.getText())) {
+            AppUtils.makeNotification(getResources().getString(R.string.provide_to_date), getActivity());
             return;
         }
-        if(binding.dateTimeFrom.getText().toString().equals(binding.dateTimeTo.getText().toString()))
-        {
-            if(TextUtils.isEmpty(binding.timeFrom.getText()))
-            {
-                AppUtils.makeNotification(getResources().getString(R.string.provide_from_time),getActivity());
+        if (binding.dateTimeFrom.getText().toString().equals(binding.dateTimeTo.getText().toString())) {
+            if (TextUtils.isEmpty(binding.timeFrom.getText())) {
+                AppUtils.makeNotification(getResources().getString(R.string.provide_from_time), getActivity());
                 return;
-            }if(TextUtils.isEmpty(binding.timeTo.getText()))
-            {
-                AppUtils.makeNotification(getResources().getString(R.string.provide_to_time),getActivity());
+            }
+            if (TextUtils.isEmpty(binding.timeTo.getText())) {
+                AppUtils.makeNotification(getResources().getString(R.string.provide_to_time), getActivity());
                 return;
             }
         }
-        if(TextUtils.isEmpty(binding.note.getText()))
-        {
-            AppUtils.makeNotification(getResources().getString(R.string.provide_notes),getActivity());
+        if (TextUtils.isEmpty(binding.note.getText())) {
+            AppUtils.makeNotification(getResources().getString(R.string.provide_notes), getActivity());
+            return;
+        }
+        if (binding.note.getText().length()<50) {
+            AppUtils.makeNotification(getResources().getString(R.string.minimum_length_notes), getActivity());
+            return;
+        }
+        if (binding.note.getText().length()>3000) {
+            AppUtils.makeNotification(getResources().getString(R.string.maximum_length_notes), getActivity());
             return;
         }
 
-        float days = AppUtils.getDaysBetweenDates(
-                binding.dateTimeFrom.getText().toString(),
-                AppUtils.FORMAT15,
-                binding.timeFrom.getText().toString(),
-                AppUtils.FORMAT5,
-                binding.dateTimeTo.getText().toString(),
-                AppUtils.FORMAT15,
-                binding.timeTo.getText().toString(),
-                AppUtils.FORMAT5,
-                getActivity());
+        float days = AppUtils.getDaysBetweenDates(binding.dateTimeFrom.getText().toString(), AppUtils.FORMAT15, binding.timeFrom.getText().toString(), AppUtils.FORMAT5, binding.dateTimeTo.getText().toString(), AppUtils.FORMAT15, binding.timeTo.getText().toString(), AppUtils.FORMAT5, getActivity());
 //        AppUtils.makeNotification("Days = "+days,getActivity());
 
-        if(days>=leaveType.getRemaining())
-        {
-            AppUtils.makeNotification(getString(R.string.requested_leaves_exceed_limit),getActivity());
+        if (days >= leaveType.getRemaining()) {
+            AppUtils.makeNotification(getString(R.string.requested_leaves_exceed_limit), getActivity());
             return;
         }
-
 
 
         FileModel fileModel = files != null && files.size() > 0 ? files.get(0) : null;
-        RequestBody fpath =null;
+        RequestBody fpath = null;
         MultipartBody.Part body = null;
 
-        if(fileModel!=null) {
+        if (fileModel != null) {
             File file = new File(fileModel.getPath());
 
             fpath = RequestBody.create(MediaType.parse(fileModel.getMimeType()), file);
@@ -246,10 +288,7 @@ public class LeaveRequestFragment extends Fragment {
         mProgressDialog.show();
 
 
-        OkHttpClient httpClient = new OkHttpClient.Builder().retryOnConnectionFailure(true)
-                .connectTimeout(10, TimeUnit.MINUTES)
-                .readTimeout(10, TimeUnit.MINUTES)
-                .writeTimeout(10, TimeUnit.MINUTES)
+        OkHttpClient httpClient = new OkHttpClient.Builder().retryOnConnectionFailure(true).connectTimeout(10, TimeUnit.MINUTES).readTimeout(10, TimeUnit.MINUTES).writeTimeout(10, TimeUnit.MINUTES)
 //                .addInterceptor(new NetInterceptor())
 /*                .addInterceptor(new Interceptor() {
                     @Override
@@ -261,14 +300,9 @@ public class LeaveRequestFragment extends Fragment {
                                 .build();
                         return chain.proceed(request);
                     }
-                })*/
-                .build();
+                })*/.build();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ApiCalls.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient)
-                .build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(httpClient).build();
 
         Urls jsonPlaceHolderApi = retrofit.create(Urls.class);
 
@@ -278,11 +312,10 @@ public class LeaveRequestFragment extends Fragment {
             @Override
             public void onResponse(Call<CreateLeaveRequestResponse> call, Response<CreateLeaveRequestResponse> response) {
                 Log.i("response", response.toString());
-                if (mProgressDialog.isShowing())
-                    mProgressDialog.dismiss();
+                if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
 
 
-                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST,response, getActivity())) {
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST, response, getActivity())) {
 
 
                     if (!response.isSuccessful()) {
@@ -307,8 +340,7 @@ public class LeaveRequestFragment extends Fragment {
             @Override
             public void onFailure(Call<CreateLeaveRequestResponse> call, Throwable t) {
                 t.printStackTrace();
-                if (mProgressDialog.isShowing())
-                    mProgressDialog.dismiss();
+                if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
                 Log.i("response", t.toString());
 //                tv.setText(t.getMessage());
                 AppUtils.makeNotification(t.getMessage(), getActivity());
@@ -339,10 +371,11 @@ public class LeaveRequestFragment extends Fragment {
 
         UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
         lc.clear();
-        lc.add(new LeaveCount(-1,getString(R.string.select),0,0));
-        for (LeaveCount leaveCount: userData.getLeaveCount()) {
-            if(leaveCount.getRemaining()>0)
-            {
+        lc.add(new LeaveCount(-1, getString(R.string.select), 0, 0));
+
+        for (LeaveCount leaveCount : userData.getLeaveCount()) {
+            if (leaveCount.getRemaining() > 0) {
+
                 lc.add(leaveCount);
             }
         }
@@ -350,11 +383,6 @@ public class LeaveRequestFragment extends Fragment {
         binding.recyclerviewLeaveProgress.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         LeavesRemainingRecyclerAdapter adapter = new LeavesRemainingRecyclerAdapter(getActivity(), userData.getLeaveCount());
         binding.recyclerviewLeaveProgress.setAdapter(adapter);
-
-        new CustomDatePicker(getActivity(), binding.dateTimeFrom);
-        new CustomDatePicker(getActivity(), binding.dateTimeTo);
-        new CustomTimePicker(getActivity(), binding.timeFrom);
-        new CustomTimePicker(getActivity(), binding.timeTo);
 
         binding.spinnerLeaveTypes.setAdapter(new LeaveTypeSpinnerAdapter(lc, getActivity()));
 
@@ -364,17 +392,33 @@ public class LeaveRequestFragment extends Fragment {
     }
 
     private void setListeners() {
-        binding.dateTimeFrom.addTextChangedListener(textChangeListener);
-        binding.dateTimeTo.addTextChangedListener(textChangeListener);
+        binding.dateTimeFrom.addTextChangedListener(textChangeListenerFromDate);
+        binding.dateTimeTo.addTextChangedListener(textChangeListenerToDate);
+        binding.timeFrom.addTextChangedListener(textChangeListenerFromTime);
         binding.spinnerLeaveTypes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 leaveType = lc.get(position);
+
+                binding.dateTimeFrom.setText("");
+                binding.dateTimeTo.setText("");
+                binding.timeFrom.setText("");
+                binding.timeTo.setText("");
+                binding.layoutTime.setVisibility(View.GONE);
+
+                if (leaveType == null || leaveType.getType().equals(getString(R.string.select)) || leaveType.getId() == -1) {
+
+                    binding.dateTimeFrom.setOnClickListener(null);
+                    binding.dateTimeTo.setOnClickListener(null);
+                    binding.timeFrom.setOnClickListener(null);
+                    binding.timeTo.setOnClickListener(null);
+                    return;
+                }
+                new CustomDatePickerDialog(getActivity(), binding.dateTimeFrom, binding.dateTimeTo, leaveType.getRemaining(), CustomDatePickerDialog.START_DATE);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
 
@@ -388,6 +432,23 @@ public class LeaveRequestFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 requestPermission();
+            }
+        });
+
+        binding.note.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    binding.noteCount.setText("("+binding.note.getText().length()+")");
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }
@@ -469,7 +530,6 @@ public class LeaveRequestFragment extends Fragment {
          */
 
 
-
         int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
         int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
         returnCursor.moveToFirst();
@@ -529,7 +589,7 @@ public class LeaveRequestFragment extends Fragment {
             public void onResponse(Call<LeaveRequestResponse> call, Response<LeaveRequestResponse> response) {
                 Log.i("response", response.toString());
 
-                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_GET,response, getActivity())) {
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_GET, response, getActivity())) {
                     if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
                     }

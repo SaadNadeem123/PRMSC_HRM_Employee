@@ -131,11 +131,11 @@ public class LoginActivity extends BaseActivity {
 
     private void login() {
         if (binding.username.getText().toString().isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(binding.username.getText().toString()).matches()) {
-            AppUtils.makeNotification("Enter valid Email address !", LoginActivity.this);
+            AppUtils.makeNotification(getResources().getString(R.string.email_invalid_error), LoginActivity.this);
             return;
         }
         if (binding.password.getText().toString().isEmpty() || binding.password.getText().toString().length() < 6) {
-            AppUtils.makeNotification("Enter valid password !", LoginActivity.this);
+            AppUtils.makeNotification(getResources().getString(R.string.password_length_error), LoginActivity.this);
             return;
         }
 

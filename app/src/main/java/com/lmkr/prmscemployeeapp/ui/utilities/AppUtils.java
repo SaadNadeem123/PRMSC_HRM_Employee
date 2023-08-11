@@ -108,11 +108,11 @@ public class AppUtils {
     public static final String LOCAL_TIME_FORMAT = "EE MMM dd hh:mm:ss ZZZZ yyyy";
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     public static final String APP_NAME = "PSDF";
-    public static final String HOUR = "HH";
-    public static final String MIN = "mm";
-    public static final String DAY = "dd";
-    public static final String MONTH = "MM";
-    public static final String YEAR = "yyyy";
+    public static final String FORMAT_HOUR = "HH";
+    public static final String FORMAT_MIN = "mm";
+    public static final String FORMAT_DAY = "dd";
+    public static final String FORMAT_MONTH = "MM";
+    public static final String FORMAT_YEAR = "yyyy";
     public static final String FORMAT0 = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     public static final String FORMAT1 = "yyyy-MM-dd HH:mm:ss.S";
     public static final String FORMAT2 = "yyyy-MM-dd HH:mm";
@@ -120,7 +120,7 @@ public class AppUtils {
     public static final String FORMAT4 = "EEE MMM dd HH:mm:ss zzz yyyy";
     public static final String FORMAT5 = "hh:mm a";
     public static final String FORMAT6 = "HH:mm";
-    public static final String FORMAT7 = "HH";
+    public static final String FORMAT7 = "hh";
     public static final String FORMAT8 = "EEE";
     public static final String FORMAT9 = "dd, MMMM yyyy";
     public static final String FORMAT10 = "MMM dd, yyyy"; //   Nov 12, 2016
@@ -343,6 +343,12 @@ public class AppUtils {
                 }
             }
         });
+    }
+
+
+    public static long getDateDifference(Date startDate, Date endDate) {
+        long diff = endDate.getTime() - startDate.getTime();
+        return diff;
     }
 
     public static String printDifference(Date startDate, Date endDate, int status) {
@@ -1207,6 +1213,17 @@ public class AppUtils {
         }
     }
 
+    public static String getCurrentTimeOfDayWithSeconds() {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+            return dateFormat.format(new Date());
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
+
     public static String getCurrentHourOfDay() {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("hh");
@@ -1714,6 +1731,13 @@ public class AppUtils {
     public static String getCurrentDateTimeGMT5String() {
 
         SimpleDateFormat sdf = new SimpleDateFormat(FORMAT14, Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+5"));
+        return sdf.format(new Date());
+    }
+
+    public static String getCurrentDateGMT5String() {
+
+        SimpleDateFormat sdf = new SimpleDateFormat(FORMAT3, Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("GMT+5"));
         return sdf.format(new Date());
     }
@@ -2390,7 +2414,6 @@ public class AppUtils {
         return (formatter.format(c)).split(" ")[0] + " 23:59:59";
     }
 
-
     public static Bitmap rotateImageIfRequired(Context context, Bitmap img, Uri selectedImage) throws IOException {
 
         InputStream input = context.getContentResolver().openInputStream(selectedImage);
@@ -2457,18 +2480,27 @@ public class AppUtils {
             if (methodType == AppWideWariables.API_METHOD_POST && response != null && response.body() != null && ((ApiBaseResponse) response.body()).getMessage() != null) {
                 try {
                     String str = ((ApiBaseResponse) response.body()).getMessage();
-                    AppUtils.makeNotification(str, activity);
-
+                    if (activity != null) {
+                        AppUtils.makeNotification(str, activity);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
             return false;
         } else {
+
+            if (response.code() == 403) {
+                SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, activity);
+                return true;
+            }
+
             if (methodType == AppWideWariables.API_METHOD_POST && response != null && response.errorBody() != null) {
                 try {
                     ApiBaseResponse message = new Gson().fromJson(response.errorBody().charStream(), ApiBaseResponse.class);
-                    AppUtils.makeNotification(message.getMessage(), activity);
+                    if (activity != null) {
+                        AppUtils.makeNotification(message.getMessage(), activity);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

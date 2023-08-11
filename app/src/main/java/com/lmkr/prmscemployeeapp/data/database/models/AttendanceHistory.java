@@ -9,7 +9,6 @@ public class AttendanceHistory {
     @PrimaryKey(autoGenerate = false)
     private int id;                    //": 14,
     private int employee_id;                   //": 1,
-    private String date;                  //": "2023-07-17T00:00:00.000Z",
     private String checkin_time;                  //": "2023-07-17T06:34:59.000Z",
     private String checkout_time;                 //": null,
     private int String;                   //": null
@@ -28,14 +27,6 @@ public class AttendanceHistory {
 
     public void setEmployee_id(int employee_id) {
         this.employee_id = employee_id;
-    }
-
-    public java.lang.String getDate() {
-        return date;
-    }
-
-    public void setDate(java.lang.String date) {
-        this.date = date;
     }
 
     public java.lang.String getCheckin_time() {

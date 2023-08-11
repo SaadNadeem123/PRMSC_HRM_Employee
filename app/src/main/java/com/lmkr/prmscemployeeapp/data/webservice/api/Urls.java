@@ -22,9 +22,9 @@ import retrofit2.http.Path;
 public interface Urls {
 
     @POST("employee/login")
-    Call<JsonObjectResponse> loginUser(@Body JsonObject body);
+    Call<UserData> loginUser(@Body JsonObject body);
 
-    @GET("attendance/attendance/{UserID}")
+    @GET("attendance/individual_attendance/{UserID}")
     Call<AttendanceHistoryResponse> getAttendanceHistory(@Header("Authorization") String standardHeaders, @Path("UserID") String user_id);
 
     @GET("employee/request/leave")

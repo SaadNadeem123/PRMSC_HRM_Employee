@@ -15,10 +15,13 @@ import android.widget.Chronometer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.App;
+import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
 import com.lmkr.prmscemployeeapp.data.webservice.api.JsonObjectResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
+import com.lmkr.prmscemployeeapp.ui.activities.LoginActivity;
+import com.lmkr.prmscemployeeapp.ui.activities.MainActivity;
 import com.lmkr.prmscemployeeapp.ui.broadcastReceivers.ConnectivityReceiver;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
@@ -156,7 +159,6 @@ public class TokenBoundService extends Service {
             return;
         }
 
-
         ++count;
         getTimestamp();
 
@@ -171,39 +173,33 @@ public class TokenBoundService extends Service {
 
         Urls urls = retrofit.create(Urls.class);
 
-        Call<JsonObjectResponse> call = urls.loginUser(body);
+        Call<UserData> call = urls.loginUser(body);
 
-        call.enqueue(new Callback<JsonObjectResponse>() {
+        call.enqueue(new Callback<UserData>() {
             @Override
-            public void onResponse(Call<JsonObjectResponse> call, Response<JsonObjectResponse> response) {
+            public void onResponse(Call<UserData> call, Response<UserData> response) {
                 Log.i("response", response.toString());
 
-
-                if (!response.isSuccessful()) {
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_GET, response, null)) {
+                    if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
-                    return;
-                }
-                JsonObjectResponse jsonObjectResponse = response.body();
+                        return;
+                    }
 
-                Log.i("response", jsonObjectResponse.toString());
-
-                if (jsonObjectResponse != null && jsonObjectResponse.getResponse() != null) {
-
-                    UserData userData = (new Gson()).fromJson(response.body().getResponse(), UserData.class);
-                    Log.i("response", userData.getToken());
-                    SharedPreferenceHelper.setLoggedinUser(getApplicationContext(), userData);
-
-                    SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, false, TokenBoundService.this);
-
-                    callBroadcastRefreshToken(REFRESH_TOKEN);
-
-                } else {
-                    SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, TokenBoundService.this);
+                    if (response.body() != null && response.body().getMessage() == null) {
+                        if (response.body().getBasicData() != null && response.body().getBasicData().size() > 0 && response.body().getBasicData().get(0).getApplication_access().equalsIgnoreCase("yes")) {
+                            SharedPreferenceHelper.setLoggedinUser(getApplicationContext(), response.body());
+                            SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, false, TokenBoundService.this);
+                            callBroadcastRefreshToken(REFRESH_TOKEN);
+                        } else {
+                            SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, TokenBoundService.this);
+                        }
+                    }
                 }
             }
 
             @Override
-            public void onFailure(Call<JsonObjectResponse> call, Throwable t) {
+            public void onFailure(Call<UserData> call, Throwable t) {
                 t.printStackTrace();
                 Log.i("response", t.toString());
                 SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, TokenBoundService.this);
