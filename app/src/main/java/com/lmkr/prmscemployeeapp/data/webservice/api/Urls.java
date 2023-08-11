@@ -1,11 +1,14 @@
 package com.lmkr.prmscemployeeapp.data.webservice.api;
 
 import com.google.gson.JsonObject;
+import com.lmkr.prmscemployeeapp.data.webservice.models.AddContactModel;
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.AttendanceHistoryResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.CreateLeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
+import com.lmkr.prmscemployeeapp.data.webservice.models.EmergencyApiResponse;
+import com.lmkr.prmscemployeeapp.data.webservice.models.BulletinResponse;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -70,5 +73,28 @@ public interface Urls {
 
     @POST("attendance/attendance")
     Call<ApiBaseResponse> checkIn(@Header("Authorization") String standardHeaders, @Body JsonObject body);
+
+    @GET("employee/emergencycontact/{id}")
+    Call<EmergencyApiResponse> getEmergencyContact(
+            @Header("Authorization") String token,
+            @Path("id") int employeeId
+    );
+
+    @POST("employee/emergencycontact/create/{employeeId}")
+    Call<Void> createEmergencyContact(
+            @Header("Authorization") String bearerToken,
+            @Path("employeeId") int employeeId,
+            @Body AddContactModel contact
+    );
+
+    @PUT("employee/emergencycontact/{contactId}")
+    Call<Void> updateEmergencyContact(
+            @Header("Authorization") String bearerToken,
+            @Path("contactId") int contactId,
+            @Body AddContactModel contact
+    );
+
+    @GET("employee/news")
+    Call<BulletinResponse> getBulletinList();
 
 }

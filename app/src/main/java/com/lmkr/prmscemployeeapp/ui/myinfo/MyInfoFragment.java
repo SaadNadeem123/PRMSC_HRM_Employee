@@ -8,8 +8,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.lmkr.prmscemployeeapp.databinding.FragmentMyinfoBinding;
+import com.lmkr.prmscemployeeapp.ui.adapter.ViewPagerAdapter;
 import com.lmkr.prmscemployeeapp.ui.myinfo.emergencyUi.EmergencyFragment;
+import com.lmkr.prmscemployeeapp.databinding.FragmentMyinfoBinding;
 
 public class MyInfoFragment extends Fragment {
 

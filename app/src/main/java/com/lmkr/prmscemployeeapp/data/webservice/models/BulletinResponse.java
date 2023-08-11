@@ -1,4 +1,4 @@
-package com.lmkr.prmscemployeeapp.ui.bulletin;
+package com.lmkr.prmscemployeeapp.data.webservice.models;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.lmkr.prmscemployeeapp.ui.myinfo.emergencyUi;
+package com.lmkr.prmscemployeeapp.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,12 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lmkr.prmscemployeeapp.R;
+import com.lmkr.prmscemployeeapp.data.webservice.models.EmergencyContact;
 import com.lmkr.prmscemployeeapp.ui.myinfo.addContact.AddContactActivity;
 
 import java.util.List;

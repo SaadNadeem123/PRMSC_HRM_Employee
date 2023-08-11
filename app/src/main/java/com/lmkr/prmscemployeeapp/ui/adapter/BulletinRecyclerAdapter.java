@@ -1,4 +1,4 @@
-package com.lmkr.prmscemployeeapp.ui.bulletin;
+package com.lmkr.prmscemployeeapp.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -14,15 +14,18 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lmkr.prmscemployeeapp.R;
+import com.lmkr.prmscemployeeapp.ui.bulletin.BulletinDetailActivity;
+import com.lmkr.prmscemployeeapp.data.webservice.models.BulletinModel;
 
 import java.util.List;
 
-public class BulletinAdapter extends RecyclerView.Adapter<BulletinAdapter.BulletinViewHolder> {
+public class BulletinRecyclerAdapter extends RecyclerView.Adapter<BulletinRecyclerAdapter.BulletinViewHolder> {
 
     private List<BulletinModel> bulletinList;
     private Context context;
 
-    public BulletinAdapter(List<BulletinModel> bulletinList, Context context) {
+    public BulletinRecyclerAdapter(List<BulletinModel> bulletinList, Context context) {
+
         this.bulletinList = bulletinList;
         this.context = context;
     }

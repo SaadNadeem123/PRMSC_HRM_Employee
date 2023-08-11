@@ -1,4 +1,4 @@
-package com.lmkr.prmscemployeeapp.ui.myinfo.emergencyUi;
+package com.lmkr.prmscemployeeapp.data.webservice.models;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -20,7 +20,6 @@ public class EmergencyContact {
     @SerializedName("address")
     private String address;
 
-    // Constructor
     public EmergencyContact(int id, String name, String email, String relation, String mobile,
                             String work, String home, String address) {
         this.id = id;

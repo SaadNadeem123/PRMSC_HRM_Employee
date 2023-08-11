@@ -1,9 +1,15 @@
-package com.lmkr.prmscemployeeapp.ui.bulletin;
+package com.lmkr.prmscemployeeapp.viewModel;
+
+import static com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls.BASE_URL;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
+import com.lmkr.prmscemployeeapp.data.webservice.models.BulletinModel;
+import com.lmkr.prmscemployeeapp.data.webservice.models.BulletinResponse;
 
 import java.util.List;
 
@@ -16,7 +22,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class BulletinViewModel extends ViewModel {
 
     private MutableLiveData<List<BulletinModel>> bulletinList = new MutableLiveData<>();
-    private static final String BASE_URL = "http://20.55.70.106:8000/api/v1/";
 
     public LiveData<List<BulletinModel>> getBulletinList() {
         return bulletinList;
@@ -28,7 +33,7 @@ public class BulletinViewModel extends ViewModel {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        BulletinService service = retrofit.create(BulletinService.class);
+        Urls service = retrofit.create(Urls.class);
         Call<BulletinResponse> call = service.getBulletinList();
 
         call.enqueue(new Callback<BulletinResponse>() {
@@ -46,7 +51,6 @@ public class BulletinViewModel extends ViewModel {
 
             @Override
             public void onFailure(@NonNull Call<BulletinResponse> call, @NonNull Throwable t) {
-                // Handle the failure
                 t.printStackTrace();
             }
         });
