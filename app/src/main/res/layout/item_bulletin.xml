@@ -49,6 +49,8 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_15sdp"
                 android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/profileImage"
                 app:layout_constraintTop_toTopOf="@+id/profileImage" />
@@ -63,6 +65,7 @@
                 android:background="@android:color/white"
                 android:text="@string/warning"
                 android:maxLines="1"
+                android:ellipsize="end"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10sdp"
                 app:layout_constraintEnd_toEndOf="parent"

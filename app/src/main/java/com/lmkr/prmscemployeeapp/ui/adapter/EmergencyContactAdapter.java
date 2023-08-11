@@ -1,20 +1,26 @@
 package com.lmkr.prmscemployeeapp.ui.adapter;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.webservice.models.EmergencyContact;
 import com.lmkr.prmscemployeeapp.ui.myinfo.addContact.AddContactActivity;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 
 import java.util.List;
 
@@ -62,9 +68,14 @@ public class EmergencyContactAdapter extends RecyclerView.Adapter<EmergencyConta
 
         });
 
-        holder.copyButton.setOnClickListener(v -> {});
+        holder.copyButton.setOnClickListener(v -> {
 
-        holder.messageButton.setOnClickListener(v -> {});
+            AppUtils.copyTextToClipboard(emergencyContact.getMobile(),context);
+        });
+
+        holder.messageButton.setOnClickListener(v -> {
+            AppUtils.sendSMS(emergencyContact.getMobile(),context);
+        });
     }
 
     @Override
@@ -110,4 +121,6 @@ public class EmergencyContactAdapter extends RecyclerView.Adapter<EmergencyConta
             }
         }
     }
+
+
 }

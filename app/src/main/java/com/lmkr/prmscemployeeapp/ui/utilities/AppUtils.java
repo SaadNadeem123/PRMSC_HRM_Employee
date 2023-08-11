@@ -7,6 +7,8 @@ import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -2511,6 +2513,33 @@ public class AppUtils {
             return "";
         }
     }
+
+    public static void copyTextToClipboard(String textToCopy, Context context) {
+
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Copied Text", textToCopy);
+        if (clipboard != null) {
+            clipboard.setPrimaryClip(clip);
+
+            Toast.makeText(context, "Text copied to clipboard", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void sendSMS(String phoneNumber, Context context) {
+
+        Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+        sendIntent.setData(Uri.parse("sms:" + phoneNumber));
+        context.startActivity(sendIntent);
+    }
+
+    public static void callPhoneNumber(String phoneNumber, Context context) {
+        if (!phoneNumber.isEmpty()) {
+            Intent callIntent = new Intent(Intent.ACTION_CALL);
+            callIntent.setData(Uri.parse("tel:" + phoneNumber));
+            context.startActivity(callIntent);
+        }
+    }
+
 }
 
 

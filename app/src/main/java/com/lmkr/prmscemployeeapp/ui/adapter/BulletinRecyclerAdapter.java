@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.ui.bulletin.BulletinDetailActivity;
 import com.lmkr.prmscemployeeapp.data.webservice.models.BulletinModel;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class BulletinRecyclerAdapter extends RecyclerView.Adapter<BulletinRecycl
         BulletinModel bulletin = bulletinList.get(position);
         holder.titleBulletin.setText(bulletin.getTitle());
         holder.descriptionBulletin.setText(bulletin.getDescription());
-        holder.dateBulletin.setText(bulletin.getDate());
+        holder.dateBulletin.setText(AppUtils.formatDate(bulletin.getDate()));
 
         holder.cardView.setOnClickListener(v -> {
 
