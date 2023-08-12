@@ -27,7 +27,9 @@
             android:layout_marginEnd="@dimen/_5sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:elevation="0dp"
+            android:elevation="0dp">
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
@@ -35,7 +37,11 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
                 android:minHeight="?attr/actionBarSize"
+                app:tabTextColor="@color/grey_dark"
+                app:tabSelectedTextColor="@color/app_green"
                 app:tabMode="scrollable"
+                android:elevation="0dp"
+                app:tabIndicatorColor="@color/app_green"
                 app:tabGravity="fill" />
 
         </com.google.android.material.appbar.AppBarLayout>

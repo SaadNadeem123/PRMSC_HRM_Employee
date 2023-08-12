@@ -22,12 +22,21 @@
             android:layout_height="wrap_content"
             android:background="@android:color/white">
 
+            <LinearLayout
+                android:id="@+id/ll"
+                android:layout_width="@dimen/_80sdp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/profileImage"
                 android:layout_width="@dimen/_80sdp"
                 android:layout_height="@dimen/_80sdp"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_10sdp"
                 android:background="@drawable/profile_circular_border_imageview"
                 android:contentDescription="@string/profile_image"
                 android:elevation="@dimen/_5sdp"
@@ -37,6 +46,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+                <com.lmkr.prmscemployeeapp.ui.customViews.UnderlineTextView
+                    android:id="@+id/logout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/logout"
+                    android:textSize="20dp"
+                    android:clickable="true"
+                    android:textColor="@color/clickable_text_black_to_grey"/>
+            </LinearLayout>
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/name"
                 android:layout_width="0dp"
@@ -51,8 +69,8 @@
                 android:textSize="20sp"
                 app:layout_constraintBottom_toTopOf="@+id/designation"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/profileImage"
-                app:layout_constraintTop_toTopOf="@+id/profileImage" />
+                app:layout_constraintStart_toEndOf="@+id/ll"
+                app:layout_constraintTop_toTopOf="@+id/ll" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/designation"
@@ -64,9 +82,10 @@
                 android:maxLines="1"
                 android:text="Human Resource Manager"
                 android:textSize="14sp"
+                android:textColor="@color/black"
                 app:layout_constraintBottom_toTopOf="@+id/department"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/profileImage"
+                app:layout_constraintStart_toEndOf="@+id/ll"
                 app:layout_constraintTop_toBottomOf="@+id/name" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -83,7 +102,7 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/officeAddress"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/profileImage"
+                app:layout_constraintStart_toEndOf="@+id/ll"
                 app:layout_constraintTop_toBottomOf="@+id/designation" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -97,9 +116,9 @@
                 android:text="Lahore (Head Office)"
                 android:visibility="gone"
                 android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/profileImage"
+                app:layout_constraintBottom_toBottomOf="@+id/ll"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/profileImage"
+                app:layout_constraintStart_toEndOf="@+id/ll"
                 app:layout_constraintTop_toBottomOf="@+id/department" />
 
 
@@ -118,7 +137,7 @@
                 android:paddingStart="@dimen/_10sdp"
                 android:gravity="center_vertical"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profileImage"
+                app:layout_constraintTop_toBottomOf="@+id/ll"
                 tools:ignore="RtlSymmetry" />
 
 

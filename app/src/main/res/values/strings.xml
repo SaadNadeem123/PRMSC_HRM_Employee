@@ -126,5 +126,6 @@
     <string name="email_invalid_error">Enter a valid email address!</string>
     <string name="minimum_length_notes">Minimum length of notes should be 50 characters!</string>
     <string name="maximum_length_notes">Maximum length of notes should be 3000 characters!</string>
+    <string name="logout">Logout</string>
 
 </resources>

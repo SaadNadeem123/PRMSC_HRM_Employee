@@ -1,7 +1,8 @@
 package com.lmkr.prmscemployeeapp.ui.myinfo.personalUi;
 
+import static androidx.core.app.ActivityCompat.finishAffinity;
+
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,11 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.lmkr.prmscemployeeapp.data.database.AppDatabase;
 import com.lmkr.prmscemployeeapp.databinding.FragmentPersonalBinding;
+import com.lmkr.prmscemployeeapp.ui.activities.SplashActivity;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
-
-import java.util.Objects;
 
 public class personalFragment extends Fragment {
 
@@ -36,7 +37,7 @@ public class personalFragment extends Fragment {
         binding = null;
     }
 
-    private void bindViews(){
+    private void bindViews() {
 
         binding.name.setText(SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getName());
         binding.designation.setText(SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getDesignation());
@@ -51,18 +52,31 @@ public class personalFragment extends Fragment {
 
     private void listeners() {
 
-        binding.copyButton.setOnClickListener(v ->{
-            if(!binding.mobilePhone.getText().toString().isEmpty())
+        binding.logout.setOnClickListener(v -> {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    AppDatabase.getInstance(getActivity()).clearAllTables();
+                }
+            }).start();
+            SharedPreferenceHelper.clearPrefrences(getActivity());
+            SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_LOGGED_IN, false, getActivity());
+            AppUtils.switchActivity(getActivity(), SplashActivity.class, null);
+            finishAffinity(getActivity());
+        });
+
+        binding.copyButton.setOnClickListener(v -> {
+            if (!binding.mobilePhone.getText().toString().isEmpty())
                 AppUtils.copyTextToClipboard(binding.mobilePhone.getText().toString(), requireContext());
         });
-        binding.messageButton.setOnClickListener(v ->{
-            if(!binding.mobilePhone.getText().toString().isEmpty())
+        binding.messageButton.setOnClickListener(v -> {
+            if (!binding.mobilePhone.getText().toString().isEmpty())
                 AppUtils.sendSMS(binding.mobilePhone.getText().toString(), requireContext());
         });
 
-        binding.phoneButton.setOnClickListener(v ->{
+        binding.phoneButton.setOnClickListener(v -> {
 
-            if(!binding.mobilePhone.getText().toString().isEmpty())
+            if (!binding.mobilePhone.getText().toString().isEmpty())
                 AppUtils.callPhoneNumber(binding.mobilePhone.getText().toString(), requireContext());
         });
     }
