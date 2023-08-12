@@ -1,23 +1,13 @@
-package com.lmkr.prmscemployeeapp.ui.myinfo.addContact;
+package com.lmkr.prmscemployeeapp.viewModel;
 
 import static com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls.BASE_EMERGENCY_URL;
-
-import android.app.Application;
-
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
+import com.lmkr.prmscemployeeapp.data.webservice.models.AddContactModel;
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
-import com.lmkr.prmscemployeeapp.viewModel.EmergencyContactViewModel;
-
-import java.util.function.Consumer;
-
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -41,4 +31,3 @@ public class ContactViewModel extends ViewModel {
         call.enqueue(callback);
     }
 }
-

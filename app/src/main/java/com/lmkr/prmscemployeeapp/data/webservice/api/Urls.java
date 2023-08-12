@@ -1,6 +1,7 @@
 package com.lmkr.prmscemployeeapp.data.webservice.api;
 
 import com.google.gson.JsonObject;
+import com.lmkr.prmscemployeeapp.data.webservice.models.AddContactModel;
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.AttendanceHistoryResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.CreateLeaveRequestResponse;
@@ -8,7 +9,6 @@ import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.data.webservice.models.EmergencyApiResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.BulletinResponse;
-import com.lmkr.prmscemployeeapp.ui.myinfo.addContact.AddContactModel;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;

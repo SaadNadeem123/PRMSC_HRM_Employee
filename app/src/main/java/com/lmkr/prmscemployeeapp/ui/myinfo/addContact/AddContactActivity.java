@@ -3,28 +3,28 @@ package com.lmkr.prmscemployeeapp.ui.myinfo.addContact;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-
+import com.lmkr.prmscemployeeapp.data.webservice.models.AddContactModel;
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.databinding.ActivityAddContactBinding;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
+import com.lmkr.prmscemployeeapp.viewModel.ContactViewModel;
 import com.lmkr.prmscemployeeapp.viewModel.EmergencyContactViewModel;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -113,6 +113,82 @@ public class AddContactActivity extends AppCompatActivity {
         });
 
 
+
+        setListeners();
+
+    }
+
+    private void setListeners() {
+
+        binding.mobilePhone.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String input = s.toString();
+
+                if (!input.startsWith("03")) {
+                    binding.mobilePhone.setText("03");
+                    binding.mobilePhone.setSelection(binding.mobilePhone.getText().length());
+                } else if (input.length() > 11) {
+                    binding.mobilePhone.setText(input.substring(0, 11));
+                    binding.mobilePhone.setSelection(11);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        binding.workPhone.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String input = s.toString();
+
+                if (!input.startsWith("03")) {
+                    binding.workPhone.setText("03");
+                    binding.workPhone.setSelection(binding.workPhone.getText().length());
+                } else if (input.length() > 11) {
+                    binding.workPhone.setText(input.substring(0, 11));
+                    binding.workPhone.setSelection(11);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        binding.homePhone.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String input = s.toString();
+
+                if (!input.startsWith("03")) {
+                    binding.homePhone.setText("03");
+                    binding.homePhone.setSelection(binding.homePhone.getText().length());
+                }else if (input.length() > 11) {
+                    binding.homePhone.setText(input.substring(0, 11));
+                    binding.homePhone.setSelection(11);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
         binding.submitButton.setOnClickListener(v -> {
 
             if (Objects.requireNonNull(binding.username.getText()).toString().isEmpty()) {
@@ -130,17 +206,17 @@ public class AddContactActivity extends AppCompatActivity {
                 return;
             }
 
-            if (Objects.requireNonNull(binding.mobilePhone.getText()).toString().isEmpty() || binding.mobilePhone.getText().toString().length() < 7) {
+            if (Objects.requireNonNull(binding.mobilePhone.getText()).toString().isEmpty() || binding.mobilePhone.getText().toString().length() < 11) {
                 AppUtils.makeNotification("Enter valid mobile number !", AddContactActivity.this);
                 return;
             }
 
-            if (Objects.requireNonNull(binding.workPhone.getText()).toString().isEmpty() || binding.workPhone.getText().toString().length() < 7) {
+            if (Objects.requireNonNull(binding.workPhone.getText()).toString().isEmpty() || binding.workPhone.getText().toString().length() < 11) {
                 AppUtils.makeNotification("Enter valid work number !", AddContactActivity.this);
                 return;
             }
 
-            if (Objects.requireNonNull(binding.homePhone.getText()).toString().isEmpty() || binding.homePhone.getText().toString().length() < 7) {
+            if (Objects.requireNonNull(binding.homePhone.getText()).toString().isEmpty() || binding.homePhone.getText().toString().length() < 11) {
                 AppUtils.makeNotification("Enter valid home number !", AddContactActivity.this);
                 return;
             }
@@ -155,7 +231,6 @@ public class AddContactActivity extends AppCompatActivity {
 
 
         });
-
 
         binding.updateButton.setOnClickListener(v -> {
             if (Objects.requireNonNull(binding.username.getText()).toString().isEmpty()) {
@@ -173,17 +248,17 @@ public class AddContactActivity extends AppCompatActivity {
                 return;
             }
 
-            if (Objects.requireNonNull(binding.mobilePhone.getText()).toString().isEmpty() || binding.mobilePhone.getText().toString().length() < 7) {
+            if (Objects.requireNonNull(binding.mobilePhone.getText()).toString().isEmpty() || binding.mobilePhone.getText().toString().length() < 11) {
                 AppUtils.makeNotification("Enter valid mobile number !", AddContactActivity.this);
                 return;
             }
 
-            if (Objects.requireNonNull(binding.workPhone.getText()).toString().isEmpty() || binding.workPhone.getText().toString().length() < 7) {
+            if (Objects.requireNonNull(binding.workPhone.getText()).toString().isEmpty() || binding.workPhone.getText().toString().length() < 11) {
                 AppUtils.makeNotification("Enter valid work number !", AddContactActivity.this);
                 return;
             }
 
-            if (Objects.requireNonNull(binding.homePhone.getText()).toString().isEmpty() || binding.homePhone.getText().toString().length() < 7) {
+            if (Objects.requireNonNull(binding.homePhone.getText()).toString().isEmpty() || binding.homePhone.getText().toString().length() < 11) {
                 AppUtils.makeNotification("Enter valid home number !", AddContactActivity.this);
                 return;
             }
@@ -197,7 +272,6 @@ public class AddContactActivity extends AppCompatActivity {
             updateApi();
 
         });
-
     }
 
     private void updateApi() {
@@ -291,14 +365,7 @@ public class AddContactActivity extends AppCompatActivity {
                     }, 2000);
                 }
 /*
-                if (response.isSuccessful()) {
-                    Toast.makeText(AddContactActivity.this, "Insertion Successfully!", Toast.LENGTH_SHORT).show();
-                       new EmergencyContactViewModel(getApplication()).loadEmergencyContacts(token,employeeId);
-                } else {
 
-                    Toast.makeText(AddContactActivity.this, "Insertion Error!", Toast.LENGTH_SHORT).show();
-                    Log.d("ResponseMsg:", response.toString());
-                }
 */
             }
 
