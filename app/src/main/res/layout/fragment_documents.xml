@@ -60,23 +60,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loadDocument" />
 
-
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/searchDocument"
         android:layout_width="0dp"
         android:layout_height="@dimen/_50sdp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/ed_bg"
-        android:layout_marginTop="@dimen/_20sdp"
-        android:hint="@string/search_document"
-        android:textColorHint="#E8E8E8"
-        android:drawablePadding="@dimen/_10sdp"
-        android:padding="@dimen/_10sdp"
         android:drawableStart="@drawable/search_icon"
-        app:layout_constraintWidth_percent="0.9"
+        android:drawablePadding="@dimen/_10sdp"
+        android:hint="@string/search_document"
+        android:padding="@dimen/_10sdp"
+        android:textColor="@color/black"
+        android:textColorHint="#E8E8E8"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
-
+        app:layout_constraintTop_toBottomOf="@+id/view"
+        app:layout_constraintWidth_percent="0.9" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="wrap_content"

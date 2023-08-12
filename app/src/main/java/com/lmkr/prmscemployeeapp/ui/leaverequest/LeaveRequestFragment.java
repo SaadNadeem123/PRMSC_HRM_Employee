@@ -29,10 +29,12 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.database.models.FileModel;
 import com.lmkr.prmscemployeeapp.data.database.models.LeaveRequest;
+import com.lmkr.prmscemployeeapp.data.webservice.TokenBoundService;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.CreateLeaveRequestResponse;
@@ -333,6 +335,7 @@ public class LeaveRequestFragment extends Fragment {
                     }
 */
                     resetViews();
+                    getToken();
                     getLeaveRequest();
                 }
             }
@@ -380,15 +383,21 @@ public class LeaveRequestFragment extends Fragment {
             }
         }
 
-        binding.recyclerviewLeaveProgress.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        LeavesRemainingRecyclerAdapter adapter = new LeavesRemainingRecyclerAdapter(getActivity(), userData.getLeaveCount());
-        binding.recyclerviewLeaveProgress.setAdapter(adapter);
+        refreshLeaveCountView();
 
         binding.spinnerLeaveTypes.setAdapter(new LeaveTypeSpinnerAdapter(lc, getActivity()));
 
 //        getLeaveRequest();
 
         setListeners();
+    }
+
+    private void refreshLeaveCountView() {
+        UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
+
+        binding.recyclerviewLeaveProgress.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        LeavesRemainingRecyclerAdapter adapter = new LeavesRemainingRecyclerAdapter(getActivity(), userData.getLeaveCount());
+        binding.recyclerviewLeaveProgress.setAdapter(adapter);
     }
 
     private void setListeners() {
@@ -618,5 +627,61 @@ public class LeaveRequestFragment extends Fragment {
 
     public void refreshApiCalls() {
         getLeaveRequest();
+        getToken();
+    }
+
+
+    private void getToken() {
+
+        boolean shouldRefresh = SharedPreferenceHelper.getBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, getActivity());
+        if (!shouldRefresh) {
+            return;
+        }
+
+
+        UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
+
+        JsonObject body = new JsonObject();
+        body.addProperty("email", userData.getBasicData().get(0).getEmail());
+        body.addProperty("password", SharedPreferenceHelper.getString(SharedPreferenceHelper.PASSWORD,getActivity()));  //3132446990
+        body.addProperty("source", AppWideWariables.SOURCE_MOBILE);  //3132446990
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+
+        Urls urls = retrofit.create(Urls.class);
+
+        Call<UserData> call = urls.loginUser(body);
+
+        call.enqueue(new Callback<UserData>() {
+            @Override
+            public void onResponse(Call<UserData> call, Response<UserData> response) {
+                Log.i("response", response.toString());
+
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_GET, response, null)) {
+                    if (!response.isSuccessful()) {
+//                    tv.setText("Code :" + response.code());
+                        return;
+                    }
+
+                    if (response.body() != null && response.body().getMessage() == null) {
+                        if (response.body().getBasicData() != null && response.body().getBasicData().size() > 0 && response.body().getBasicData().get(0).getApplication_access().equalsIgnoreCase("yes")) {
+                            SharedPreferenceHelper.setLoggedinUser(getActivity(), response.body());
+                            SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, false, getActivity());
+                            refreshLeaveCountView();
+                        } else {
+                            SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, getActivity());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserData> call, Throwable t) {
+                t.printStackTrace();
+                Log.i("response", t.toString());
+                SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, getActivity());
+            }
+        });
+
     }
 }

@@ -38,13 +38,12 @@ public class EmergencyContactViewModel extends AndroidViewModel {
     }
 
 
-    public LiveData<List<EmergencyContact>> getEmergencyContacts(String token, int employeeId) {
-        if (emergencyContactsLiveData == null) {
+    public void getEmergencyContacts(String token, int employeeId) {
+        /*if (emergencyContactsLiveData == null) {
             emergencyContactsLiveData = new MutableLiveData<>();
         }
-
+*/
         loadEmergencyContacts(token, employeeId);
-        return emergencyContactsLiveData;
     }
 
     public void loadEmergencyContacts(String token, int employeeId) {
@@ -97,5 +96,8 @@ public class EmergencyContactViewModel extends AndroidViewModel {
     }
 
 
+    public LiveData<List<EmergencyContact>> getEmergencyContactsLiveData() {
+        return emergencyContactsLiveData;
+    }
 }
 

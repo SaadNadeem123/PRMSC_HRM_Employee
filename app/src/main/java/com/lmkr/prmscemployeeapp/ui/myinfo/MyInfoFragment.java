@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import com.lmkr.prmscemployeeapp.databinding.FragmentMyinfoBinding;
 import com.lmkr.prmscemployeeapp.ui.adapter.ViewPagerAdapter;
+import com.lmkr.prmscemployeeapp.ui.myinfo.emergencyUi.EmergencyFragment;
 
 public class MyInfoFragment extends Fragment {
 
@@ -36,9 +37,9 @@ public class MyInfoFragment extends Fragment {
         binding = null;
     }
 
- /*   public void refreshApiCalls() {
+    public void refreshApiCalls() {
         if (adapter != null && adapter.getItem(3) != null && adapter.getItem(3) instanceof EmergencyFragment) {
             ((EmergencyFragment) adapter.getItem(3)).callApi();
         }
-    }*/
+    }
 }

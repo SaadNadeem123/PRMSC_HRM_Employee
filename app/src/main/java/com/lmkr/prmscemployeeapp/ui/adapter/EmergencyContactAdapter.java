@@ -31,7 +31,7 @@ public class EmergencyContactAdapter extends RecyclerView.Adapter<EmergencyConta
 
     public EmergencyContactAdapter(List<EmergencyContact> emergencyContacts,Context context) {
 
-        emergencyContacts.sort((contact1, contact2) -> Integer.compare(contact1.getId(), contact2.getId()));
+//        emergencyContacts.sort((contact1, contact2) -> Integer.compare(contact1.getId(), contact2.getId()));
 
         this.emergencyContacts = emergencyContacts;
         this.context = context;
@@ -69,7 +69,6 @@ public class EmergencyContactAdapter extends RecyclerView.Adapter<EmergencyConta
         });
 
         holder.copyButton.setOnClickListener(v -> {
-
             AppUtils.copyTextToClipboard(emergencyContact.getMobile(),context);
         });
 

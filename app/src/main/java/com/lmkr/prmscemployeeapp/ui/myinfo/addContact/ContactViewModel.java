@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
+import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.viewModel.EmergencyContactViewModel;
 
 import java.util.function.Consumer;
@@ -30,13 +31,13 @@ public class ContactViewModel extends ViewModel {
 
 
 
-    public void createEmergencyContact(String bearerToken, AddContactModel data, Callback<Void> callback) {
-        Call<Void> call = contactServiceUrls.createEmergencyContact(bearerToken, data.getEmployeeId(), data);
+    public void createEmergencyContact(String bearerToken, AddContactModel data, Callback<ApiBaseResponse> callback) {
+        Call<ApiBaseResponse> call = contactServiceUrls.createEmergencyContact(bearerToken, data.getEmployeeId(), data);
         call.enqueue(callback);
     }
 
-    public void updateEmergencyContact(String bearerToken, int contactId, AddContactModel contact, Callback<Void> callback) {
-        Call<Void> call = contactServiceUrls.updateEmergencyContact(bearerToken, contactId, contact);
+    public void updateEmergencyContact(String bearerToken, int contactId, AddContactModel contact, Callback<ApiBaseResponse> callback) {
+        Call<ApiBaseResponse> call = contactServiceUrls.updateEmergencyContact(bearerToken, contactId, contact);
         call.enqueue(callback);
     }
 }

@@ -82,14 +82,14 @@ public interface Urls {
 
 
     @PUT("employee/emergencycontact/{contactId}")
-    Call<Void> updateEmergencyContact(
+    Call<ApiBaseResponse> updateEmergencyContact(
             @Header("Authorization") String bearerToken,
             @Path("contactId") int contactId,
             @Body AddContactModel contact
     );
 
     @POST("employee/emergencycontact/create/{id}")
-    Call<Void> createEmergencyContact(
+    Call<ApiBaseResponse> createEmergencyContact(
             @Header("Authorization") String bearerToken,
             @Path("id") int employeeId,
             @Body AddContactModel data

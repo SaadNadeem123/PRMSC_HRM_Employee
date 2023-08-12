@@ -1,11 +1,8 @@
 package com.lmkr.prmscemployeeapp.ui.myinfo.addContact;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -13,12 +10,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import com.lmkr.prmscemployeeapp.App;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.databinding.ActivityAddContactBinding;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
 import com.lmkr.prmscemployeeapp.viewModel.EmergencyContactViewModel;
-import com.lmkr.prmscemployeeapp.viewModel.EmergencyContactViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,15 +37,14 @@ public class AddContactActivity extends AppCompatActivity {
     private ContactViewModel contactViewModel;
 
     private String token, name, email, mobileNum, homeNum, workNum, personalAddress, relationship;
-    private int employeeId, getEmployeeId,staticId;
+    private int employeeId, getEmployeeId, staticId;
 
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding= ActivityAddContactBinding.inflate(getLayoutInflater());
+        binding = ActivityAddContactBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
 
         contactViewModel = new ViewModelProvider(this).get(ContactViewModel.class);
 
@@ -70,7 +70,7 @@ public class AddContactActivity extends AppCompatActivity {
         binding.updateButton.setVisibility(View.GONE);
 
 
-        if(staticId == 100){
+        if (staticId == 100) {
 
             binding.submitButton.setVisibility(View.GONE);
             binding.updateButton.setVisibility(View.VISIBLE);
@@ -87,7 +87,7 @@ public class AddContactActivity extends AppCompatActivity {
         }
 
 
-        List<String> relationList =  new ArrayList<>();
+        List<String> relationList = new ArrayList<>();
         relationList.add("Mother");
         relationList.add("Father");
         relationList.add("Brother");
@@ -100,7 +100,7 @@ public class AddContactActivity extends AppCompatActivity {
         binding.designSpinner.setSelection(relationList.indexOf("Mother"));
 
 
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,relationList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, relationList);
         binding.designSpinner.setAdapter(adapter);
         binding.designSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -113,17 +113,18 @@ public class AddContactActivity extends AppCompatActivity {
         });
 
 
-        binding.submitButton.setOnClickListener(v ->{
+        binding.submitButton.setOnClickListener(v -> {
 
             if (Objects.requireNonNull(binding.username.getText()).toString().isEmpty()) {
                 AppUtils.makeNotification("Enter name !", AddContactActivity.this);
                 return;
-            }if (Objects.requireNonNull(binding.email.getText()).toString().isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(binding.email.getText().toString()).matches()) {
+            }
+            if (Objects.requireNonNull(binding.email.getText()).toString().isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(binding.email.getText().toString()).matches()) {
                 AppUtils.makeNotification("Enter valid Email address !", AddContactActivity.this);
                 return;
             }
 
-            if(dropDownValue == 0){
+            if (dropDownValue == 0) {
 
                 AppUtils.makeNotification("Please select your Relation !", AddContactActivity.this);
                 return;
@@ -160,12 +161,13 @@ public class AddContactActivity extends AppCompatActivity {
             if (Objects.requireNonNull(binding.username.getText()).toString().isEmpty()) {
                 AppUtils.makeNotification("Enter name !", AddContactActivity.this);
                 return;
-            }if (Objects.requireNonNull(binding.email.getText()).toString().isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(binding.email.getText().toString()).matches()) {
+            }
+            if (Objects.requireNonNull(binding.email.getText()).toString().isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(binding.email.getText().toString()).matches()) {
                 AppUtils.makeNotification("Enter valid Email address !", AddContactActivity.this);
                 return;
             }
 
-            if(dropDownValue == 0){
+            if (dropDownValue == 0) {
 
                 AppUtils.makeNotification("Please select your Relation !", AddContactActivity.this);
                 return;
@@ -216,20 +218,36 @@ public class AddContactActivity extends AppCompatActivity {
                 token,
                 getEmployeeId,
                 updatedContact,
-                new Callback<Void>() {
+                new Callback<ApiBaseResponse>() {
                     @Override
-                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                    public void onResponse(@NonNull Call<ApiBaseResponse> call, @NonNull Response<ApiBaseResponse> response) {
                         binding.progressBar.setVisibility(View.GONE);
+                        if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST, response, AddContactActivity.this)) {
+                            if (!response.isSuccessful()) {
+                                return;
+                            }
+                            new EmergencyContactViewModel(getApplication()).loadEmergencyContacts(token,employeeId);
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finish();
+                                }
+                            }, 2000);
+
+//                            new EmergencyContactViewModel(getApplication()).loadEmergencyContacts(token,employeeId);
+                        }
+
+
                         if (response.isSuccessful()) {
                             Toast.makeText(AddContactActivity.this, "Updated Successfully!", Toast.LENGTH_SHORT).show();
-                            new EmergencyContactViewModel(getApplication()).loadEmergencyContacts(token,employeeId);
+                            finish();
                         } else {
                             Toast.makeText(AddContactActivity.this, "Updation Error!", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                    public void onFailure(@NonNull Call<ApiBaseResponse> call, @NonNull Throwable t) {
                         binding.progressBar.setVisibility(View.GONE);
                         AppUtils.makeNotification(t.toString(), AddContactActivity.this);
                         Log.d("ErrorMsg", t.toString());
@@ -254,11 +272,25 @@ public class AddContactActivity extends AppCompatActivity {
         newContact.setAddress(Objects.requireNonNull(binding.address.getText()).toString());
 
 
-        contactViewModel.createEmergencyContact(token, newContact, new Callback<Void>() {
+        contactViewModel.createEmergencyContact(token, newContact, new Callback<ApiBaseResponse>() {
             @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+            public void onResponse(@NonNull Call<ApiBaseResponse> call, @NonNull Response<ApiBaseResponse> response) {
 
                 binding.progressBar.setVisibility(View.GONE);
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST, response, AddContactActivity.this)) {
+                    if (!response.isSuccessful()) {
+                        return;
+                    }
+
+                    new EmergencyContactViewModel(getApplication()).loadEmergencyContacts(token,employeeId);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            finish();
+                        }
+                    }, 2000);
+                }
+/*
                 if (response.isSuccessful()) {
                     Toast.makeText(AddContactActivity.this, "Insertion Successfully!", Toast.LENGTH_SHORT).show();
                        new EmergencyContactViewModel(getApplication()).loadEmergencyContacts(token,employeeId);
@@ -267,10 +299,11 @@ public class AddContactActivity extends AppCompatActivity {
                     Toast.makeText(AddContactActivity.this, "Insertion Error!", Toast.LENGTH_SHORT).show();
                     Log.d("ResponseMsg:", response.toString());
                 }
+*/
             }
 
             @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<ApiBaseResponse> call, @NonNull Throwable t) {
 
                 binding.progressBar.setVisibility(View.GONE);
 
@@ -279,7 +312,6 @@ public class AddContactActivity extends AppCompatActivity {
 
             }
         });
-
 
 
     }

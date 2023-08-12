@@ -37,7 +37,6 @@ public class EmergencyFragment extends Fragment {
     private EmergencyContactViewModel viewModel;
 
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,9 +48,18 @@ public class EmergencyFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        viewModel = new ViewModelProvider(this, new EmergencyContactViewModelFactory(App.getInstance(),"")).get(EmergencyContactViewModel.class);
+        viewModel.getEmergencyContactsLiveData().observe(getViewLifecycleOwner(),new Observer<List<EmergencyContact>>()
+        {
+            @Override
+            public void onChanged(List<EmergencyContact> emergencyContacts) {
+                adapter = new EmergencyContactAdapter(emergencyContacts, getActivity());
+                binding.recyclerView.setAdapter(adapter);
+            }
+        });
+
+
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        viewModel = new ViewModelProvider(this, new EmergencyContactViewModelFactory(App.getInstance(),""))
-                .get(EmergencyContactViewModel.class);
 
 
         callApi();
@@ -68,14 +76,14 @@ public class EmergencyFragment extends Fragment {
         String token = AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity()));
         int employeeId = SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getId();
 
-        viewModel.getEmergencyContacts(token,employeeId).observe(getViewLifecycleOwner(), new Observer<List<EmergencyContact>>() {
+        viewModel.getEmergencyContacts(token,employeeId);/*.observe(getViewLifecycleOwner(), new Observer<List<EmergencyContact>>() {
             @Override
             public void onChanged(List<EmergencyContact> emergencyContacts) {
                 Log.d("EmergencyContactFragment", "Number of items in the list: " + emergencyContacts.size());
                 adapter = new EmergencyContactAdapter(emergencyContacts, getActivity());
                 binding.recyclerView.setAdapter(adapter);
             }
-        });
+        });*/
     }
 
     @Override

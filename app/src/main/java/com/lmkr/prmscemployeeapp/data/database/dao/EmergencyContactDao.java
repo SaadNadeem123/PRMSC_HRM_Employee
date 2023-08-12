@@ -29,6 +29,6 @@ public interface EmergencyContactDao {
     @Query("Delete From EmergencyContact")
     void deleteAllEmergencyContacts();
 
-    @Query("SELECT * FROM EmergencyContact order by id asc")
+    @Query("SELECT * FROM EmergencyContact order by name asc")
     LiveData<List<EmergencyContact>> getAllEmergencyContacts();
 }
