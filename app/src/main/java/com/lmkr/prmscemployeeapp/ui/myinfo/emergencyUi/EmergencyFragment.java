@@ -76,7 +76,8 @@ public class EmergencyFragment extends Fragment {
         String token = AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity()));
         int employeeId = SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getId();
 
-        viewModel.getEmergencyContacts(token,employeeId);/*.observe(getViewLifecycleOwner(), new Observer<List<EmergencyContact>>() {
+        viewModel.getEmergencyContacts(token,employeeId);
+        /*.observe(getViewLifecycleOwner(), new Observer<List<EmergencyContact>>() {
             @Override
             public void onChanged(List<EmergencyContact> emergencyContacts) {
                 Log.d("EmergencyContactFragment", "Number of items in the list: " + emergencyContacts.size());

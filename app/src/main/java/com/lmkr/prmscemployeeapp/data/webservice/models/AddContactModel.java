@@ -1,4 +1,4 @@
-package com.lmkr.prmscemployeeapp.ui.myinfo.addContact;
+package com.lmkr.prmscemployeeapp.data.webservice.models;
 
 
 import com.google.gson.annotations.SerializedName;
@@ -83,4 +83,5 @@ public class AddContactModel {
         this.address = address;
     }
 }
+
 
