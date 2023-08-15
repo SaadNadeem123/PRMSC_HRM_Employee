@@ -166,16 +166,22 @@ public class CustomTimePicker implements View.OnClickListener, TimePickerDialog.
             startTime = _textInputEditText2.getText().toString();
         }
 
-        if(!TextUtils.isEmpty(startTime))
-        {
+        if (!TextUtils.isEmpty(startTime)) {
             int hours = Integer.parseInt(AppUtils.getConvertedDateFromOneFormatToOther(startTime, AppUtils.FORMAT5, AppUtils.FORMAT_HOUR));
             int min = Integer.parseInt(AppUtils.getConvertedDateFromOneFormatToOther(startTime, AppUtils.FORMAT5, AppUtils.FORMAT_MIN));
             dialog.setMin(hours, min);
-            if (timeType == END_TIME && halfLeaveLimit > 0 && halfLeaveLimit < 1) {
-                dialog.setMax((int) (hours + AppWideWariables.HALF_LEAVE_HOUR_LIMIT), min);
+            if (timeType == END_TIME) {
+                if (halfLeaveLimit > 0 && halfLeaveLimit < 1) {
+                    dialog.setMax((int) (hours + AppWideWariables.HALF_LEAVE_HOUR_LIMIT), min);
+                } else {
+                    if (min + AppWideWariables.MINIMUM_TIME_DIFF < 60) {
+                        dialog.setMin((int) (hours + AppWideWariables.HALF_LEAVE_HOUR_LIMIT), min + AppWideWariables.MINIMUM_TIME_DIFF);
+                    } else {
+                        dialog.setMin((int) (hours + 1), AppWideWariables.MINIMUM_TIME_DIFF-(60-min));
+                    }
+                }
             }
-        }
-        if (timeType == START_TIME && minimumTime != -1) {
+        } if (timeType == START_TIME && minimumTime != -1) {
             dialog.setMin(Integer.valueOf(AppUtils.getCurrentHourOfDay()), Integer.valueOf(AppUtils.getCurrentMinOfDay()));
         }
 
@@ -209,7 +215,7 @@ public class CustomTimePicker implements View.OnClickListener, TimePickerDialog.
             _textInputEditText.setText(dateTimeStamp);
         }
 
-        if (timeType == START_TIME&& halfLeaveLimit > 0 && halfLeaveLimit < 1) {
+        if (timeType == START_TIME && halfLeaveLimit > 0 && halfLeaveLimit < 1) {
             if (_textView2 != null) {
                 _textView2.setTag(time_24hrs);
                 _textView2.setText(dateTimeStamp);

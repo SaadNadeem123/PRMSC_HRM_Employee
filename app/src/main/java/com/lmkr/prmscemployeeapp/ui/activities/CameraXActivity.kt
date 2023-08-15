@@ -3,7 +3,6 @@ package com.lmkr.prmscemployeeapp.ui.activities
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.Image
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -30,7 +29,6 @@ import com.lmkr.prmscemployeeapp.databinding.ActivityCameraXBinding
 import com.lmkr.prmscemployeeapp.ui.cameraxUtils.FaceContourDetectionProcessor
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables
-import com.lmkr.prmscemployeeapp.ui.utilities.FileUtils
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -226,7 +224,8 @@ class CameraXActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<ApiBaseResponse?>, t: Throwable) {
                 t.printStackTrace()
-                AppUtils.makeNotification(t.toString(), this@CameraXActivity)
+                AppUtils.ApiError(t, this@CameraXActivity)
+//                AppUtils.makeNotification(t.toString(), this@CameraXActivity)
                 Log.i("response", t.toString())
                 //                tv.setText(t.getMessage());
             }
@@ -269,7 +268,8 @@ class CameraXActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<ApiBaseResponse?>, t: Throwable) {
                 t.printStackTrace()
-                AppUtils.makeNotification(t.toString(), this@CameraXActivity)
+                AppUtils.ApiError(t, this@CameraXActivity)
+//                AppUtils.makeNotification(t.toString(), this@CameraXActivity)
                 Log.i("response", t.toString())
             }
         })
@@ -377,7 +377,8 @@ class CameraXActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<ApiBaseResponse?>, t: Throwable) {
                 t.printStackTrace()
-                AppUtils.makeNotification(t.toString(), this@CameraXActivity)
+                AppUtils.ApiError(t, this@CameraXActivity)
+//                AppUtils.makeNotification(t.toString(), this@CameraXActivity)
                 Log.i("response", t.toString())
                 //                tv.setText(t.getMessage());
             }

@@ -102,6 +102,9 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.net.ssl.HttpsURLConnection;
+
+import retrofit2.HttpException;
 import retrofit2.Response;
 
 public class AppUtils {
@@ -1228,7 +1231,8 @@ public class AppUtils {
 
     public static String getCurrentHourOfDay() {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("hh");
+            SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT_HOUR);
+            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+5"));
             return dateFormat.format(new Date());
         } catch (Exception e) {
             e.printStackTrace();
@@ -1240,6 +1244,7 @@ public class AppUtils {
     public static String getCurrentMinOfDay() {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("mm");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+5"));
             return dateFormat.format(new Date());
         } catch (Exception e) {
             e.printStackTrace();
@@ -2473,54 +2478,6 @@ public class AppUtils {
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
-    public static boolean isErrorResponse(int methodType, Response<?> response, Activity activity) {
-        if (response == null) {
-            return true;
-        }
-
-        if (response.code() == 200 || response.code() == 201) {
-            if (methodType == AppWideWariables.API_METHOD_POST && response != null && response.body() != null && ((ApiBaseResponse) response.body()).getMessage() != null) {
-                try {
-                    String str = ((ApiBaseResponse) response.body()).getMessage();
-                    if (activity != null) {
-                        AppUtils.makeNotification(str, activity);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            return false;
-        } else {
-
-            if (response.code() == 403) {
-                SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, activity);
-                return true;
-            }
-
-            if (methodType == AppWideWariables.API_METHOD_POST && response != null && response.errorBody() != null) {
-                try {
-                    ApiBaseResponse message = new Gson().fromJson(response.errorBody().charStream(), ApiBaseResponse.class);
-                    if (activity != null) {
-                        AppUtils.makeNotification(message.getMessage(), activity);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-//            else if (methodType == AppWideWariables.API_METHOD_POST && response.body() != null && ((ApiBaseResponse) response.body()).getMessage() != null) {
-//                try {
-//                    AppUtils.makeNotification(((ApiBaseResponse) response.body()).getMessage(), activity);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            } else if (methodType == AppWideWariables.API_METHOD_POST && response != null && response.message() != null && !TextUtils.isEmpty(response.message())) {
-//                AppUtils.makeNotification(response.message(), activity);
-//            }
-
-            return true;
-        }
-    }
-
     public static String getFloatOrInteger(float value) {
         return value == (int) value ? (int) value + "" : value + "";
     }
@@ -2572,6 +2529,102 @@ public class AppUtils {
         }
     }
 
+
+    public static boolean isErrorResponse(int methodType, Response<?> response, Activity activity) {
+        if (response == null) {
+            return true;
+        }
+
+        if (response.code() == 200 || response.code() == 201) {
+            try {
+                if (methodType == AppWideWariables.API_METHOD_POST && response != null && response.body() != null && ((ApiBaseResponse) response.body()).getMessage() != null) {
+                    try {
+                        String str = ((ApiBaseResponse) response.body()).getMessage();
+                        if (activity != null) {
+                            AppUtils.makeNotification(str, activity);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        } else {
+
+            if (response.code() == 403) {
+                SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, activity);
+                return true;
+            } else if (response.code() == 401 || response.code() == 400) {
+                try {
+                    if (methodType == AppWideWariables.API_METHOD_POST && response != null && response.errorBody() != null) {
+                        try {
+                            ApiBaseResponse message = new Gson().fromJson(response.errorBody().charStream(), ApiBaseResponse.class);
+                            if (activity != null) {
+                                AppUtils.makeNotification(message.getMessage(), activity);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else if (methodType == AppWideWariables.API_METHOD_POST && response.body() != null && ((ApiBaseResponse) response.body()).getMessage() != null) {
+                        try {
+                            AppUtils.makeNotification(((ApiBaseResponse) response.body()).getMessage(), activity);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else if (methodType == AppWideWariables.API_METHOD_POST && response != null && response.message() != null && !TextUtils.isEmpty(response.message())) {
+                        try {
+                            AppUtils.makeNotification(response.message(), activity);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return true;
+            } else {
+                if (methodType == AppWideWariables.API_METHOD_POST) {
+                    String errMessage = activity.getResources().getString(R.string.api_generic_err_response);
+                    AppUtils.makeNotification(errMessage, activity);
+                }
+            }
+            return true;
+        }
+    }
+
+    public static void ApiError(Throwable t, Activity activity) {
+        if (activity == null) {
+            return;
+        }
+        try {
+            if (t instanceof HttpException) {
+                String message = ((HttpException) t).message();
+                switch (((HttpException) t).code()) {
+                    case HttpsURLConnection.HTTP_UNAUTHORIZED:
+//                    message = "Unauthorised User ";
+                        break;
+                    case HttpsURLConnection.HTTP_FORBIDDEN:
+//                    message = "Forbidden";
+                        message = "";
+                        break;
+                    case HttpsURLConnection.HTTP_INTERNAL_ERROR:
+//                    message = "Internal Server Error";
+                        message = activity.getResources().getString(R.string.api_generic_err_response);
+                        break;
+                    case HttpsURLConnection.HTTP_BAD_REQUEST:
+//                    message = "Bad Request";
+                        break;
+                    default:
+                        message = activity.getResources().getString(R.string.api_generic_err_response);
+                }
+                AppUtils.makeNotification(message, activity);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 

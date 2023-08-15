@@ -36,6 +36,7 @@ import com.lmkr.prmscemployeeapp.data.database.models.FileModel;
 import com.lmkr.prmscemployeeapp.data.database.models.LeaveRequest;
 import com.lmkr.prmscemployeeapp.data.webservice.TokenBoundService;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
+import com.lmkr.prmscemployeeapp.data.webservice.api.ApiManager;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.CreateLeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveCount;
@@ -335,7 +336,6 @@ public class LeaveRequestFragment extends Fragment {
                     }
 */
                     resetViews();
-                    getToken();
                     getLeaveRequest();
                 }
             }
@@ -346,8 +346,8 @@ public class LeaveRequestFragment extends Fragment {
                 if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
                 Log.i("response", t.toString());
 //                tv.setText(t.getMessage());
-                AppUtils.makeNotification(t.getMessage(), getActivity());
-
+//                AppUtils.makeNotification(t.getMessage(), getActivity());
+                AppUtils.ApiError(t,getActivity());
             }
 
         });
@@ -372,20 +372,8 @@ public class LeaveRequestFragment extends Fragment {
         binding.rvAttachment.setAdapter(adapter);
         binding.rvAttachment.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
-        lc.clear();
-        lc.add(new LeaveCount(-1, getString(R.string.select), 0, 0));
-
-        for (LeaveCount leaveCount : userData.getLeaveCount()) {
-            if (leaveCount.getRemaining() > 0) {
-
-                lc.add(leaveCount);
-            }
-        }
 
         refreshLeaveCountView();
-
-        binding.spinnerLeaveTypes.setAdapter(new LeaveTypeSpinnerAdapter(lc, getActivity()));
 
 //        getLeaveRequest();
 
@@ -398,6 +386,19 @@ public class LeaveRequestFragment extends Fragment {
         binding.recyclerviewLeaveProgress.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         LeavesRemainingRecyclerAdapter adapter = new LeavesRemainingRecyclerAdapter(getActivity(), userData.getLeaveCount());
         binding.recyclerviewLeaveProgress.setAdapter(adapter);
+
+        lc.clear();
+        lc.add(new LeaveCount(-1, getString(R.string.select), 0, 0));
+
+        for (LeaveCount leaveCount : userData.getLeaveCount()) {
+            if (leaveCount.getRemaining() > 0) {
+
+                lc.add(leaveCount);
+            }
+        }
+
+
+        binding.spinnerLeaveTypes.setAdapter(new LeaveTypeSpinnerAdapter(lc, getActivity()));
     }
 
     private void setListeners() {
@@ -612,7 +613,8 @@ public class LeaveRequestFragment extends Fragment {
             @Override
             public void onFailure(Call<LeaveRequestResponse> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.makeNotification(t.toString(), getActivity());
+                AppUtils.ApiError(t,getActivity());
+//                AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
 //                tv.setText(t.getMessage());
             }
@@ -626,62 +628,9 @@ public class LeaveRequestFragment extends Fragment {
     }
 
     public void refreshApiCalls() {
+        ApiManager.getInstance().getToken();
         getLeaveRequest();
-        getToken();
+        refreshLeaveCountView();
     }
 
-
-    private void getToken() {
-
-        boolean shouldRefresh = SharedPreferenceHelper.getBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, getActivity());
-        if (!shouldRefresh) {
-            return;
-        }
-
-
-        UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
-
-        JsonObject body = new JsonObject();
-        body.addProperty("email", userData.getBasicData().get(0).getEmail());
-        body.addProperty("password", SharedPreferenceHelper.getString(SharedPreferenceHelper.PASSWORD,getActivity()));  //3132446990
-        body.addProperty("source", AppWideWariables.SOURCE_MOBILE);  //3132446990
-
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-
-        Urls urls = retrofit.create(Urls.class);
-
-        Call<UserData> call = urls.loginUser(body);
-
-        call.enqueue(new Callback<UserData>() {
-            @Override
-            public void onResponse(Call<UserData> call, Response<UserData> response) {
-                Log.i("response", response.toString());
-
-                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_GET, response, null)) {
-                    if (!response.isSuccessful()) {
-//                    tv.setText("Code :" + response.code());
-                        return;
-                    }
-
-                    if (response.body() != null && response.body().getMessage() == null) {
-                        if (response.body().getBasicData() != null && response.body().getBasicData().size() > 0 && response.body().getBasicData().get(0).getApplication_access().equalsIgnoreCase("yes")) {
-                            SharedPreferenceHelper.setLoggedinUser(getActivity(), response.body());
-                            SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, false, getActivity());
-                            refreshLeaveCountView();
-                        } else {
-                            SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, getActivity());
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserData> call, Throwable t) {
-                t.printStackTrace();
-                Log.i("response", t.toString());
-                SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, getActivity());
-            }
-        });
-
-    }
 }

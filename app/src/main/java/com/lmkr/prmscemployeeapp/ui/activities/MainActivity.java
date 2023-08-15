@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
@@ -249,7 +250,8 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onFailure(Call<UserData> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.makeNotification(t.toString(), MainActivity.this);
+                AppUtils.ApiError(t,MainActivity.this);
+//                AppUtils.makeNotification(t.toString(), MainActivity.this);
             }
         });
 
@@ -337,6 +339,13 @@ public class MainActivity extends BaseActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
+
+        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
+            @Override
+            public void onDestinationChanged(@NonNull NavController navController, @NonNull NavDestination navDestination, @Nullable Bundle bundle) {
+
+            }
+        });
 
     }
 

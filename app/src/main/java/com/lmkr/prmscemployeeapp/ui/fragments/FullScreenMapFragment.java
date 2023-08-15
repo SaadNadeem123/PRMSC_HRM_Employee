@@ -270,7 +270,8 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             @Override
             public void onFailure(Call<ApiBaseResponse> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.makeNotification(t.toString(), getActivity());
+                AppUtils.ApiError(t,getActivity());
+//                AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
 //                tv.setText(t.getMessage());
             }
@@ -309,7 +310,8 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             @Override
             public void onFailure(Call<ApiBaseResponse> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.makeNotification(t.toString(), getActivity());
+                AppUtils.ApiError(t,getActivity());
+//                AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
             }
         });

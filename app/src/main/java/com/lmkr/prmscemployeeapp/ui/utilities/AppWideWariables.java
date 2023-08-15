@@ -21,4 +21,5 @@ public class AppWideWariables {
     public static final String IS_IN_GEOFENCE = "isInGeofence";
     @Nullable
     public static final String FACE_LOCK_PATH = "faceLockPath";
+    public static final int MINIMUM_TIME_DIFF = 30; //in minutes
 }

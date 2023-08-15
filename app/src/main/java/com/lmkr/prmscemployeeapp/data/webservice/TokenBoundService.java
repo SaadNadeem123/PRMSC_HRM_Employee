@@ -203,6 +203,7 @@ public class TokenBoundService extends Service {
                 t.printStackTrace();
                 Log.i("response", t.toString());
                 SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, TokenBoundService.this);
+                AppUtils.ApiError(t,null);
             }
         });
 

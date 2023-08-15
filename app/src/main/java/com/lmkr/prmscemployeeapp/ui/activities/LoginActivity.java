@@ -118,7 +118,8 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onFailure(Call<UserData> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.makeNotification(t.toString(), LoginActivity.this);
+                AppUtils.ApiError(t,LoginActivity.this);
+//                AppUtils.makeNotification(t.toString(), LoginActivity.this);
                 binding.loading.setVisibility(View.GONE);
             }
         });

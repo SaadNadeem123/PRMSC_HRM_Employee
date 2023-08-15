@@ -249,7 +249,8 @@ public class AddContactActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Call<ApiBaseResponse> call, @NonNull Throwable t) {
                         binding.progressBar.setVisibility(View.GONE);
-                        AppUtils.makeNotification(t.toString(), AddContactActivity.this);
+//                        AppUtils.makeNotification(t.toString(), AddContactActivity.this);
+                        AppUtils.ApiError(t,AddContactActivity.this);
                         Log.d("ErrorMsg", t.toString());
                     }
                 }
@@ -307,9 +308,10 @@ public class AddContactActivity extends AppCompatActivity {
 
                 binding.progressBar.setVisibility(View.GONE);
 
-                AppUtils.makeNotification(t.toString(), AddContactActivity.this);
+//                AppUtils.makeNotification(t.toString(), AddContactActivity.this);
                 Log.d("ErrorMsg", t.toString());
 
+                AppUtils.ApiError(t,AddContactActivity.this);
             }
         });
 

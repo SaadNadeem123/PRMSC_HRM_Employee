@@ -27,6 +27,7 @@ import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.database.models.AttendanceHistory;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
+import com.lmkr.prmscemployeeapp.data.webservice.api.ApiManager;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.AttendanceHistoryResponse;
@@ -343,7 +344,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<ApiBaseResponse> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.makeNotification(t.toString(), getActivity());
+                AppUtils.ApiError(t,getActivity());
+//                AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
             }
         });
@@ -403,7 +405,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<ApiBaseResponse> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.makeNotification(t.toString(), getActivity());
+                AppUtils.ApiError(t,getActivity());
+//                AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
 //                tv.setText(t.getMessage());
             }
@@ -444,7 +447,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<AttendanceHistoryResponse> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.makeNotification(t.toString(), getActivity());
+                AppUtils.ApiError(t,getActivity());
+//                AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
 //                tv.setText(t.getMessage());
             }
@@ -480,6 +484,7 @@ public class HomeFragment extends Fragment {
 
     public void refreshApiCalls() {
 
+        ApiManager.getInstance().getToken();
         if (SharedPreferenceHelper.isInGeofence(getActivity()) || SharedPreferenceHelper.hasFaceLockPath(getActivity())) {
             if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
                 callCheckOutApi();
@@ -489,7 +494,6 @@ public class HomeFragment extends Fragment {
 
             }
         }
-
         getAttendanceHistory();
     }
 }
