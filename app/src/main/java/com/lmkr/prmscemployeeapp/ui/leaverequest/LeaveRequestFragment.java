@@ -453,10 +453,10 @@ public class LeaveRequestFragment extends Fragment {
             @Override
             public void run() {
 
-                binding.dateTimeFrom.setText(fdate);
-                binding.dateTimeTo.setText(tdate);
-                binding.timeFrom.setText(ftime);
-                binding.timeTo.setText(ttime);
+                binding.dateTimeFrom.setText(fdate==null?"":fdate);
+                binding.dateTimeTo.setText(tdate==null?"":tdate);
+                binding.timeFrom.setText(ftime==null?"":ftime);
+                binding.timeTo.setText(ttime==null?"":ttime);
 
             }
         }, 100);
