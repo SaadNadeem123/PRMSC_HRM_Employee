@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -114,8 +115,7 @@ public class CustomTimePicker implements View.OnClickListener, TimePickerDialog.
 //        dialog.getDatePicker().setSpinnersShown(true);
 //        dialog.getDatePicker().setCalendarViewShown(false);
 
-
-        CustomizedTimePicker finalDialog = dialog;
+              CustomizedTimePicker finalDialog = dialog;
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
@@ -185,8 +185,12 @@ public class CustomTimePicker implements View.OnClickListener, TimePickerDialog.
             dialog.setMin(Integer.valueOf(AppUtils.getCurrentHourOfDay()), Integer.valueOf(AppUtils.getCurrentMinOfDay()));
         }
 
-
         dialog.show();
+
+        dialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
+        dialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
+        dialog.getButton(DatePickerDialog.BUTTON_NEUTRAL).setTextColor(Color.BLACK);
+
 
     }
 
