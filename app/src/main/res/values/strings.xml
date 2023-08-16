@@ -41,7 +41,7 @@
     <string name="title_activity_geofence_maps">GeofenceMapsActivity</string>
     <string name="welcome_comma">"Welcome, "</string>
     <string name="checkedout">Checked Out</string>
-    <string name="checkedin">CheckedIn</string>
+    <string name="checkedin">Checked In</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="current_location">Current Location</string>
     <string name="back">Back</string>
@@ -128,5 +128,6 @@
     <string name="maximum_length_notes">Maximum length of notes should be 3000 characters!</string>
     <string name="logout">Logout</string>
     <string name="api_generic_err_response">Something went wrong please try again later!</string>
+    <string name="attendance_history">Attendance History</string>
 
 </resources>

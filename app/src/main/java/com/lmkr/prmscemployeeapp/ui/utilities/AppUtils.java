@@ -118,6 +118,7 @@ public class AppUtils {
     public static final String FORMAT_DAY = "dd";
     public static final String FORMAT_MONTH = "MM";
     public static final String FORMAT_YEAR = "yyyy";
+    public static final String FORMAT_MONTH_YEAR = "MMMM yyyy";
     public static final String FORMAT0 = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     public static final String FORMAT1 = "yyyy-MM-dd HH:mm:ss.S";
     public static final String FORMAT2 = "yyyy-MM-dd HH:mm";
@@ -2089,9 +2090,19 @@ public class AppUtils {
             fromTimeFormat = FORMAT18;
         }
         if (toTime == null || TextUtils.isEmpty(toTime)) {
-            toTime = "00:00:00";
+            toTime = "24:00:00";
             toTimeFormat = FORMAT18;
         }
+
+/*
+        if (fromTime.equals("00:00:00") && toTime.equals("00:00:00")) {
+            String ds = AppUtils.getConvertedDateFromOneFormatToOther(fromDate, fromDateFormat, FORMAT15);
+            String de = AppUtils.getConvertedDateFromOneFormatToOther(toDate, toDateFormat, FORMAT15);
+            if (ds.equals(de)) {
+                return 1;
+            }
+        }
+*/
         String fromDateTime = getConvertedDateFromOneFormatToOther(fromDate + " " + fromTime, fromDateFormat + " " + fromTimeFormat, FORMAT22);
         String toDateTime = getConvertedDateFromOneFormatToOther(toDate + " " + toTime, toDateFormat + " " + toTimeFormat, FORMAT22);
 
@@ -2556,7 +2567,7 @@ public class AppUtils {
             if (response.code() == 403) {
                 SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, true, activity);
                 return true;
-            } else if (response.code() == 401 || response.code() == 400) {
+            } else if (response.code() == 401 || response.code() == 400 || response.code() == 500) {
                 try {
                     if (methodType == AppWideWariables.API_METHOD_POST && response != null && response.errorBody() != null) {
                         try {

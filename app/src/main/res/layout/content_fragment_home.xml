@@ -85,7 +85,7 @@
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
                     android:gravity="center_vertical"
-                    android:text="@string/checkin_history"
+                    android:text="@string/attendance_history"
                     android:textAllCaps="true"
                     android:textColor="@color/app_green"
                     android:textSize="16dp" />

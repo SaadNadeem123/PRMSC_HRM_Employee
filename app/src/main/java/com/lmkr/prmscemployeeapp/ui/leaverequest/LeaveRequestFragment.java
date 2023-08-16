@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.OpenableColumns;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -29,12 +30,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.database.models.FileModel;
 import com.lmkr.prmscemployeeapp.data.database.models.LeaveRequest;
-import com.lmkr.prmscemployeeapp.data.webservice.TokenBoundService;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiManager;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
@@ -75,7 +74,7 @@ public class LeaveRequestFragment extends Fragment {
 
     private static final int REQUEST_CODE = 1;
     private static final int REQUEST_WRITE_PERMISSION = 0;
-    private static List<LeaveRequest> leaveRequests = null;
+    private static final List<LeaveRequest> leaveRequests = new ArrayList<>();
     private final List<FileModel> files = new ArrayList<>();
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
         @Override
@@ -94,10 +93,12 @@ public class LeaveRequestFragment extends Fragment {
     private final Observer<? super List<LeaveRequest>> leaveRequestObserver = new Observer<List<LeaveRequest>>() {
         @Override
         public void onChanged(List<LeaveRequest> leaveRequests) {
-            LeaveRequestFragment.leaveRequests = leaveRequests;
+            LeaveRequestFragment.leaveRequests.clear();
+            LeaveRequestFragment.leaveRequests.addAll(leaveRequests);
             loadLeaveRequestData();
         }
     };
+
     private LeaveRequestViewModel leaveRequestViewModel;
     private LeaveCount leaveType = null;
     private final TextWatcher textChangeListenerFromDate = new TextWatcher() {
@@ -172,6 +173,36 @@ public class LeaveRequestFragment extends Fragment {
 
         }
     };
+    private final AdapterView.OnItemSelectedListener spinnerLeaveTypeItemSelectedListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            leaveType = lc.get(position);
+
+            binding.dateTimeFrom.setText("");
+            binding.dateTimeTo.setText("");
+            binding.timeFrom.setText("");
+            binding.timeTo.setText("");
+            binding.layoutTime.setVisibility(View.GONE);
+
+            if (leaveType == null || leaveType.getType().equals(getString(R.string.select)) || leaveType.getId() == -1) {
+
+                binding.dateTimeFrom.setOnClickListener(null);
+                binding.dateTimeTo.setOnClickListener(null);
+                binding.timeFrom.setOnClickListener(null);
+                binding.timeTo.setOnClickListener(null);
+                return;
+            }
+            new CustomDatePickerDialog(getActivity(), binding.dateTimeFrom, binding.dateTimeTo, leaveType.getRemaining(), CustomDatePickerDialog.START_DATE);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
+    };
+    private String fdate = "";
+    private String tdate = "";
+    private String ftime = "";
+    private String ttime = "";
     private AttachmentsRecyclerAdapter adapter;
     ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
         @Override
@@ -185,11 +216,9 @@ public class LeaveRequestFragment extends Fragment {
         binding.recyclerViewLeaveRequest.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         LeaveRequestRecyclerAdapter adapter = new LeaveRequestRecyclerAdapter(getActivity(), leaveRequests);
         binding.recyclerViewLeaveRequest.setAdapter(adapter);
-
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
 
         leaveRequestViewModel = new ViewModelProvider(this, new LeaveRequestViewModelFactory(App.getInstance(), "%" + AppUtils.getCurrentDate() + "%")).get(LeaveRequestViewModel.class);
         leaveRequestViewModel.getLeaveRequest().observe(getViewLifecycleOwner(), leaveRequestObserver);
@@ -207,7 +236,6 @@ public class LeaveRequestFragment extends Fragment {
             return;
         }
 
-
         if (leaveType == null || leaveType.getType().equals(getString(R.string.select)) || leaveType.getId() == -1) {
             AppUtils.makeNotification(getResources().getString(R.string.select_leave_type), getActivity());
             return;
@@ -217,29 +245,35 @@ public class LeaveRequestFragment extends Fragment {
             AppUtils.makeNotification(getResources().getString(R.string.provide_from_date), getActivity());
             return;
         }
+
         if (TextUtils.isEmpty(binding.dateTimeTo.getText())) {
             AppUtils.makeNotification(getResources().getString(R.string.provide_to_date), getActivity());
             return;
         }
+
         if (binding.dateTimeFrom.getText().toString().equals(binding.dateTimeTo.getText().toString())) {
             if (TextUtils.isEmpty(binding.timeFrom.getText())) {
                 AppUtils.makeNotification(getResources().getString(R.string.provide_from_time), getActivity());
                 return;
             }
+
             if (TextUtils.isEmpty(binding.timeTo.getText())) {
                 AppUtils.makeNotification(getResources().getString(R.string.provide_to_time), getActivity());
                 return;
             }
         }
+
         if (TextUtils.isEmpty(binding.note.getText())) {
             AppUtils.makeNotification(getResources().getString(R.string.provide_notes), getActivity());
             return;
         }
-        if (binding.note.getText().length()<50) {
+
+        if (binding.note.getText().length() < 50) {
             AppUtils.makeNotification(getResources().getString(R.string.minimum_length_notes), getActivity());
             return;
         }
-        if (binding.note.getText().length()>3000) {
+
+        if (binding.note.getText().length() > 3000) {
             AppUtils.makeNotification(getResources().getString(R.string.maximum_length_notes), getActivity());
             return;
         }
@@ -317,16 +351,14 @@ public class LeaveRequestFragment extends Fragment {
                 Log.i("response", response.toString());
                 if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
 
-
                 if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST, response, getActivity())) {
 
-
                     if (!response.isSuccessful()) {
-//                    tv.setText("Code :" + response.code());
+                        //tv.setText("Code :" + response.code());
                         return;
                     }
 
-/*
+                    /*
                     JsonObjectResponse jsonObjectResponse = response.body();
 
                     Log.i("response", jsonObjectResponse.toString());
@@ -334,7 +366,8 @@ public class LeaveRequestFragment extends Fragment {
                     if (response.body().isStatus()) {
                         JsonObject jsonObject = (JsonObject) response.body().getResponse();
                     }
-*/
+                    */
+
                     resetViews();
                     getLeaveRequest();
                 }
@@ -347,7 +380,7 @@ public class LeaveRequestFragment extends Fragment {
                 Log.i("response", t.toString());
 //                tv.setText(t.getMessage());
 //                AppUtils.makeNotification(t.getMessage(), getActivity());
-                AppUtils.ApiError(t,getActivity());
+                AppUtils.ApiError(t, getActivity());
             }
 
         });
@@ -372,15 +405,14 @@ public class LeaveRequestFragment extends Fragment {
         binding.rvAttachment.setAdapter(adapter);
         binding.rvAttachment.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-
-        refreshLeaveCountView();
-
-//        getLeaveRequest();
+        resetViews();
+        refreshApiCalls();
 
         setListeners();
     }
 
     private void refreshLeaveCountView() {
+
         UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
 
         binding.recyclerviewLeaveProgress.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
@@ -392,45 +424,58 @@ public class LeaveRequestFragment extends Fragment {
 
         for (LeaveCount leaveCount : userData.getLeaveCount()) {
             if (leaveCount.getRemaining() > 0) {
-
                 lc.add(leaveCount);
             }
         }
 
+        LeaveCount selected = leaveType;
+
+        fdate = binding.dateTimeFrom.getText().toString();
+        tdate = binding.dateTimeTo.getText().toString();
+        ftime = binding.timeFrom.getText().toString();
+        ttime = binding.timeTo.getText().toString();
+
 
         binding.spinnerLeaveTypes.setAdapter(new LeaveTypeSpinnerAdapter(lc, getActivity()));
+
+        int i = 0;
+        if (selected != null) {
+            for (LeaveCount leaveCount : lc) {
+                if (leaveCount.getId() == selected.getId()) {
+                    break;
+                }
+                i++;
+            }
+        }
+        binding.spinnerLeaveTypes.setSelection(i);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                binding.dateTimeFrom.setText(fdate);
+                binding.dateTimeTo.setText(tdate);
+                binding.timeFrom.setText(ftime);
+                binding.timeTo.setText(ttime);
+
+            }
+        }, 100);
+    }
+
+    private void setSpinnerListener() {
+        binding.spinnerLeaveTypes.setOnItemSelectedListener(spinnerLeaveTypeItemSelectedListener);
+    }
+
+    private void removeSpinnerListeners() {
+        binding.spinnerLeaveTypes.setOnItemSelectedListener(null);
     }
 
     private void setListeners() {
+
         binding.dateTimeFrom.addTextChangedListener(textChangeListenerFromDate);
         binding.dateTimeTo.addTextChangedListener(textChangeListenerToDate);
         binding.timeFrom.addTextChangedListener(textChangeListenerFromTime);
-        binding.spinnerLeaveTypes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                leaveType = lc.get(position);
-
-                binding.dateTimeFrom.setText("");
-                binding.dateTimeTo.setText("");
-                binding.timeFrom.setText("");
-                binding.timeTo.setText("");
-                binding.layoutTime.setVisibility(View.GONE);
-
-                if (leaveType == null || leaveType.getType().equals(getString(R.string.select)) || leaveType.getId() == -1) {
-
-                    binding.dateTimeFrom.setOnClickListener(null);
-                    binding.dateTimeTo.setOnClickListener(null);
-                    binding.timeFrom.setOnClickListener(null);
-                    binding.timeTo.setOnClickListener(null);
-                    return;
-                }
-                new CustomDatePickerDialog(getActivity(), binding.dateTimeFrom, binding.dateTimeTo, leaveType.getRemaining(), CustomDatePickerDialog.START_DATE);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
+        setSpinnerListener();
 
         binding.requestTimeOff.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -438,6 +483,7 @@ public class LeaveRequestFragment extends Fragment {
                 callRequestTimeOffApi();
             }
         });
+
         binding.attachment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -448,17 +494,15 @@ public class LeaveRequestFragment extends Fragment {
         binding.note.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    binding.noteCount.setText("("+binding.note.getText().length()+")");
+                binding.noteCount.setText("(" + binding.note.getText().length() + ")");
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
     }
@@ -473,16 +517,16 @@ public class LeaveRequestFragment extends Fragment {
     private void requestPermission() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if(ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED) {
-//                requestPermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//            }else {
-//                showFileChooser();
-//            }
+            //            if(ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED) {
+            //                requestPermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            //            }else {
+            //                showFileChooser();
+            //            }
             requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
-
         } else {
             showFileChooser();
         }
+
     }
 
     public void showFileChooser() {
@@ -589,11 +633,8 @@ public class LeaveRequestFragment extends Fragment {
         }
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-
         Urls urls = retrofit.create(Urls.class);
-
         Call<LeaveRequestResponse> call = urls.getLeaveRequest(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())));
-
         call.enqueue(new Callback<LeaveRequestResponse>() {
             @Override
             public void onResponse(Call<LeaveRequestResponse> call, Response<LeaveRequestResponse> response) {
@@ -613,7 +654,7 @@ public class LeaveRequestFragment extends Fragment {
             @Override
             public void onFailure(Call<LeaveRequestResponse> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.ApiError(t,getActivity());
+                AppUtils.ApiError(t, getActivity());
 //                AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
 //                tv.setText(t.getMessage());
@@ -629,8 +670,13 @@ public class LeaveRequestFragment extends Fragment {
 
     public void refreshApiCalls() {
         ApiManager.getInstance().getToken();
-        getLeaveRequest();
-        refreshLeaveCountView();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getLeaveRequest();
+                refreshLeaveCountView();
+            }
+        }, 1000);
     }
 
 }

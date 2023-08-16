@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -93,13 +94,12 @@ public class HomeFragment extends Fragment {
         AttendanceHistoryRecyclerAdapter adapter = new AttendanceHistoryRecyclerAdapter(getActivity(), attendanceHistories);
         binding.contentHome.recyclerViewAttendanceHistory.setAdapter(adapter);
 
-        updateCheckInCheckOutProgress(isCheckedIn, isCheckedOut, attendanceHistory);
+        updateCheckInCheckOutProgress(SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getCheckout_check(), isCheckedIn, isCheckedOut, attendanceHistory);
     }
 
-    private void updateCheckInCheckOutProgress(boolean isCheckedIn, boolean isCheckedOut, AttendanceHistory attendanceHistory) {
+    private void updateCheckInCheckOutProgress(String checkoutCheck, boolean isCheckedIn, boolean isCheckedOut, AttendanceHistory attendanceHistory) {
         if (isCheckedIn && !isCheckedOut) {
             if (!oneTimeCheckinAnimationCompleted) {
-
 
                 if (objectAnimator != null && objectAnimator.isRunning()) {
                     return;
@@ -109,16 +109,21 @@ public class HomeFragment extends Fragment {
                     return;
                 }
 
-
                 binding.circleAnimation.setProgress(0);
                 binding.circleAnimation.setMax(1000);
                 binding.checkedIn.setText(getResources().getText(R.string.checkedin));
-                binding.checkin.setVisibility(View.VISIBLE);
                 binding.checkin.setText(getResources().getText(R.string.checkout));
                 binding.time.setText(AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getCheckin_time(), AppUtils.FORMAT19, AppUtils.FORMAT5));
                 binding.closeImg.setVisibility(View.GONE);
                 binding.animationTick.cancelAnimation();
                 binding.animationTick.setVisibility(View.VISIBLE);
+
+                if (checkoutCheck.equals(AppWideWariables.NO)) {
+                    binding.checkin.setVisibility(View.GONE);
+                } else {
+                    binding.checkin.setVisibility(View.VISIBLE);
+                }
+
 
                 objectAnimator = ObjectAnimator.ofInt(binding.circleAnimation, "progress", 1000).setDuration(3000);
                 objectAnimator.addListener(new Animator.AnimatorListener() {
@@ -158,15 +163,20 @@ public class HomeFragment extends Fragment {
             } else {
                 binding.circleAnimation.setProgress(1000);
                 binding.checkedIn.setText(getResources().getText(R.string.checkedin));
-                binding.checkin.setVisibility(View.VISIBLE);
                 binding.checkin.setText(getResources().getText(R.string.checkout));
                 binding.time.setText(AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getCheckin_time(), AppUtils.FORMAT19, AppUtils.FORMAT5));
                 binding.closeImg.setVisibility(View.GONE);
 //                binding.animationTick.cancelAnimation();
 //                binding.animationTick.setAnimation(R.raw.tick);
                 binding.animationTick.setVisibility(View.VISIBLE);
+                if (checkoutCheck.equals(AppWideWariables.NO)) {
+                    binding.checkin.setVisibility(View.GONE);
+                } else {
+                    binding.checkin.setVisibility(View.VISIBLE);
+                }
+
             }
-        } else if (isCheckedIn && isCheckedOut) {
+        } else if (isCheckedIn && isCheckedOut && checkoutCheck.equals(AppWideWariables.YES)) {
             if (!oneTimeCheckoutAnimationCompleted) {
                 if (objectAnimator != null && objectAnimator.isRunning()) {
                     return;
@@ -305,6 +315,7 @@ public class HomeFragment extends Fragment {
         binding.textHome.setText(SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getName());
 //        updateProgressBar();
 //        getAttendanceHistory();
+        refreshApiCalls();
         enableCheckinButton(true);
     }
 
@@ -313,24 +324,18 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-
         Urls urls = retrofit.create(Urls.class);
-
         JsonObject body = new JsonObject();
 
         UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
-
         body.addProperty("checkout_time", AppUtils.getCurrentDateTimeGMT5String());
-
         Call<ApiBaseResponse> call = urls.checkout(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())), String.valueOf(userData.getBasicData().get(0).getId()), body);
 
         call.enqueue(new Callback<ApiBaseResponse>() {
             @Override
             public void onResponse(Call<ApiBaseResponse> call, Response<ApiBaseResponse> response) {
                 Log.i("response", response.toString());
-
                 if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST, response, getActivity())) {
                     if (!response.isSuccessful()) {
                         return;
@@ -344,7 +349,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<ApiBaseResponse> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.ApiError(t,getActivity());
+                AppUtils.ApiError(t, getActivity());
 //                AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
             }
@@ -405,7 +410,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<ApiBaseResponse> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.ApiError(t,getActivity());
+                AppUtils.ApiError(t, getActivity());
 //                AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
 //                tv.setText(t.getMessage());
@@ -447,7 +452,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<AttendanceHistoryResponse> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.ApiError(t,getActivity());
+                AppUtils.ApiError(t, getActivity());
 //                AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
 //                tv.setText(t.getMessage());
@@ -485,15 +490,36 @@ public class HomeFragment extends Fragment {
     public void refreshApiCalls() {
 
         ApiManager.getInstance().getToken();
-        if (SharedPreferenceHelper.isInGeofence(getActivity()) || SharedPreferenceHelper.hasFaceLockPath(getActivity())) {
-            if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
-                callCheckOutApi();
-            } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
-                callCheckInApi();
-            } else {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (SharedPreferenceHelper.isInGeofence(getActivity())) {
+                    if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
+                        callCheckOutApi();
+                    } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
+                        callCheckInApi();
+                    } else {
 
+                    }
+                } else if (SharedPreferenceHelper.hasFaceLockPath(getActivity())) {
+                    if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
+                        callCheckOutApi();
+                    } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
+                        callCheckInApi();
+                    } else {
+
+                    }
+                } else if (SharedPreferenceHelper.isInGeofence(getActivity()) && SharedPreferenceHelper.hasFaceLockPath(getActivity())) {
+                    if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
+                        callCheckOutApi();
+                    } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
+                        callCheckInApi();
+                    } else {
+
+                    }
+                }
+                getAttendanceHistory();
             }
-        }
-        getAttendanceHistory();
+        }, 1000);
     }
 }

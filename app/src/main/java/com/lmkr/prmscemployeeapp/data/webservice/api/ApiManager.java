@@ -18,7 +18,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ApiManager {
+public class ApiManager{
 
     private static ApiManager Instance = null;
 
@@ -30,11 +30,6 @@ public class ApiManager {
     }
 
     public void getToken() {
-
-        boolean shouldRefresh = SharedPreferenceHelper.getBoolean(SharedPreferenceHelper.SHOULD_REFRESH_TOKEN, App.getInstance());
-        if (!shouldRefresh) {
-            return;
-        }
 
         UserData userData = SharedPreferenceHelper.getLoggedinUser(App.getInstance());
 

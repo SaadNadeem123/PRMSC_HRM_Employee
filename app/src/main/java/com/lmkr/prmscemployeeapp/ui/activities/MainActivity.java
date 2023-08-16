@@ -257,7 +257,7 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    private void refreshApiCalls() {
+    public void refreshApiCalls() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

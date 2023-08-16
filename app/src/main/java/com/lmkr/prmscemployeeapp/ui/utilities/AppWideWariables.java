@@ -22,4 +22,10 @@ public class AppWideWariables {
     @Nullable
     public static final String FACE_LOCK_PATH = "faceLockPath";
     public static final int MINIMUM_TIME_DIFF = 30; //in minutes
+    public static final String YES = "yes";
+    public static final String NO = "no";
+
+    public static final String PENDING = "pending";
+    public static final String APPROVED = "approved";
+    public static final String REJECTED = "rejected";
 }

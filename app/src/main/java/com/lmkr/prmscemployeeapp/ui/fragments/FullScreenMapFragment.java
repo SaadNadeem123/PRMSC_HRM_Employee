@@ -37,12 +37,12 @@ import com.google.maps.android.PolyUtil;
 import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
-import com.lmkr.prmscemployeeapp.data.webservice.api.JsonObjectResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.Locations;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.ui.activities.CameraXActivity;
+import com.lmkr.prmscemployeeapp.ui.activities.MainActivity;
 import com.lmkr.prmscemployeeapp.ui.locationUtils.LocationService;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
@@ -93,84 +93,86 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
 
     private void updateCurrentLocation() {
 
-        latitude = SharedPreferenceHelper.getString("lat", getActivity());
-        longitude = SharedPreferenceHelper.getString("long", getActivity());
+        try {
+            latitude = SharedPreferenceHelper.getString("lat", getActivity());
+            longitude = SharedPreferenceHelper.getString("long", getActivity());
 
-        PolylineOptions options = new PolylineOptions();
-        options.clickable(true);
-        options.color(getResources().getColor(R.color.black));
+            PolylineOptions options = new PolylineOptions();
+            options.clickable(true);
+            options.color(getResources().getColor(R.color.black));
 
-        PolygonOptions optionsPolygon = new PolygonOptions();
-        optionsPolygon.clickable(true);
-        optionsPolygon.fillColor(getResources().getColor(R.color.app_green_overlay));
-        optionsPolygon.strokeColor(getResources().getColor(R.color.black));
+            PolygonOptions optionsPolygon = new PolygonOptions();
+            optionsPolygon.clickable(true);
+            optionsPolygon.fillColor(getResources().getColor(R.color.app_green_overlay));
+            optionsPolygon.strokeColor(getResources().getColor(R.color.black));
+
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+            for (Locations location : userdata.getLatLngArray()) {
+                builder.include(new LatLng(location.getLatitude(), location.getLongitude()));
+                options.add(new LatLng(location.getLatitude(), location.getLongitude()));
+                optionsPolygon.add(new LatLng(location.getLatitude(), location.getLongitude()));
+            }
 
 
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-
-        for (Locations location : userdata.getLatLngArray()) {
-            builder.include(new LatLng(location.getLatitude(), location.getLongitude()));
-            options.add(new LatLng(location.getLatitude(), location.getLongitude()));
-            optionsPolygon.add(new LatLng(location.getLatitude(), location.getLongitude()));
-        }
-
-
-        if (mMap != null) {
-            mMap.clear();
+            if (mMap != null) {
+                mMap.clear();
 
 
 //            Polyline polyline1 = googleMap.addPolyline(options);
-            Polygon polygon = mMap.addPolygon(optionsPolygon);
+                Polygon polygon = mMap.addPolygon(optionsPolygon);
 
-            // Set listeners for click events.
-            mMap.setOnPolylineClickListener(this);
-            mMap.setOnPolygonClickListener(this);
-            if (!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude)) {
-                builder.include(new LatLng(Double.valueOf(latitude), Double.valueOf(longitude)));
-                mMap.addMarker(new MarkerOptions().position(new LatLng(Double.valueOf(latitude), Double.valueOf(longitude))).icon(AppUtils.BitmapFromVector(getActivity(), R.drawable.baseline_my_location_24)).title(getString(R.string.current_location)));
-            }
-            try {
-                mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-                    @Override
-                    public void onMapLoaded() {
-                        try {
-                            LatLngBounds bounds = builder.build();
-                            int padding = 100; // offset from edges of the map in pixels
-                            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                // Set listeners for click events.
+                mMap.setOnPolylineClickListener(this);
+                mMap.setOnPolygonClickListener(this);
+                if (!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude)) {
+                    builder.include(new LatLng(Double.valueOf(latitude), Double.valueOf(longitude)));
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(Double.valueOf(latitude), Double.valueOf(longitude))).icon(AppUtils.BitmapFromVector(getActivity(), R.drawable.baseline_my_location_24)).title(getString(R.string.current_location)));
+                }
+                try {
+                    mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                        @Override
+                        public void onMapLoaded() {
+                            try {
+                                LatLngBounds bounds = builder.build();
+                                int padding = 100; // offset from edges of the map in pixels
+                                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
-                            mMap.moveCamera(cu);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                                mMap.moveCamera(cu);
+                            } catch (Exception e) {
+                                e.printStackTrace();
 
+                            }
                         }
-                    }
-                });
+                    });
 
-            } catch (Exception e) {
-                e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
 
-        }
+            boolean isInGeofence = false;
+            if (!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude)) {
+                isInGeofence = PolyUtil.containsLocation(Double.valueOf(latitude), Double.valueOf(longitude), optionsPolygon.getPoints(), true);
+            }
 
-        boolean isInGeofence = false;
-        if (!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude)) {
-             isInGeofence = PolyUtil.containsLocation(Double.valueOf(latitude), Double.valueOf(longitude), optionsPolygon.getPoints(), true);
+            if (isInGeofence) {
+                animationCross.setVisibility(View.GONE);
+                animation.cancelAnimation();
+                animation.setVisibility(View.GONE);
+                proceed.setEnabled(true);
+                title.setText("");
+            } else {
+                animationCross.setVisibility(View.VISIBLE);
+                animation.setVisibility(View.VISIBLE);
+                animation.cancelAnimation();
+                proceed.setEnabled(false);
+                title.setText(getResources().getText(R.string.not_in_defined_area));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        if (isInGeofence) {
-            animationCross.setVisibility(View.GONE);
-            animation.cancelAnimation();
-            animation.setVisibility(View.GONE);
-            proceed.setEnabled(true);
-            title.setText("");
-        } else {
-            animationCross.setVisibility(View.VISIBLE);
-            animation.setVisibility(View.VISIBLE);
-            animation.cancelAnimation();
-            proceed.setEnabled(false);
-            title.setText(getResources().getText(R.string.not_in_defined_area));
-        }
-
     }
 
     @Override
@@ -212,10 +214,11 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
                 if (userdata.getBasicData().get(0).getFacelock().equals("yes")) {
                     getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
                 } else {
-                    SharedPreferenceHelper.saveBoolean(AppWideWariables.IS_IN_GEOFENCE,true,getActivity());
+                    SharedPreferenceHelper.saveBoolean(AppWideWariables.IS_IN_GEOFENCE, true, getActivity());
+                    ((MainActivity) getActivity()).refreshApiCalls();
 //                    callCheckInApi();
                 }
-                destroy();
+                dismiss();
             }
         });
 
@@ -255,7 +258,7 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             @Override
             public void onResponse(Call<ApiBaseResponse> call, Response<ApiBaseResponse> response) {
                 Log.i("response", response.toString());
-                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST,response, getActivity())) {
+                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST, response, getActivity())) {
                     if (!response.isSuccessful()) {
 //                    tv.setText("Code :" + response.code());
                         return;
@@ -270,7 +273,7 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             @Override
             public void onFailure(Call<ApiBaseResponse> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.ApiError(t,getActivity());
+                AppUtils.ApiError(t, getActivity());
 //                AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
 //                tv.setText(t.getMessage());
@@ -302,7 +305,6 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
 
                 if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST, response, getActivity())) {
                     if (!response.isSuccessful()) {
-                        return;
                     }
                 }
             }
@@ -310,7 +312,7 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             @Override
             public void onFailure(Call<ApiBaseResponse> call, Throwable t) {
                 t.printStackTrace();
-                AppUtils.ApiError(t,getActivity());
+                AppUtils.ApiError(t, getActivity());
 //                AppUtils.makeNotification(t.toString(), getActivity());
                 Log.i("response", t.toString());
             }
@@ -381,9 +383,7 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             public void run() {
                 try {
                     updateCurrentLocation();
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 

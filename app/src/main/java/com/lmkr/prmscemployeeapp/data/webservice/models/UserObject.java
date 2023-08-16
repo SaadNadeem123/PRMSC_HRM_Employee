@@ -1,39 +1,45 @@
 package com.lmkr.prmscemployeeapp.data.webservice.models;
 
-import android.location.Location;
-
 public class UserObject {
 
-            private int id;                                       //": 1,
-            private String application_access;                                       //": "yes",
-            private String name;                                     //": "Hassan",
-            private String father_name;                                      //": "Tahir",
-            private String cnic_number;                                      //": "0123456789101",
-            private String designation;                                      //": "HR",
-            private String dob;                                      //": "2000-06-21T00:00:00.000Z",
-            private String domicile;                                     //": "Jhelum",
-            private String marital_status;                                       //": "unmarried",
-            private String email;                                        //": "hassan@lmkt.com",
-            private String mobile;                                       //": "03032191991",
-            private String landline;                                     //": "0544271112",
-            private String address;                                      //": "House no 510 G9/3",
-            private String next_to_kin_name;                                     //": "Hamza Tahir",
-            private String next_to_kin_contact;                                      //": "03365759858",
-            private int status;                                       //": 1,
-            private String facelock;                                     //": "yes",
-            private String geofence;                                     //": "yes",
-            private int geofence_id;                                      //": 9,
-            private String geofence_name;                                        //": "Location 1",
-            private String geofencepoint_text;                                       //": "POLYGON((73.056740942452 33.7107174921365,73.0583792473862 33.711411375713,73.0576155903876 33.7124996679882,73.0561669888723 33.7117338304433,73.056740942452 33.7107174921365))",
-            private int manager_id;                                       //": 16,
-            private String manager_name;                                     //": "Hammad Mahmood",
-            private int department_id;                                        //": 1,
-            private String department_name;                                      //": "HR",
-            private int created_by;                                       //": 1
+    private int id;                                            //": 1,
+    private String application_access;                         //": "yes",
+    private String name;                                       //": "Hassan",
+    private String father_name;                                //": "Tahir",
+    private String cnic_number;                                //": "0123456789101",
+    private String designation;                                //": "HR",
+    private String dob;                                        //": "2000-06-21T00:00:00.000Z",
+    private String domicile;                                   //": "Jhelum",
+    private String marital_status;                             //": "unmarried",
+    private String email;                                      //": "hassan@lmkt.com",
+    private String mobile;                                     //": "03032191991",
+    private String landline;                                   //": "0544271112",
+    private String address;                                    //": "House no 510 G9/3",
+    private String next_to_kin_name;                           //": "Hamza Tahir",
+    private String next_to_kin_contact;                        //": "03365759858",
+    private int status;                                        //": 1,
+    private String facelock;                                   //": "yes",
+    private String geofence;                                   //": "yes",
+    private String checkout_check;                             //": "yes",
+    private int geofence_id;                                   //": 9,
+    private String geofence_name;                              //": "Location 1",
+    private String geofencepoint_text;                         //": "POLYGON((73.056740942452 33.7107174921365,73.0583792473862 33.711411375713,73.0576155903876 33.7124996679882,73.0561669888723 33.7117338304433,73.056740942452 33.7107174921365))",
+    private int manager_id;                                    //": 16,
+    private String manager_name;                               //": "Hammad Mahmood",
+    private int department_id;                                 //": 1,
+    private String department_name;                            //": "HR",
+    private int created_by;                                    //": 1
+    private String hire_date;
+    private String employment_status;
+    private String wing_name;
 
-            private String hire_date;
-            private String employment_status;
-            private String wing_name;
+    public String getCheckout_check() {
+        return checkout_check;
+    }
+
+    public void setCheckout_check(String checkout_check) {
+        this.checkout_check = checkout_check;
+    }
 
     public String getHire_date() {
         return hire_date;
