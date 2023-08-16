@@ -113,11 +113,11 @@ public class EmergencyContactAdapter extends RecyclerView.Adapter<EmergencyConta
             homePhone.setText(contact.getHome());
             mobilePhone.setText(contact.getMobile());
             address.setText(contact.getAddress());
-            if(contact.getId() == 1){
+           /* if(contact.getId() == 1){
                 text1.setVisibility(View.VISIBLE);
             }else {
                 text1.setVisibility(View.GONE);
-            }
+            }*/
         }
     }
 

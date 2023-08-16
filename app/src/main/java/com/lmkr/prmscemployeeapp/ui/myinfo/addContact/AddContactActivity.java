@@ -64,6 +64,9 @@ public class AddContactActivity extends AppCompatActivity {
             relationship = receivedBundle.getString("Relation");
             getEmployeeId = receivedBundle.getInt("Id");
             staticId = receivedBundle.getInt("staticId");
+
+            Log.d("BundleValue:" , receivedBundle.toString());
+
         }
 
         binding.submitButton.setVisibility(View.VISIBLE);

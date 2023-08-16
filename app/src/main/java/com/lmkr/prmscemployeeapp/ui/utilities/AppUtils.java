@@ -2534,7 +2534,7 @@ public class AppUtils {
 
     public static void callPhoneNumber(String phoneNumber, Context context) {
         if (!phoneNumber.isEmpty()) {
-            Intent callIntent = new Intent(Intent.ACTION_CALL);
+            Intent callIntent = new Intent(Intent.ACTION_DIAL);
             callIntent.setData(Uri.parse("tel:" + phoneNumber));
             context.startActivity(callIntent);
         }
