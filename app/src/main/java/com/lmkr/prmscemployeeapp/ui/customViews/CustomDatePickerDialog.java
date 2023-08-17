@@ -143,7 +143,8 @@ public class CustomDatePickerDialog implements View.OnClickListener, DatePickerD
             //add remaining day in start date and set it as max date selection limit
 
             long maxdate;
-            if ((int) remaining_leave_count > 1) {//                dialog.getDatePicker().setMaxDate(System.currentTimeMillis()+ 30L * 24 * 60 * 60 * 1000);
+            if ((int) remaining_leave_count > 1) {
+                //                dialog.getDatePicker().setMaxDate(System.currentTimeMillis()+ 30L * 24 * 60 * 60 * 1000);
                 maxdate = System.currentTimeMillis() + ((long) ((int) remaining_leave_count) * 24 * 60 * 60 * 1000) + AppUtils.getDateDifference(AppUtils.getDateFromString(AppUtils.getCurrentDateGMT5String() + " 00:00:00"/*+AppUtils.getCurrentTimeOfDayWithSeconds()*/, AppUtils.FORMAT14), AppUtils.getDateFromString(AppUtils.getConvertedDateFromOneFormatToOther(startDate, AppUtils.FORMAT15, AppUtils.FORMAT3) + " 00:00:00"/*+AppUtils.getCurrentTimeOfDayWithSeconds()*/, AppUtils.FORMAT14));
             } else {
                 maxdate = System.currentTimeMillis() + AppUtils.getDateDifference(AppUtils.getDateFromString(AppUtils.getCurrentDateGMT5String() + " " + AppUtils.getCurrentTimeOfDayWithSeconds(), AppUtils.FORMAT14), AppUtils.getDateFromString(AppUtils.getConvertedDateFromOneFormatToOther(startDate, AppUtils.FORMAT15, AppUtils.FORMAT3) + " 00:00:00" /*+ AppUtils.getCurrentTimeOfDayWithSeconds()*/, AppUtils.FORMAT14));
@@ -159,7 +160,6 @@ public class CustomDatePickerDialog implements View.OnClickListener, DatePickerD
         dialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
         dialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
         dialog.getButton(DatePickerDialog.BUTTON_NEUTRAL).setTextColor(Color.BLACK);
-
 
     }
 

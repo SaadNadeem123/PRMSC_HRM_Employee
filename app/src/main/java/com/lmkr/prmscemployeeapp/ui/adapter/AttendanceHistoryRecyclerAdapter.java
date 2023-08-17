@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -55,8 +56,12 @@ public class AttendanceHistoryRecyclerAdapter extends RecyclerView.Adapter<Atten
             holder.dateLabel.setVisibility(View.VISIBLE);
         }
 
-        if (!TextUtils.isEmpty(attendanceHistory.getCheckout_time())||attendanceHistory.getCheckout_time()!=null) {
+        if (!TextUtils.isEmpty(attendanceHistory.getCheckout_time()) && attendanceHistory.getCheckout_time() != null && !attendanceHistory.getCheckout_time().equals("null")) {
             holder.timeCheckout.setText(AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getCheckout_time(), AppUtils.FORMAT19, AppUtils.FORMAT5));
+            holder.lLCheckout.setVisibility(View.VISIBLE);
+        }
+        else {
+            holder.lLCheckout.setVisibility(View.GONE);
         }
         holder.timeCheckin.setText(AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getCheckin_time(), AppUtils.FORMAT19, AppUtils.FORMAT5));
     }
@@ -76,12 +81,14 @@ public class AttendanceHistoryRecyclerAdapter extends RecyclerView.Adapter<Atten
         TextView timeCheckin;
         TextView dateLabel;
         TextView timeCheckout;
+        LinearLayout lLCheckout;
 
         public ViewHolder(RecyclerItemAttendanceHistoryBinding binding) {
             super(binding.getRoot());
             timeCheckin = binding.timeCheckin;
             dateLabel = binding.dateLabel;
             timeCheckout = binding.timeCheckout;
+            lLCheckout = binding.llCheckout;
         }
     }
 }

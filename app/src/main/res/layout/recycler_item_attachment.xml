@@ -21,6 +21,18 @@
         android:textSize="14dp"
         tools:text="attachmentName" />
 
+    <TextView
+        android:id="@+id/size"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="14dp"
+        tools:text="50 MB"/>
+
     <ImageButton
         android:id="@+id/viewAttachment"
         android:layout_width="@dimen/button_height"

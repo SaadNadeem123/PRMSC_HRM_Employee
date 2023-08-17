@@ -2494,13 +2494,20 @@ public class AppUtils {
     }
 
     public static boolean checkNetworkState(Activity activity) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        boolean response = networkInfo != null && networkInfo.isConnected();
-        if (!response) {
-            makeNotification(activity.getResources().getString(R.string.check_internet_connection), activity);
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            boolean response = networkInfo != null && networkInfo.isConnected();
+            if (!response) {
+                makeNotification(activity.getResources().getString(R.string.check_internet_connection), activity);
+            }
+            return response;
         }
-        return response;
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static String formatDate(String inputDate) {
@@ -2635,6 +2642,82 @@ public class AppUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isFileGreaterThan2MB(File file) {
+        int maxFileSize = 2 * 1024 * 1024;
+        Long l = file.length();
+        String fileSize = l.toString();
+        int finalFileSize = Integer.parseInt(fileSize);
+        return finalFileSize >= maxFileSize;
+    }
+    public static String getFileSizeInMB(File file) {
+        Long l = file.length();
+        String fileSize = l.toString();
+        int finalFileSize = Integer.parseInt(fileSize);
+        return finalFileSize+"";
+//        float sizeInKB = finalFileSize/1024f;
+//        float sizeInMB = sizeInKB/1024f;
+//        return sizeInMB>=1?sizeInMB+" MB":sizeInKB+" KB";
+//        return String.format("%.2f", sizeInMB>=1?sizeInMB+" MB":sizeInKB+" KB");
+    }
+
+    public static String getFileSize(File file) {
+        FileInputStream fis = null;
+        try {/*w  w w. ja v  a 2s  . c o  m*/
+            fis = new FileInputStream(file);
+            int length = fis.available();
+            double GB = 1000*1000*1000;
+            double MB = 1000*1000;
+            double KB = 1000;
+/*
+            double GB = 1024*1024*1024;
+            double MB = 1024*1024;
+            double KB = 1024;
+*/
+            if (length >= GB) {
+                return String.format("%.2f GB", length * 1.0 / GB);
+            } else if (length >= MB) {
+                return String.format("%.2f MB", length * 1.0 / MB);
+            } else {
+                return String.format("%.2f KB", length * 1.0 / KB);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return "unknown";
+    }
+
+    public static boolean sizeLessThan2MB(File file) {
+        FileInputStream fis = null;
+        try {
+            /*w  w w. ja v  a 2s  . c o  m*/
+            fis = new FileInputStream(file);
+            int length = fis.available();
+            double GB = 1000*1000*1000;
+            double MB = 1000*1000;
+            double KB = 1000;
+            if (length <= 2.0*MB) {
+                return true;
+            } else{
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }
 

@@ -74,6 +74,17 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/status_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:gravity="center"
+                android:inputType="textCapWords"
+                android:background="@color/white"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
             <View
                 android:id="@+id/status"
                 android:layout_width="8dp"

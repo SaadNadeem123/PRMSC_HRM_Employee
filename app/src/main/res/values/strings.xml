@@ -61,7 +61,7 @@
     <string name="from_date">From Date</string>
     <string name="to_date">To Date</string>
     <string name="attachments">Attachments</string>
-    <string name="attachment">Attachment</string>
+    <string name="attachment">Attachment (Max 2MB)</string>
     <string name="add_another">Add Another</string>
     <string name="please_write_details_about_request">Please write details about request...</string>
     <string name="please_try_again_later">Please try again later</string>
@@ -129,5 +129,6 @@
     <string name="logout">Logout</string>
     <string name="api_generic_err_response">Something went wrong please try again later!</string>
     <string name="attendance_history">Attendance History</string>
+    <string name="size_greater_than_2mb">File size is greater than 2MB</string>
 
 </resources>

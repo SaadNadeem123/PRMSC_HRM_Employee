@@ -56,7 +56,6 @@ public class LeaveRequestRecyclerAdapter extends RecyclerView.Adapter<LeaveReque
             holder.year.setVisibility(View.VISIBLE);
         }
 
-
         holder.date.setText(AppUtils.getConvertedDateFromOneFormatToOther(leaveRequest.getFrom_date(), AppUtils.FORMAT19, AppUtils.FORMAT_DAY) + " - " + AppUtils.getConvertedDateFromOneFormatToOther(leaveRequest.getTo_date(), AppUtils.FORMAT19, AppUtils.FORMAT_DAY));
         holder.leaveType.setText(leaveRequest.getLeave_type_name());
 
@@ -74,14 +73,18 @@ public class LeaveRequestRecyclerAdapter extends RecyclerView.Adapter<LeaveReque
         switch (leaveRequest.getStatus()) {
             case AppWideWariables.PENDING:
                 holder.status.setBackgroundColor(context.getColor(R.color.grey_dark));
+                holder.statusLabel.setTextColor(context.getColor(R.color.grey_dark));
                 break;
             case AppWideWariables.APPROVED:
                 holder.status.setBackgroundColor(context.getColor(R.color.app_green));
+                holder.statusLabel.setTextColor(context.getColor(R.color.app_green));
                 break;
             case AppWideWariables.REJECTED:
                 holder.status.setBackgroundColor(context.getColor(R.color.red));
+                holder.statusLabel.setTextColor(context.getColor(R.color.red));
                 break;
         }
+        holder.statusLabel.setText(leaveRequest.getStatus());
 
     }
 
@@ -95,6 +98,7 @@ public class LeaveRequestRecyclerAdapter extends RecyclerView.Adapter<LeaveReque
         TextView year;
         TextView date;
         TextView leaveType;
+        TextView statusLabel;
         ImageView image;
         View status;
 
@@ -105,6 +109,7 @@ public class LeaveRequestRecyclerAdapter extends RecyclerView.Adapter<LeaveReque
             leaveType = binding.leaveType;
             image = binding.image;
             status = binding.status;
+            statusLabel = binding.statusLabel;
         }
     }
 }

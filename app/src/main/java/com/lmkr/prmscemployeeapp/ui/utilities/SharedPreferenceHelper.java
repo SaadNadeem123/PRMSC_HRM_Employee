@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import androidx.fragment.app.FragmentActivity;
-
 import com.google.gson.Gson;
 import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
@@ -34,6 +32,10 @@ public class SharedPreferenceHelper {
     public static String IS_CHECKED_IN = "isCheckedIn";
 
     public static void saveFloat(String key, float value, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat(key, value);
@@ -41,12 +43,20 @@ public class SharedPreferenceHelper {
     }
 
     public static float getFloat(String key, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
 //        return preferences.getString(key, "NaN");
         return preferences.getFloat(key, 0);
     }
 
     public static void saveString(String key, String value, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(key, value);
@@ -54,6 +64,10 @@ public class SharedPreferenceHelper {
     }
 
     public static void saveInt(String key, int value, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(key, value);
@@ -61,6 +75,10 @@ public class SharedPreferenceHelper {
     }
 
     public static String getString(String key, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
 //        return preferences.getString(key, "NaN");
         if (preferences.contains(key)) {
@@ -71,6 +89,10 @@ public class SharedPreferenceHelper {
     }
 
     public static int getInt(String key, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
 //        return preferences.getString(key, "NaN");
         if (preferences.contains(key)) {
@@ -81,6 +103,10 @@ public class SharedPreferenceHelper {
     }
 
     public static void saveBoolean(String key, boolean value, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(key, value);
@@ -88,11 +114,19 @@ public class SharedPreferenceHelper {
     }
 
     public static boolean getBoolean(String key, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
         return preferences.getBoolean(key, false);
     }
 
     public static void saveBooleanFile(String key, boolean value, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(key, value);
@@ -100,6 +134,10 @@ public class SharedPreferenceHelper {
     }
 
     public static void saveSyncBoolean(String key, boolean value, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(key, value);
@@ -107,12 +145,19 @@ public class SharedPreferenceHelper {
     }
 
     public static boolean getSyncBoolean(String key, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
         return preferences.getBoolean(key, true);
     }
 
     public static void clearPrefrences(Context context) {
-
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         String firebaseToken = getString(FIRE_BASE_TOKEN, context);
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -122,6 +167,10 @@ public class SharedPreferenceHelper {
     }
 
     public static void remove(String key, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
 
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -130,11 +179,18 @@ public class SharedPreferenceHelper {
     }
 
     public static boolean has(String key, Context context) {
+        if(context==null)
+        {
+            context = App.getInstance();
+        }
         SharedPreferences preferences = context.getSharedPreferences(PREFRENCESNAME, Context.MODE_PRIVATE);
         return preferences.contains(key);
     }
 
     public static UserData getLoggedinUser(Context context) {
+        if (context == null) {
+            context = App.getInstance();
+        }
         String userdata = getString(USERDATA, context);
 
         UserData user = (new Gson()).fromJson(userdata, UserData.class);
@@ -143,38 +199,60 @@ public class SharedPreferenceHelper {
     }
 
     public static void setLoggedinUser(Context context, UserData userdata) {
+        if (context == null) {
+            context = App.getInstance();
+        }
         saveString(USERDATA, (new Gson()).toJson(userdata), context);
         saveBoolean(SharedPreferenceHelper.IS_LOGGED_IN, true, context);
     }
 
     public static boolean isCheckedIn(Context context) {
+        if (context == null) {
+            context = App.getInstance();
+        }
+
         Boolean isCheckedIn = getBoolean(IS_CHECKED_IN, context);
 
         return isCheckedIn;
     }
 
-    public static void setCheckedIn(boolean isCheckedIn,Context context) {
+    public static void setCheckedIn(boolean isCheckedIn, Context context) {
+        if (context == null) {
+            context = App.getInstance();
+        }
         saveBoolean(IS_CHECKED_IN, isCheckedIn, context);
     }
 
     public static boolean isInGeofence(Context context) {
-        return getBoolean(AppWideWariables.IS_IN_GEOFENCE,context);
+        if (context == null) {
+            context = App.getInstance();
+        }
+        return getBoolean(AppWideWariables.IS_IN_GEOFENCE, context);
     }
 
     public static boolean hasFaceLockPath(Context context) {
-        String path = getString(AppWideWariables.FACE_LOCK_PATH,context);
+        if (context == null) {
+            context = App.getInstance();
+        }
+        String path = getString(AppWideWariables.FACE_LOCK_PATH, context);
         return !TextUtils.isEmpty(path);
     }
 
     public static String getFaceLockPath(Context context) {
-        String path = getString(AppWideWariables.FACE_LOCK_PATH,context);
+        if (context == null) {
+            context = App.getInstance();
+        }
+        String path = getString(AppWideWariables.FACE_LOCK_PATH, context);
         return path;
     }
 
-    public static void resetGeofenceAndFaceLock(Context context)
-    {
-     remove(AppWideWariables.IS_IN_GEOFENCE,context);
-     remove(AppWideWariables.FACE_LOCK_PATH,context);
+    public static void resetGeofenceAndFaceLock(Context context) {
+        if (context == null) {
+            context = App.getInstance();
+        }
+
+        remove(AppWideWariables.IS_IN_GEOFENCE, context);
+        remove(AppWideWariables.FACE_LOCK_PATH, context);
     }
 
 }

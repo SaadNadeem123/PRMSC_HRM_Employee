@@ -22,6 +22,7 @@ import com.lmkr.prmscemployeeapp.ui.utilities.PermissionsRequest;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.List;
 
 public class AttachmentsRecyclerAdapter extends RecyclerView.Adapter<AttachmentsRecyclerAdapter.ViewHolder> {
@@ -63,6 +64,7 @@ public class AttachmentsRecyclerAdapter extends RecyclerView.Adapter<Attachments
         }
 
         holder.name.setText(fileModel.getFileName());
+        holder.size.setText(AppUtils.getFileSize(new File(fileModel.getPath())));
         /*holder.viewAttachment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,12 +120,13 @@ public class AttachmentsRecyclerAdapter extends RecyclerView.Adapter<Attachments
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView name;
+        TextView name,size;
         ImageButton viewAttachment, deleteAttachment;
 
         public ViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name);
+            size = itemView.findViewById(R.id.size);
             viewAttachment = itemView.findViewById(R.id.viewAttachment);
             deleteAttachment = itemView.findViewById(R.id.deleteAttachment);
 

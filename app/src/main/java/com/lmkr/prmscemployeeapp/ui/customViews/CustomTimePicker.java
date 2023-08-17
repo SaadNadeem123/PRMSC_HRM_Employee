@@ -175,9 +175,11 @@ public class CustomTimePicker implements View.OnClickListener, TimePickerDialog.
                     dialog.setMax((int) (hours + AppWideWariables.HALF_LEAVE_HOUR_LIMIT), min);
                 } else {
                     if (min + AppWideWariables.MINIMUM_TIME_DIFF < 60) {
-                        dialog.setMin((int) (hours + AppWideWariables.HALF_LEAVE_HOUR_LIMIT), min + AppWideWariables.MINIMUM_TIME_DIFF);
+                        dialog.setMin((int) (hours /*+ AppWideWariables.HALF_LEAVE_HOUR_LIMIT*/), min + AppWideWariables.MINIMUM_TIME_DIFF);
+                        dialog.updateTime((int) (hours /*+ AppWideWariables.HALF_LEAVE_HOUR_LIMIT*/), min + AppWideWariables.MINIMUM_TIME_DIFF);
                     } else {
                         dialog.setMin((int) (hours + 1), AppWideWariables.MINIMUM_TIME_DIFF-(60-min));
+                        dialog.updateTime((int) (hours + 1), AppWideWariables.MINIMUM_TIME_DIFF-(60-min));
                     }
                 }
             }
@@ -190,7 +192,6 @@ public class CustomTimePicker implements View.OnClickListener, TimePickerDialog.
         dialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
         dialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
         dialog.getButton(DatePickerDialog.BUTTON_NEUTRAL).setTextColor(Color.BLACK);
-
 
     }
 

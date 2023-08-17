@@ -413,61 +413,97 @@ public class LeaveRequestFragment extends Fragment {
 
     private void refreshLeaveCountView() {
 
-        UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
-
-        binding.recyclerviewLeaveProgress.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        LeavesRemainingRecyclerAdapter adapter = new LeavesRemainingRecyclerAdapter(getActivity(), userData.getLeaveCount());
-        binding.recyclerviewLeaveProgress.setAdapter(adapter);
-
-        lc.clear();
-        lc.add(new LeaveCount(-1, getString(R.string.select), 0, 0));
-
-        for (LeaveCount leaveCount : userData.getLeaveCount()) {
-            if (leaveCount.getRemaining() > 0) {
-                lc.add(leaveCount);
+        try {
+            if(binding==null)
+            {
+                return;
             }
-        }
+            UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
 
-        LeaveCount selected = leaveType;
+            if (binding.recyclerviewLeaveProgress != null) {
+                binding.recyclerviewLeaveProgress.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+                LeavesRemainingRecyclerAdapter adapter = new LeavesRemainingRecyclerAdapter(getActivity(), userData.getLeaveCount());
+                binding.recyclerviewLeaveProgress.setAdapter(adapter);
+            }
+            lc.clear();
+            lc.add(new LeaveCount(-1, getString(R.string.select), 0, 0));
 
-        fdate = binding.dateTimeFrom.getText().toString();
-        tdate = binding.dateTimeTo.getText().toString();
-        ftime = binding.timeFrom.getText().toString();
-        ttime = binding.timeTo.getText().toString();
-
-
-        binding.spinnerLeaveTypes.setAdapter(new LeaveTypeSpinnerAdapter(lc, getActivity()));
-
-        int i = 0;
-        if (selected != null) {
-            for (LeaveCount leaveCount : lc) {
-                if (leaveCount.getId() == selected.getId()) {
-                    break;
+            for (LeaveCount leaveCount : userData.getLeaveCount()) {
+                if (leaveCount.getRemaining() > 0) {
+                    lc.add(leaveCount);
                 }
-                i++;
             }
-        }
-        binding.spinnerLeaveTypes.setSelection(i);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
 
+            removeSpinnerListeners();
+
+            LeaveCount selected = leaveType;
+
+            if (binding.dateTimeFrom != null) {
+                fdate = binding.dateTimeFrom.getText().toString();
+            }
+            if (binding.dateTimeTo != null) {
+                tdate = binding.dateTimeTo.getText().toString();
+            }
+            if (binding.timeFrom != null) {
+                ftime = binding.timeFrom.getText().toString();
+            }
+            if (binding.timeTo != null) {
+                ttime = binding.timeTo.getText().toString();
+            }
+
+            if (binding.spinnerLeaveTypes != null) {
+                binding.spinnerLeaveTypes.setAdapter(new LeaveTypeSpinnerAdapter(lc, getActivity()));
+
+                int i = 0;
+                if (selected != null) {
+                    for (LeaveCount leaveCount : lc) {
+                        if (leaveCount.getId() == selected.getId()) {
+                            break;
+                        }
+                        i++;
+                    }
+                }
+
+                binding.spinnerLeaveTypes.setSelection(i);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+/*
                 binding.dateTimeFrom.setText(fdate==null?"":fdate);
                 binding.dateTimeTo.setText(tdate==null?"":tdate);
                 binding.timeFrom.setText(ftime==null?"":ftime);
                 binding.timeTo.setText(ttime==null?"":ttime);
-
+*/
+                        setSpinnerListener();
+                    }
+                }, 1000);
             }
-        }, 100);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void setSpinnerListener() {
-        binding.spinnerLeaveTypes.setOnItemSelectedListener(spinnerLeaveTypeItemSelectedListener);
+        try {
+            if (binding.spinnerLeaveTypes != null) {
+                binding.spinnerLeaveTypes.setOnItemSelectedListener(spinnerLeaveTypeItemSelectedListener);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void removeSpinnerListeners() {
-        binding.spinnerLeaveTypes.setOnItemSelectedListener(null);
+        try {
+            if (binding.spinnerLeaveTypes != null) {
+                binding.spinnerLeaveTypes.setOnItemSelectedListener(null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void setListeners() {
@@ -545,8 +581,8 @@ public class LeaveRequestFragment extends Fragment {
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
 
         // REQUEST_CODE = <some-integer>
-//        mGetContent.launch("*/*");
-//        mGetContent.launch("image/*");
+        // mGetContent.launch("*/*");
+        // mGetContent.launch("image/*");
 
         startActivityForResult(intent, REQUEST_CODE);
     }
@@ -586,6 +622,8 @@ public class LeaveRequestFragment extends Fragment {
 
         int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
         int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+
+
         returnCursor.moveToFirst();
         String fileName = returnCursor.getString(nameIndex);
         String mimeType = getActivity().getContentResolver().getType(returnUri);
@@ -598,10 +636,24 @@ public class LeaveRequestFragment extends Fragment {
         file.setMimeType(mimeType);
         file.setSize(size);
         file.setType(null);
+
+        if(!AppUtils.sizeLessThan2MB(new File(file.getPath())))
+        {
+            binding.attachment.setVisibility(View.VISIBLE);
+            AppUtils.makeNotification(getResources().getString(R.string.size_greater_than_2mb),getActivity());
+            return;
+        }
+
+
         fromAttachment = true;
         adapter.setFromAttachment(fromAttachment);
         adapter.removeItems(files);
         updateFileAdapter(file);
+
+//        AppUtils.makeNotification(AppUtils.getFileSizeInMB(new File(file.getPath())),getActivity());
+//        AppUtils.makeNotification(AppUtils.getFileSize(new File(file.getPath())),getActivity());
+
+
 
     }
 
@@ -615,12 +667,12 @@ public class LeaveRequestFragment extends Fragment {
         }
         files.clear();
     }
-/*
+    /*
     public void viewImage(FileModel fileModel) {
         findViewById(R.id.fl_image).setVisibility(View.VISIBLE);
         AppUtils.loadWithGlide(BookingDetailsActivity.this, ApiCalls.BASE_DOCUMENT_URL + fileModel.getPath(), findViewById(R.id.image));
     }
-*/
+    */
 
     private void updateFileAdapter(FileModel fileModel) {
         adapter.addItem(fileModel);
