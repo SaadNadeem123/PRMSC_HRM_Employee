@@ -523,7 +523,14 @@ public class LeaveRequestFragment extends Fragment {
         binding.attachment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                binding.attachment.setEnabled(false);
                 requestPermission();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.attachment.setEnabled(true);
+                    }
+                },2000);
             }
         });
 

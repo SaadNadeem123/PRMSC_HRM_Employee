@@ -3,6 +3,8 @@ package com.lmkr.prmscemployeeapp.viewModel;
 import static com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls.BASE_EMERGENCY_URL;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.AddContactModel;
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
@@ -26,7 +28,7 @@ public class ContactViewModel extends ViewModel {
         call.enqueue(callback);
     }
 
-    public void updateEmergencyContact(String bearerToken, int contactId, AddContactModel contact, Callback<ApiBaseResponse> callback) {
+    public void updateEmergencyContact(String bearerToken, int contactId, JsonObject contact, Callback<ApiBaseResponse> callback) {
         Call<ApiBaseResponse> call = contactServiceUrls.updateEmergencyContact(bearerToken, contactId, contact);
         call.enqueue(callback);
     }

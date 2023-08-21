@@ -85,7 +85,7 @@ public interface Urls {
     Call<ApiBaseResponse> updateEmergencyContact(
             @Header("Authorization") String bearerToken,
             @Path("contactId") int contactId,
-            @Body AddContactModel contact
+            @Body JsonObject body
     );
 
     @POST("employee/emergencycontact/create/{id}")

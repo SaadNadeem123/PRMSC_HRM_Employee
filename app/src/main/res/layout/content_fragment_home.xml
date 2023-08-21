@@ -41,14 +41,14 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="3"
                 tools:listitem="@layout/recycler_item_leave_progress"
-                tools:orientation="horizontal"/>
+                tools:orientation="horizontal" />
 
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:visibility="gone"
-                android:background="@color/title_background_grey">
+                android:background="@color/title_background_grey"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -66,9 +66,9 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="3"
-                android:visibility="gone"
                 tools:listitem="@layout/recycler_item_holidays" />
 
 
@@ -98,21 +98,35 @@
                     android:background="@android:color/transparent"
                     android:gravity="center_vertical"
                     android:text="@string/view_all"
-                    android:visibility="gone"
                     android:textAllCaps="true"
                     android:textColor="@color/grey_text"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewAttendanceHistory"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="3"
-                tools:listitem="@layout/recycler_item_attendance_history" />
+                android:layout_height="wrap_content">
 
+                <TextView
+                    android:id="@+id/no_record_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/no_record_found"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:textColor="@color/black"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewAttendanceHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/recycler_item_attendance_history" />
+
+            </FrameLayout>
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

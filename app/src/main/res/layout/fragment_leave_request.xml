@@ -50,8 +50,8 @@
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="30dp"
-                android:text="@string/leaves_type"
                 android:drawableEnd="@drawable/compulsory"
+                android:text="@string/leaves_type"
                 android:textAlignment="center"
                 android:textColor="@color/app_green"
                 android:textSize="14sp" />
@@ -98,8 +98,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="@string/from_date"
                         android:drawableEnd="@drawable/compulsory"
+                        android:text="@string/from_date"
                         android:textAlignment="center"
                         android:textColor="@color/app_green"
                         android:textSize="14sp" />
@@ -142,8 +142,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="@string/to_date"
                         android:drawableEnd="@drawable/compulsory"
+                        android:text="@string/to_date"
                         android:textAlignment="center"
                         android:textColor="@color/app_green"
                         android:textSize="14sp" />
@@ -197,8 +197,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="@string/from_time"
                         android:drawableEnd="@drawable/compulsory"
+                        android:text="@string/from_time"
                         android:textAlignment="center"
                         android:textColor="@color/app_green"
                         android:textSize="14sp" />
@@ -241,8 +241,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="@string/to_time"
                         android:drawableEnd="@drawable/compulsory"
+                        android:text="@string/to_time"
                         android:textAlignment="center"
                         android:textColor="@color/app_green"
                         android:textSize="14sp" />
@@ -287,15 +287,15 @@
                     android:id="@+id/note_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/note"
                     android:drawableEnd="@drawable/compulsory"
+                    android:text="@string/note"
                     android:textColor="@color/app_green"
                     android:textSize="14sp" />
 
                 <View
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1" />
 
                 <TextView
                     android:id="@+id/note_count"
@@ -411,13 +411,27 @@
                 android:textColor="@color/app_green"
                 android:textSize="14dp" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewLeaveRequest"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="3"
-                tools:listitem="@layout/recycler_item_attendance_history" />
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/no_record_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="@string/no_record_found"
+                    android:textColor="@color/black" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewLeaveRequest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/recycler_item_attendance_history" />
+            </FrameLayout>
 
             <View
                 android:layout_width="match_parent"

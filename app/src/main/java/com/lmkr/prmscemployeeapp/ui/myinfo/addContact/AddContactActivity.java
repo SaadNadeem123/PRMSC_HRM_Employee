@@ -14,6 +14,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.data.webservice.models.AddContactModel;
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.databinding.ActivityAddContactBinding;
@@ -22,6 +24,9 @@ import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
 import com.lmkr.prmscemployeeapp.viewModel.ContactViewModel;
 import com.lmkr.prmscemployeeapp.viewModel.EmergencyContactViewModel;
+
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -282,7 +287,7 @@ public class AddContactActivity extends AppCompatActivity {
         binding.progressBar.setVisibility(View.VISIBLE);
 
         AddContactModel updatedContact = new AddContactModel();
-        updatedContact.setEmployeeId(getEmployeeId);
+        updatedContact.setEmployeeId(employeeId);
         updatedContact.setName(Objects.requireNonNull(binding.username.getText()).toString());
         updatedContact.setEmail(Objects.requireNonNull(binding.email.getText()).toString());
         updatedContact.setRelation(String.valueOf(dropDownValue));
@@ -291,10 +296,24 @@ public class AddContactActivity extends AppCompatActivity {
         updatedContact.setHomeNumber(Objects.requireNonNull(binding.homePhone.getText()).toString());
         updatedContact.setAddress(Objects.requireNonNull(binding.address.getText()).toString());
 
+        JsonObject body = new JsonObject();
+
+
+                body.addProperty("employee_id",employeeId);                                                                     //: "1",
+                body.addProperty("name",Objects.requireNonNull(binding.username.getText()).toString());                        //: "TEST",
+                body.addProperty("email",Objects.requireNonNull(binding.email.getText()).toString());                       //: "test@lmkt.com",
+                body.addProperty("relation",String.valueOf(dropDownValue));                                                  //:"5", //1 for Mother, 1 for Father etc ... ENUM('Mother', 'Father', 'Brother', 'Sister', 'Spouse', 'Daughter', 'Son', 'Friend')
+                body.addProperty("mobile",Objects.requireNonNull(binding.mobilePhone.getText()).toString());                      //: "03365759000",
+                body.addProperty("work_number",Objects.requireNonNull(binding.workPhone.getText()).toString());                 //: "05441122334",
+                body.addProperty("home_number",Objects.requireNonNull(binding.homePhone.getText()).toString());                 //: "0511212009",
+                body.addProperty("address",Objects.requireNonNull(binding.address.getText()).toString());                     //: "TEST"
+
+
+
         contactViewModel.updateEmergencyContact(
                 token,
                 getEmployeeId,
-                updatedContact,
+                body,
                 new Callback<ApiBaseResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<ApiBaseResponse> call, @NonNull Response<ApiBaseResponse> response) {
