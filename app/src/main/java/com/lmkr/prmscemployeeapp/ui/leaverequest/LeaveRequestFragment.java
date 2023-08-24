@@ -25,6 +25,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -204,6 +205,7 @@ public class LeaveRequestFragment extends Fragment {
     private String ftime = "";
     private String ttime = "";
     private AttachmentsRecyclerAdapter adapter;
+
     ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
         @Override
         public void onActivityResult(Uri uri) {
@@ -414,8 +416,7 @@ public class LeaveRequestFragment extends Fragment {
     private void refreshLeaveCountView() {
 
         try {
-            if(binding==null)
-            {
+            if (binding == null) {
                 return;
             }
             UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
@@ -530,7 +531,7 @@ public class LeaveRequestFragment extends Fragment {
                     public void run() {
                         binding.attachment.setEnabled(true);
                     }
-                },2000);
+                }, 2000);
             }
         });
 
@@ -557,17 +558,43 @@ public class LeaveRequestFragment extends Fragment {
         }
     }
 
+    /* private void requestPermission() {
+
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+             //            if(ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED) {
+             //                requestPermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+             //            }else {
+             //                showFileChooser();
+             //            }
+             requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
+         } else {
+             showFileChooser();
+         }
+
+     }
+ */
     private void requestPermission() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            //            if(ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED) {
-            //                requestPermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            //            }else {
-            //                showFileChooser();
-            //            }
-            requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
-        } else {
+        if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            // You can use the API that requires the permission.
             showFileChooser();
+        } else if (shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // In an educational UI, explain to the user why your app requires this
+            // permission for a specific feature to behave as expected, and what
+            // features are disabled if it's declined. In this UI, include a
+            // "cancel" or "no thanks" button that lets the user continue
+            // using your app without granting the permission.
+//            showInContextUI(...)
+        } else {
+            // You can directly ask for the permission.
+            // The registered ActivityResultCallback gets the result of this request.
+//            requestPermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                showFileChooser();
+            } else {
+                requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_PERMISSION);
+            }
         }
 
     }
@@ -598,7 +625,7 @@ public class LeaveRequestFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // If the user doesn't pick a file just return
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode != REQUEST_CODE || resultCode != RESULT_OK) {
+        if (requestCode != REQUEST_CODE || resultCode != RESULT_OK || data == null || data.getData() == null) {
             return;
         }
 
@@ -610,57 +637,57 @@ public class LeaveRequestFragment extends Fragment {
 
     public void importFile(Uri returnUri) {
 
-        binding.attachment.setVisibility(View.GONE);
-//        String fileName = getFileName(returnUri);
+        try {
+            binding.attachment.setVisibility(View.GONE);
 
-        /*
-         * Get the file's content URI from the incoming Intent,
-         * then query the server app to get the file's display name
-         * and size.
-         */
+            //        String fileName = getFileName(returnUri);
 
-        Cursor returnCursor = getActivity().getContentResolver().query(returnUri, null, null, null, null);
-        /*
-         * Get the column indexes of the data in the Cursor,
-         * move to the first row in the Cursor, get the data,
-         * and display it.
-         */
+            /*
+             * Get the file's content URI from the incoming Intent,
+             * then query the server app to get the file's display name
+             * and size.
+             */
 
+            Cursor returnCursor = getActivity().getContentResolver().query(returnUri, null, null, null, null);
+            /*
+             * Get the column indexes of the data in the Cursor,
+             * move to the first row in the Cursor, get the data,
+             * and display it.
+             */
 
-        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-        int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+            int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            int sizeIndex = returnCursor.getColumnIndex(OpenableColumns.SIZE);
 
+            returnCursor.moveToFirst();
+            String fileName = returnCursor.getString(nameIndex);
+            String mimeType = getActivity().getContentResolver().getType(returnUri);
+            String size = Long.toString(returnCursor.getLong(sizeIndex));
 
-        returnCursor.moveToFirst();
-        String fileName = returnCursor.getString(nameIndex);
-        String mimeType = getActivity().getContentResolver().getType(returnUri);
-        String size = Long.toString(returnCursor.getLong(sizeIndex));
+            FileModel file = new FileModel();
+            file.setPath(FileUtils.getPath(getActivity(), returnUri));
+            file.setUri(returnUri);
+            file.setFileName(fileName);
+            file.setMimeType(mimeType);
+            file.setSize(size);
+            file.setType(null);
 
-        FileModel file = new FileModel();
-        file.setPath(FileUtils.getPath(getActivity(), returnUri));
-        file.setUri(returnUri);
-        file.setFileName(fileName);
-        file.setMimeType(mimeType);
-        file.setSize(size);
-        file.setType(null);
+            if (!AppUtils.sizeLessThan2MB(new File(file.getPath()))) {
+                binding.attachment.setVisibility(View.VISIBLE);
+                AppUtils.makeNotification(getResources().getString(R.string.size_greater_than_2mb), getActivity());
+                return;
+            }
 
-        if(!AppUtils.sizeLessThan2MB(new File(file.getPath())))
-        {
-            binding.attachment.setVisibility(View.VISIBLE);
-            AppUtils.makeNotification(getResources().getString(R.string.size_greater_than_2mb),getActivity());
-            return;
-        }
-
-
-        fromAttachment = true;
-        adapter.setFromAttachment(fromAttachment);
-        adapter.removeItems(files);
-        updateFileAdapter(file);
+            fromAttachment = true;
+            adapter.setFromAttachment(fromAttachment);
+            adapter.removeItems(files);
+            updateFileAdapter(file);
 
 //        AppUtils.makeNotification(AppUtils.getFileSizeInMB(new File(file.getPath())),getActivity());
 //        AppUtils.makeNotification(AppUtils.getFileSize(new File(file.getPath())),getActivity());
-
-
+        } catch (Exception e) {
+            e.printStackTrace();
+            binding.attachment.setVisibility(View.VISIBLE);
+        }
 
     }
 

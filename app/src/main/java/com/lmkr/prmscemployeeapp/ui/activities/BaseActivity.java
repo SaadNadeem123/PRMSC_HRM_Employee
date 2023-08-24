@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.lmkr.prmscemployeeapp.R;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -37,5 +38,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.activity_back_in, R.anim.activity_back_out);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AppUtils.hideNotification(this);
     }
 }
