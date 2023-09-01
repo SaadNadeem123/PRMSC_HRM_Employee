@@ -15,12 +15,14 @@ import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public class FileUtils {
     private static Uri contentUri = null;
@@ -29,9 +31,18 @@ public class FileUtils {
     public static String getPath(Context context, final Uri uri) {
         // check here to KITKAT or new version
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+        final boolean isAndroidR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
         String selection = null;
         String[] selectionArgs = null;
         // DocumentProvider
+        if(isAndroidR)
+        {
+            try {
+                return getStringFilePathFromUri(context,uri);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         if (isKitKat) {
             // ExternalStorageProvider
 
@@ -66,18 +77,14 @@ public class FileUtils {
                             }
                         }
                     } finally {
-                        if (cursor != null)
-                            cursor.close();
+                        if (cursor != null) cursor.close();
                     }
                     id = DocumentsContract.getDocumentId(uri);
                     if (!TextUtils.isEmpty(id)) {
                         if (id.startsWith("raw:")) {
                             return id.replaceFirst("raw:", "");
                         }
-                        String[] contentUriPrefixesToTry = new String[]{
-                                "content://downloads/public_downloads",
-                                "content://downloads/my_downloads"
-                        };
+                        String[] contentUriPrefixesToTry = new String[]{"content://downloads/public_downloads", "content://downloads/my_downloads"};
                         for (String contentUriPrefix : contentUriPrefixesToTry) {
                             try {
                                 final Uri contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), Long.valueOf(id));
@@ -99,8 +106,7 @@ public class FileUtils {
                         return id.replaceFirst("raw:", "");
                     }
                     try {
-                        contentUri = ContentUris.withAppendedId(
-                                Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                        contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
                     } catch (NumberFormatException e) {
                         e.printStackTrace();
                     }
@@ -131,8 +137,7 @@ public class FileUtils {
                 selectionArgs = new String[]{split[1]};
 
 
-                return getDataColumn(context, contentUri, selection,
-                        selectionArgs);
+                return getDataColumn(context, contentUri, selection, selectionArgs);
             }
 
             if (isGoogleDriveUri(uri)) {
@@ -172,13 +177,10 @@ public class FileUtils {
             }
 
             if ("content".equalsIgnoreCase(uri.getScheme())) {
-                String[] projection = {
-                        MediaStore.Images.Media.DATA
-                };
+                String[] projection = {MediaStore.Images.Media.DATA};
                 Cursor cursor = null;
                 try {
-                    cursor = context.getContentResolver()
-                            .query(uri, projection, selection, selectionArgs, null);
+                    cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
                     int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                     if (cursor.moveToFirst()) {
                         return cursor.getString(column_index);
@@ -252,7 +254,7 @@ public class FileUtils {
             InputStream inputStream = context.getContentResolver().openInputStream(uri);
             FileOutputStream outputStream = new FileOutputStream(file);
             int read = 0;
-            int maxBufferSize = 1 * 1024 * 1024;
+            int maxBufferSize = 1024 * 1024;
             int bytesAvailable = inputStream.available();
 
             //int bufferSize = 1024;
@@ -282,9 +284,7 @@ public class FileUtils {
     private static String copyFileToInternalStorage(Context context, Uri uri, String newDirName) {
         Uri returnUri = uri;
 
-        Cursor returnCursor = context.getContentResolver().query(returnUri, new String[]{
-                OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE
-        }, null, null, null);
+        Cursor returnCursor = context.getContentResolver().query(returnUri, new String[]{OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE}, null, null, null);
 
 
         /*
@@ -339,16 +339,14 @@ public class FileUtils {
         final String[] projection = {column};
 
         try {
-            cursor = context.getContentResolver().query(uri, projection,
-                    selection, selectionArgs, null);
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
 
             if (cursor != null && cursor.moveToFirst()) {
                 final int index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(index);
             }
         } finally {
-            if (cursor != null)
-                cursor.close();
+            if (cursor != null) cursor.close();
         }
 
         return null;
@@ -443,8 +441,7 @@ public class FileUtils {
         return null;
     }
 
-    private static byte[] readBytes(Uri uri, ContentResolver resolver)
-            throws IOException {
+    private static byte[] readBytes(Uri uri, ContentResolver resolver) throws IOException {
         // this dynamically extends to take the bytes you read
         InputStream inputStream = resolver.openInputStream(uri);
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
@@ -464,5 +461,65 @@ public class FileUtils {
         return byteBuffer.toByteArray();
     }
 
+    public static void copyStream(InputStream source, OutputStream target) throws IOException {
+        byte[] buf = new byte[8192];
+        int length;
+        while ((length = source.read(buf)) != -1) {
+            target.write(buf, 0, length);
+        }
+    }
+
+    public static String getFileName(Context context, Uri uri) {
+        String fileName = getFileNameFromCursor(context, uri);
+        if (fileName == null) {
+            String fileExtension = getFileExtension(context, uri);
+            fileName = "temp_file" + (fileExtension != null ? "." + fileExtension : "");
+        } else if (!fileName.contains(".")) {
+            String fileExtension = getFileExtension(context, uri);
+            fileName = fileName + "." + fileExtension;
+        }
+        return fileName;
+    }
+
+    public static String getFileExtension(Context context, Uri uri) {
+        String fileType = context.getContentResolver().getType(uri);
+        return MimeTypeMap.getSingleton().getExtensionFromMimeType(fileType);
+    }
+
+    public static String getFileNameFromCursor(Context context, Uri uri) {
+        Cursor fileCursor = context.getContentResolver().query(uri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null);
+        String fileName = null;
+        if (fileCursor != null && fileCursor.moveToFirst()) {
+            int cIndex = fileCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            if (cIndex != -1) {
+                fileName = fileCursor.getString(cIndex);
+            }
+        }
+        return fileName;
+    }
+
+    public static Uri getFilePathFromUri(Context context, Uri uri) throws IOException {
+        String fileName = getFileName(context, uri);
+        File file = new File(context.getExternalCacheDir(), fileName);
+        file.createNewFile();
+        try (OutputStream outputStream = new FileOutputStream(file); InputStream inputStream = context.getContentResolver().openInputStream(uri)) {
+            FileUtils.copyStream(inputStream, outputStream); //Simply reads input to output stream
+
+            outputStream.flush();
+        }
+        return Uri.fromFile(file);
+    }
+
+    public static String getStringFilePathFromUri(Context context, Uri uri) throws IOException {
+        String fileName = getFileName(context, uri);
+        File file = new File(context.getExternalCacheDir(), fileName);
+        file.createNewFile();
+        try (OutputStream outputStream = new FileOutputStream(file); InputStream inputStream = context.getContentResolver().openInputStream(uri)) {
+            FileUtils.copyStream(inputStream, outputStream); //Simply reads input to output stream
+
+            outputStream.flush();
+        }
+        return file.getPath();
+    }
 
 }
