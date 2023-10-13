@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.lmkr.prmscemployeeapp.R;
@@ -26,44 +27,51 @@ public class CustomTimePicker implements View.OnClickListener, TimePickerDialog.
     public static final int END_TIME = 2;
     private static final int DEFAULT = -1;
     private final Context _context;
-    private final int minimumTime = Integer.valueOf(AppUtils.getCurrentHourOfDay());
+    private int minimumTime = Integer.valueOf(AppUtils.getCurrentHourOfDay());
     private final boolean is24HoursView = false;
-    TextView _textView, _textView2;
-    EditText _editText, _editText2;
-    TextInputEditText _textInputEditText, _textInputEditText2;
+    TextView _textView, _textView2,_dateTextView1,_dateTextView2;
+    EditText _editText, _editText2,_dateEditText1,_dateEditText2;
+    TextInputEditText _textInputEditText, _textInputEditText2,_dateTextInputEditText1,_dateTextInputEditText2;
     int timePickerThemeResId = R.style.MyTimePickerDialogTheme;
     private int timeType = DEFAULT;
     private int _hour_of_day;
     private int _minutes;
     private float halfLeaveLimit = -1;
 
-    public CustomTimePicker(Context _context, TextView _textView, TextView _textView2, int timeType, float halfLeaveLimit) {
+    public CustomTimePicker(Context _context, TextView _textView, TextView _textView2, TextView dateTimeTo , TextView dateTimeFrom , int timeType, float halfLeaveLimit) {
         this._context = _context;
         this._textView = _textView;
         this._textView.setOnClickListener(this);
         this._textView2 = _textView2;
+        this._dateTextView1 = dateTimeTo;
+        this._dateTextView2 = dateTimeFrom;
         this.timeType = timeType;
         this.halfLeaveLimit = halfLeaveLimit;
     }
 
-    public CustomTimePicker(Context _context, EditText _editText, EditText _editText2, int timeType, float halfLeaveLimit) {
+    public CustomTimePicker(Context _context, EditText _editText, EditText _editText2, EditText dateTimeTo , EditText dateTimeFrom , int timeType, float halfLeaveLimit) {
         this._context = _context;
         this._editText = _editText;
         this._editText.setOnClickListener(this);
         this._editText2 = _editText2;
+        this._dateEditText1 = dateTimeTo;
+        this._dateEditText2 = dateTimeFrom;
         this.timeType = timeType;
         this.halfLeaveLimit = halfLeaveLimit;
     }
 
-    public CustomTimePicker(Context _context, TextInputEditText _textInputEditText, TextInputEditText _textInputEditText2, int timeType, float halfLeaveLimit) {
+    public CustomTimePicker(Context _context, TextInputEditText _textInputEditText, TextInputEditText _textInputEditText2, TextInputEditText dateTimeTo , TextInputEditText dateTimeFrom , int timeType, float halfLeaveLimit) {
         this._context = _context;
         this._textInputEditText = _textInputEditText;
         this._textInputEditText.setOnClickListener(this);
         this._textInputEditText2 = _textInputEditText2;
+        this._dateTextInputEditText1 = dateTimeTo;
+        this._dateTextInputEditText2 = dateTimeFrom;
         this.timeType = timeType;
         this.halfLeaveLimit = halfLeaveLimit;
     }
-
+    
+    
     public Context get_context() {
         return _context;
     }
@@ -164,6 +172,11 @@ public class CustomTimePicker implements View.OnClickListener, TimePickerDialog.
 
         if (_textInputEditText2 != null) {
             startTime = _textInputEditText2.getText().toString();
+        }
+        
+        if(!_dateTextView1.getText().toString().equalsIgnoreCase(AppUtils.getCurrentDateGMT5Format2String()))
+        {
+            minimumTime = -1;
         }
 
         if (!TextUtils.isEmpty(startTime)) {

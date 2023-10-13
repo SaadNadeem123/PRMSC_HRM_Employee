@@ -208,17 +208,27 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             @Override
             public void onClick(View v) {
 
-                SharedPreferenceHelper.saveString(AppWideWariables.CHECKIN_LAT, SharedPreferenceHelper.getString("lat", getActivity()), getActivity());
-                SharedPreferenceHelper.saveString(AppWideWariables.CHECKIN_LONG, SharedPreferenceHelper.getString("long", getActivity()), getActivity());
-
-                if (userdata.getBasicData().get(0).getFacelock().equals("yes")) {
-                    getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
-                } else {
-                    SharedPreferenceHelper.saveBoolean(AppWideWariables.IS_IN_GEOFENCE, true, getActivity());
-                    ((MainActivity) getActivity()).refreshApiCalls();
-//                    callCheckInApi();
+                boolean allowToProceed = true;
+                if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getHave_ssid().equals("yes")) {
+                    allowToProceed = AppUtils.wifiLockValidate();
                 }
-                dismiss();
+
+
+                if (allowToProceed) {
+                    SharedPreferenceHelper.saveString(AppWideWariables.CHECKIN_LAT, SharedPreferenceHelper.getString("lat", getActivity()), getActivity());
+                    SharedPreferenceHelper.saveString(AppWideWariables.CHECKIN_LONG, SharedPreferenceHelper.getString("long", getActivity()), getActivity());
+
+                    if (userdata.getBasicData().get(0).getFacelock().equals("yes")) {
+                        getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
+                    } else {
+                        SharedPreferenceHelper.saveBoolean(AppWideWariables.IS_IN_GEOFENCE, true, getActivity());
+                        ((MainActivity) getActivity()).refreshApiCalls();
+//                    callCheckInApi();
+                    }
+                    dismiss();
+                } else {
+                    AppUtils.makeNotification(getResources().getString(R.string.connect_to_binded_wifi), getActivity());
+                }
             }
         });
 

@@ -41,6 +41,8 @@ import com.lmkr.prmscemployeeapp.ui.fragments.FullScreenMapFragment;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
+import com.lmkr.prmscemployeeapp.ui.utilities.networkUtils.NetworkMonitorListener;
+import com.lmkr.prmscemployeeapp.ui.utilities.networkUtils.NetworkObject;
 import com.lmkr.prmscemployeeapp.viewModel.AttendanceHistoryViewModel;
 import com.lmkr.prmscemployeeapp.viewModel.AttendanceHistoryViewModelFactory;
 
@@ -279,22 +281,33 @@ public class HomeFragment extends Fragment {
 
                 if (AppUtils.isDateTimeAuto(getActivity())) {
                     try {
-                        if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getGeofence().equals("yes")) {
-                            FullScreenMapFragment fragment = FullScreenMapFragment.getInstance();
-                            if (!fragment.isAdded()) {
-                                fragment.setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Dialog_NoTitle);
-                                fragment.show(getActivity().getSupportFragmentManager(), "MapFragment");
-                            }
-                        } else if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getFacelock().equals("yes")) {
-                            getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
-                        } else {
-                            if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
-                                callCheckOutApi();
-                            } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
-                                callCheckInApi();
-                            } else {
+                        boolean allowToProceed = true;
+                        if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getHave_ssid().equals("yes")) {
+                            allowToProceed = AppUtils.wifiLockValidate();
+                        }
 
+                        if (allowToProceed) {
+                            if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getGeofence().equals("yes")) {
+                                FullScreenMapFragment fragment = FullScreenMapFragment.getInstance();
+                                if (!fragment.isAdded()) {
+                                    fragment.setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Dialog_NoTitle);
+                                    fragment.show(getActivity().getSupportFragmentManager(), "MapFragment");
+                                }
+                            } else if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getFacelock().equals("yes")) {
+                                getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
+                            } else {
+                                if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
+                                    callCheckOutApi();
+                                } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
+                                    callCheckInApi();
+                                } else {
+
+                                }
                             }
+                        }
+                        else
+                        {
+                            AppUtils.makeNotification(getResources().getString(R.string.connect_to_binded_wifi),getActivity());
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -493,7 +506,15 @@ public class HomeFragment extends Fragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (SharedPreferenceHelper.isInGeofence(getActivity())) {
+                 if (SharedPreferenceHelper.isInGeofence(getActivity()) && SharedPreferenceHelper.hasFaceLockPath(getActivity())) {
+                    if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
+                        callCheckOutApi();
+                    } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
+                        callCheckInApi();
+                    } else {
+
+                    }
+                } else if (SharedPreferenceHelper.isInGeofence(getActivity())) {
                     if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
                         callCheckOutApi();
                     } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
@@ -502,14 +523,6 @@ public class HomeFragment extends Fragment {
 
                     }
                 } else if (SharedPreferenceHelper.hasFaceLockPath(getActivity())) {
-                    if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
-                        callCheckOutApi();
-                    } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
-                        callCheckInApi();
-                    } else {
-
-                    }
-                } else if (SharedPreferenceHelper.isInGeofence(getActivity()) && SharedPreferenceHelper.hasFaceLockPath(getActivity())) {
                     if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
                         callCheckOutApi();
                     } else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {

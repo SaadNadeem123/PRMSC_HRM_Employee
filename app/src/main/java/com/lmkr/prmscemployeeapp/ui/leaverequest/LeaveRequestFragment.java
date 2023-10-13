@@ -140,7 +140,7 @@ public class LeaveRequestFragment extends Fragment {
                 binding.layoutTime.setVisibility(View.VISIBLE);
                 binding.timeFrom.setText("");
                 binding.timeTo.setText("");
-                new CustomTimePicker(getActivity(), binding.timeFrom, binding.timeTo, CustomTimePicker.START_TIME, leaveType.getRemaining());
+                new CustomTimePicker(getActivity(), binding.timeFrom, binding.timeTo,binding.dateTimeTo, binding.dateTimeFrom, CustomTimePicker.START_TIME, leaveType.getRemaining());
             } else {
                 binding.layoutTime.setVisibility(View.GONE);
 
@@ -163,7 +163,7 @@ public class LeaveRequestFragment extends Fragment {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             binding.timeTo.setText("");
             if (!TextUtils.isEmpty(binding.timeFrom.getText())) {
-                new CustomTimePicker(getActivity(), binding.timeTo, binding.timeFrom, CustomTimePicker.END_TIME, leaveType.getRemaining());
+                new CustomTimePicker(getActivity(), binding.timeTo, binding.timeFrom,binding.dateTimeTo, binding.dateTimeFrom, CustomTimePicker.END_TIME, leaveType.getRemaining());
             } else {
                 binding.timeTo.setOnClickListener(null);
             }

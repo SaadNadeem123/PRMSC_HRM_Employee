@@ -131,5 +131,6 @@
     <string name="attendance_history">Attendance History</string>
     <string name="size_greater_than_2mb">File size is greater than 2MB</string>
     <string name="no_record_found">No Record Found</string>
+    <string name="connect_to_binded_wifi">"Kindly connect to binded wifi to proceed. "</string>
 
 </resources>

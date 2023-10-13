@@ -20,7 +20,35 @@ public class UserObject {
     private int status;                                        //": 1,
     private String facelock;                                   //": "yes",
     private String geofence;                                   //": "yes",
+    private String have_ssid;                                   //": "yes",
+    private String list;                                        //": "XX:XX:XX:XX:XX:XX",
+    private int ssid;                                        //": 1,
     private String checkout_check;                             //": "yes",
+
+    public String getList() {
+        return list;
+    }
+
+    public void setList(String list) {
+        this.list = list;
+    }
+
+    public String getHave_ssid() {
+        return have_ssid;
+    }
+
+    public void setHave_ssid(String have_ssid) {
+        this.have_ssid = have_ssid;
+    }
+
+    public int getSsid() {
+        return ssid;
+    }
+
+    public void setSsid(int ssid) {
+        this.ssid = ssid;
+    }
+
     private int geofence_id;                                   //": 9,
     private String geofence_name;                              //": "Location 1",
     private String geofencepoint_text;                         //": "POLYGON((73.056740942452 33.7107174921365,73.0583792473862 33.711411375713,73.0576155903876 33.7124996679882,73.0561669888723 33.7117338304433,73.056740942452 33.7107174921365))",

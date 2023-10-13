@@ -73,6 +73,8 @@ import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.ui.fragments.ToastFragmentManager;
 import com.lmkr.prmscemployeeapp.ui.locationUtils.LocationAlertDialogFragment;
+import com.lmkr.prmscemployeeapp.ui.utilities.networkUtils.NetworkMonitorListener;
+import com.lmkr.prmscemployeeapp.ui.utilities.networkUtils.NetworkObject;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -1750,6 +1752,13 @@ public class AppUtils {
         return sdf.format(new Date());
     }
 
+    public static String getCurrentDateGMT5Format2String() {
+
+        SimpleDateFormat sdf = new SimpleDateFormat(FORMAT15, Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+5"));
+        return sdf.format(new Date());
+    }
+
     public static Date getCurrentDateTimeGMT5() {
 
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
@@ -2718,6 +2727,19 @@ public class AppUtils {
             }
         }
         return false;
+    }
+
+    public static boolean wifiLockValidate() {
+        boolean a = NetworkMonitorListener.getInstance().getNetworkObject()!=null;
+        boolean b = NetworkMonitorListener.getInstance().getNetworkObject().getValue()!=null;
+        boolean c = false;
+        boolean d = false;
+       if(a&&b) {
+           c = NetworkMonitorListener.getInstance().getNetworkObject().getValue().getNetworkType().equals(NetworkObject.NETWORK_TYPE_WIFI);
+           d = NetworkMonitorListener.getInstance().getNetworkObject().getValue().getBssid().equals(SharedPreferenceHelper.getLoggedinUser(App.getInstance()).getBasicData().get(0).getList());
+       }
+       boolean e = a && b && c && d;
+        return  e ;
     }
 }
 

@@ -32,6 +32,7 @@ import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.webservice.TokenBoundService;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
+import com.lmkr.prmscemployeeapp.data.webservice.api.ApiManager;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.databinding.ActivityMainBinding;
@@ -200,7 +201,6 @@ public class MainActivity extends BaseActivity {
             AppUtils.showLocationSettingsAlert(MainActivity.this);
         }
 
-
         bindTokenService();
 
         refreshApiCalls();
@@ -343,7 +343,7 @@ public class MainActivity extends BaseActivity {
         navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
             @Override
             public void onDestinationChanged(@NonNull NavController navController, @NonNull NavDestination navDestination, @Nullable Bundle bundle) {
-
+                ApiManager.getInstance().getToken();
             }
         });
 

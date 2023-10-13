@@ -214,11 +214,11 @@ public class TokenBoundService extends Service {
         return ConnectivityReceiver.isConnected();
     }
 
-    public String getDeviceId() {
+    /*public String getDeviceId() {
         //        return FirebaseInstanceId.getInstance().getToken();
         return null;
     }
-
+*/
     public String getAppVersion() {
         return AppUtils.getAppBuildVersionName();
     }

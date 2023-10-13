@@ -5,6 +5,8 @@ import static cat.ereza.customactivityoncrash.config.CaocConfig.BACKGROUND_MODE_
 import android.app.Application;
 import android.database.CursorWindow;
 
+import com.lmkr.prmscemployeeapp.ui.utilities.networkUtils.NetworkMonitor;
+
 import java.lang.reflect.Field;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
@@ -20,6 +22,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         INSTANCE = this;
+        NetworkMonitor.initialize(getApplicationContext());
         initCustomActivityOnCrashLibrary();
         increaseDBCursorSize();
     }
