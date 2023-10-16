@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "943040220593",
+    "project_id": "prmsc-735ae",
+    "storage_bucket": "prmsc-735ae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:943040220593:android:88f30544c46e8514848190",
+        "android_client_info": {
+          "package_name": "com.lmkr.prmscemployeeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWtSZ5cxsIrOE94CW9uUz24KjT6JlAX3I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
