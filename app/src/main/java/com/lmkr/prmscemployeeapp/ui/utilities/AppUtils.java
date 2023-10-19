@@ -103,6 +103,8 @@ import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -2748,6 +2750,31 @@ public class AppUtils {
        boolean e = a && b && c && d;
         return  e ;
     }
+	
+	public static boolean isValidPassword(String password) {
+//          pattern     ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{4,}$
+//          ^                 # start-of-string
+//          (?=.*[0-9])       # a digit must occur at least once
+//          (?=.*[a-z])       # a lower case letter must occur at least once
+//          (?=.*[A-Z])       # an upper case letter must occur at least once
+//          (?=.*[@#$%^&+=])  # a special character must occur at least once you can replace with your special characters
+//          (?=\\S+$)         # no whitespace allowed in the entire string
+//          .{4,}             # anything, at least six places though
+//          $                 # end-of-string
+        
+//          final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{4,}$";
+//            final String PASSWORD_PATTERN = "^(?=.*?[0-9])(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[#?!@$%^&*-])(?=\\S+$).{8,}$";
+            final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[#?!@$%^&*-])(?=\\S+$).{8,}$";
+        
+        Pattern pattern;
+        Matcher matcher;
+        
+        pattern = Pattern.compile(PASSWORD_PATTERN);
+        matcher = pattern.matcher(password);
+        
+        return matcher.matches();
+	}
+	
 }
 
 

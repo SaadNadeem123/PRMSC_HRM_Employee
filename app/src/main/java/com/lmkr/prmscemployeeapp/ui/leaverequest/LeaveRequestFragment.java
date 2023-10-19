@@ -270,7 +270,7 @@ public class LeaveRequestFragment extends Fragment {
             return;
         }
 
-        if (binding.note.getText().length() < 50) {
+        if (binding.note.getText().length() < 10) {
             AppUtils.makeNotification(getResources().getString(R.string.minimum_length_notes), getActivity());
             return;
         }

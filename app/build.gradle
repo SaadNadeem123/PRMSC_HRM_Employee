@@ -96,7 +96,8 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
 
     def lifecycle_version = "2.6.2"
-    def room_version = "2.2.6"
+    def room_version = "2.4.3"
+//    def room_version = "2.2.6"
     def retrofit_version = "2.9.0"
 
     //lifecycle
@@ -109,6 +110,8 @@ dependencies {
 
     //room (sqlite wrapper ORM)
     implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-common:$room_version"
+    implementation 'androidx.room:room-common:2.5.0-rc01'
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
 //    retrofit (http calls wrapper)
@@ -141,4 +144,6 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.3.1')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-messaging'
+
+    implementation 'androidx.work:work-runtime:2.7.1'
 }

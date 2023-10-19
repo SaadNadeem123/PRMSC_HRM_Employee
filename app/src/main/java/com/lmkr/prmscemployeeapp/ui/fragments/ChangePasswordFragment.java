@@ -8,9 +8,13 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -76,6 +80,16 @@ public class ChangePasswordFragment extends BaseDialogFragment {
 	
 	@Override
 	public void setListeners() {
+		binding.confirmPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+			
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if (actionId == EditorInfo.IME_ACTION_DONE) {
+					validate();
+				}
+				return false;
+			}
+		});
 		
 		binding.close.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -145,13 +159,22 @@ public class ChangePasswordFragment extends BaseDialogFragment {
 		boolean shouldProceed = true;
 		
 		if (!binding.currentPassword.getText().toString().equalsIgnoreCase(SharedPreferenceHelper.getString(SharedPreferenceHelper.PASSWORD , getActivity()))) {
-			binding.currentPassword.setError("Current Password is not correct!");
+			binding.currentPassword.setError(getString(R.string.wrong_current_password));
 			shouldProceed = false;
-		} else if (binding.newPassword.getText().toString().isEmpty() || binding.newPassword.getText().toString().length() < 8) {
-			binding.newPassword.setError("New password length should be greater than 8 characters!");
+		}
+		if (binding.newPassword.getText().toString().isEmpty()
+				|| binding.newPassword.getText().toString().length() < 8
+				|| !AppUtils.isValidPassword(binding.newPassword.getText().toString())) {
+			binding.newPassword.setError(getString(R.string.password_format_error));
 			shouldProceed = false;
-		} else if (binding.confirmPassword.getText().toString().isEmpty() || !binding.confirmPassword.getText().toString().equals(binding.newPassword.getText().toString())) {
-			binding.confirmPassword.setError("Confirm Password is different from New Password!");
+		}
+		if (binding.confirmPassword.getText().toString().isEmpty()
+				|| binding.confirmPassword.getText().toString().length() < 8
+				|| !AppUtils.isValidPassword(binding.confirmPassword.getText().toString())) {
+			binding.confirmPassword.setError(getString(R.string.password_format_error));
+			shouldProceed = false;
+		}else if (!binding.confirmPassword.getText().toString().equals(binding.newPassword.getText().toString())) {
+			binding.confirmPassword.setError(getString(R.string.password_match_error));
 			shouldProceed = false;
 		}
 		
@@ -173,8 +196,8 @@ public class ChangePasswordFragment extends BaseDialogFragment {
 		mProgressDialog.show();
 		
 		JsonObject body = new JsonObject();
-		body.addProperty("oldPassword", binding.currentPassword.getText().toString());
-		body.addProperty("newPassword", binding.newPassword.getText().toString());
+		body.addProperty("oldPassword", binding.currentPassword.getText().toString().trim());
+		body.addProperty("newPassword", binding.newPassword.getText().toString().trim());
 		body.addProperty("source", AppWideWariables.SOURCE_MOBILE);
 		
 		Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();

@@ -45,7 +45,7 @@ public class CustomDatePickerDialog implements View.OnClickListener, DatePickerD
         this.dateType = dateType;
         this._textView.setOnClickListener(this);
         this._context = context;
-        this.remaining_leave_count = remaining_leave_count;
+        this.remaining_leave_count = remaining_leave_count-1;
     }
 
     public CustomDatePickerDialog(Context context, EditText editText, EditText editText2, float remaining_leave_count, int dateType) {
@@ -54,7 +54,7 @@ public class CustomDatePickerDialog implements View.OnClickListener, DatePickerD
         this.dateType = dateType;
         this._editText.setOnClickListener(this);
         this._context = context;
-        this.remaining_leave_count = remaining_leave_count;
+        this.remaining_leave_count = remaining_leave_count-1;
     }
 
     public CustomDatePickerDialog(Context context, TextInputEditText editText, TextInputEditText editText2, float remaining_leave_count, int dateType) {
@@ -63,7 +63,7 @@ public class CustomDatePickerDialog implements View.OnClickListener, DatePickerD
         this.dateType = dateType;
         this._textInputEditText.setOnClickListener(this);
         this._context = context;
-        this.remaining_leave_count = remaining_leave_count;
+        this.remaining_leave_count = remaining_leave_count-1;
     }
 
     @Override
