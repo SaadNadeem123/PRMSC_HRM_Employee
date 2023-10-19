@@ -25,7 +25,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (SharedPreferenceHelper.getBoolean(SharedPreferenceHelper.IS_LOGGED_IN, SplashActivity.this)) {
-                    AppUtils.switchActivity(SplashActivity.this, MainActivity.class, null);
+                    AppUtils.switchActivity(SplashActivity.this, MainActivity.class, getIntent().getExtras());
                 } else {
                     AppUtils.switchActivity(SplashActivity.this, LoginActivity.class, null);
                 }

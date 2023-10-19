@@ -36,8 +36,11 @@ public interface Urls {
     @POST("employee/login")
     Call<UserData> loginUserApi(@Body JsonObject body);
 
-     @POST("employee/changePassword")
+    @POST("employee/changePassword")
     Call<ApiBaseResponse> changePassword(@Header("Authorization") String standardHeaders,@Body JsonObject body);
+
+    @POST("employee/firebasedevice/create")
+    Call<ApiBaseResponse> updateFirebaseToken(@Header("Authorization") String standardHeaders,@Body JsonObject body);
 
     @PUT("attendance/attendance/{UserID}")
     Call<ApiBaseResponse> checkout(@Header("Authorization") String standardHeaders,@Path("UserID") String user_id,@Body JsonObject body);
