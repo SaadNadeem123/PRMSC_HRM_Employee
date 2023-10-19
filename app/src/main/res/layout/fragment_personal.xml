@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.myinfo.personalUi.personalFragment">
 
 
@@ -26,118 +26,162 @@
                 android:id="@+id/ll"
                 android:layout_width="@dimen/_80sdp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
                 android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_10sdp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/profileImage"
-                android:layout_width="@dimen/_80sdp"
-                android:layout_height="@dimen/_80sdp"
-                android:background="@drawable/profile_circular_border_imageview"
-                android:contentDescription="@string/profile_image"
-                android:elevation="@dimen/_5sdp"
-                android:padding="@dimen/_16sdp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/profile"
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/profileImage"
+                    android:layout_width="@dimen/_80sdp"
+                    android:layout_height="@dimen/_80sdp"
+                    android:background="@drawable/profile_circular_border_imageview"
+                    android:contentDescription="@string/profile_image"
+                    android:elevation="@dimen/_5sdp"
+                    android:padding="@dimen/_16sdp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/profile"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ll"
+                app:layout_constraintTop_toTopOf="@id/ll"
+                app:layout_constraintBottom_toBottomOf="@+id/ll">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:background="@android:color/white"
+                    android:fontFamily="@font/product_sans_bold"
+                    android:maxLines="1"
+                    android:text="John Doe"
+                    android:textColor="@color/text_color"
+                    android:textSize="20sp" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/designation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:background="@android:color/white"
+                    android:maxLines="1"
+                    android:text="Human Resource Manager"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/department"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:background="@android:color/white"
+                    android:maxLines="1"
+                    android:text="PMRSC"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/officeAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:background="@android:color/white"
+                    android:maxLines="1"
+                    android:text="Lahore (Head Office)"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/textAction"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_28sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:background="@color/view_bg"
+                android:fontFamily="@font/product_sans_bold"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/_10sdp"
+                android:text="@string/support"
+                android:textColor="@color/text_color"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/ll"
+                tools:ignore="RtlSymmetry" />
+
+
+            <LinearLayout
+                android:id="@+id/ll3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textAction">
+
+                <com.lmkr.prmscemployeeapp.ui.customViews.UnderlineTextView
+                    android:id="@+id/changePassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:gravity="end"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/change_password"
+                    android:textColor="@color/clickable_text_black_to_grey"
+                    android:textSize="16sp" />
 
                 <com.lmkr.prmscemployeeapp.ui.customViews.UnderlineTextView
                     android:id="@+id/logout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/logout"
-                    android:textSize="20dp"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
                     android:clickable="true"
-                    android:textColor="@color/clickable_text_black_to_grey"/>
+                    android:gravity="end"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/logout"
+                    android:textColor="@color/clickable_text_black_to_grey"
+                    android:textSize="16sp" />
+
             </LinearLayout>
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:background="@android:color/white"
-                android:maxLines="1"
-                android:text="John Doe"
-                android:fontFamily="@font/product_sans_bold"
-                android:textColor="@color/text_color"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toTopOf="@+id/designation"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/ll"
-                app:layout_constraintTop_toTopOf="@+id/ll" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/designation"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:background="@android:color/white"
-                android:maxLines="1"
-                android:text="Human Resource Manager"
-                android:textSize="14sp"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toTopOf="@+id/department"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/ll"
-                app:layout_constraintTop_toBottomOf="@+id/name" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/department"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:background="@android:color/white"
-                android:maxLines="1"
-                android:text="PMRSC"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/officeAddress"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/ll"
-                app:layout_constraintTop_toBottomOf="@+id/designation" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/officeAddress"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:background="@android:color/white"
-                android:maxLines="1"
-                android:text="Lahore (Head Office)"
-                android:visibility="gone"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/ll"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/ll"
-                app:layout_constraintTop_toBottomOf="@+id/department" />
-
 
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/text1"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_28sdp"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:background="@color/view_bg"
-                android:text="@string/contact"
                 android:fontFamily="@font/product_sans_bold"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/_10sdp"
+                android:text="@string/contact"
                 android:textColor="@color/text_color"
                 android:textSize="18sp"
-                android:paddingStart="@dimen/_10sdp"
-                android:gravity="center_vertical"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ll"
+                app:layout_constraintTop_toBottomOf="@+id/ll3"
                 tools:ignore="RtlSymmetry" />
 
 
@@ -145,11 +189,11 @@
                 android:id="@+id/text2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:background="@color/white"
                 android:text="@string/work_phone"
                 android:textSize="16sp"
-                android:layout_marginStart="@dimen/_10sdp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text1" />
 
@@ -157,13 +201,13 @@
                 android:id="@+id/landline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/white"
                 android:text="0519992227"
-                android:textStyle="bold"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:layout_marginStart="@dimen/_10sdp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text2" />
 
@@ -211,11 +255,11 @@
                 android:id="@+id/text8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:background="@color/white"
                 android:text="@string/mobile_phone"
                 android:textSize="16sp"
-                android:layout_marginStart="@dimen/_10sdp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/landline" />
 
@@ -223,13 +267,13 @@
                 android:id="@+id/mobilePhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/white"
                 android:text="0519992227"
-                android:textStyle="bold"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:layout_marginStart="@dimen/_10sdp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text8" />
 
@@ -238,11 +282,11 @@
                 android:id="@+id/text3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:background="@color/white"
                 android:text="@string/work_email"
                 android:textSize="16sp"
-                android:layout_marginStart="@dimen/_10sdp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/mobilePhone" />
 
@@ -250,13 +294,13 @@
                 android:id="@+id/workEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/white"
                 android:text="XYZ@lmkr.com"
-                android:textStyle="bold"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:layout_marginStart="@dimen/_10sdp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text3" />
 
@@ -264,11 +308,11 @@
                 android:id="@+id/text4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:background="@color/white"
                 android:text="@string/personal_email"
                 android:textSize="16sp"
-                android:layout_marginStart="@dimen/_10sdp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/workEmail" />
 
@@ -276,13 +320,13 @@
                 android:id="@+id/personalEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/white"
                 android:text="XYZ@lmkr.com"
-                android:textStyle="bold"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:layout_marginStart="@dimen/_10sdp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text4" />
 
@@ -290,15 +334,15 @@
                 android:id="@+id/text5"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_28sdp"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:background="@color/view_bg"
+                android:fontFamily="@font/product_sans_bold"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/_10sdp"
                 android:text="@string/basic_info"
                 android:textColor="@color/text_color"
                 android:textSize="18sp"
-                android:paddingStart="@dimen/_10sdp"
-                android:fontFamily="@font/product_sans_bold"
-                android:gravity="center_vertical"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/personalEmail"
                 tools:ignore="RtlSymmetry" />
@@ -307,11 +351,11 @@
                 android:id="@+id/text6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:background="@color/white"
                 android:text="@string/employee_id"
                 android:textSize="16sp"
-                android:layout_marginStart="@dimen/_10sdp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text5" />
 
@@ -319,13 +363,13 @@
                 android:id="@+id/employeeId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/white"
                 android:text="4445535"
-                android:textStyle="bold"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:layout_marginStart="@dimen/_10sdp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text6" />
 
@@ -333,11 +377,11 @@
                 android:id="@+id/text7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:background="@color/white"
                 android:text="@string/first_name"
                 android:textSize="16sp"
-                android:layout_marginStart="@dimen/_10sdp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/employeeId" />
 
@@ -345,17 +389,16 @@
                 android:id="@+id/firstName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/white"
                 android:text="John"
-                android:textStyle="bold"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:layout_marginStart="@dimen/_10sdp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text7" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+ </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 

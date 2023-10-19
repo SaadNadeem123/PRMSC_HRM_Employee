@@ -132,5 +132,11 @@
     <string name="size_greater_than_2mb">File size is greater than 2MB</string>
     <string name="no_record_found">No Record Found</string>
     <string name="connect_to_binded_wifi">"Kindly connect to binded wifi to proceed. "</string>
+    <string name="change_password">Change Password</string>
+    <string name="support">Support</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="submit">Submit</string>
 
 </resources>

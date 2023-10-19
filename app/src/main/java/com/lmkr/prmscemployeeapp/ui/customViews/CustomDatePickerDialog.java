@@ -25,7 +25,8 @@ public class CustomDatePickerDialog implements View.OnClickListener, DatePickerD
     public static final int END_DATE = 2;
     private static final int DEFAULT = -1;
     private final Context _context;
-    private final long minimumDate = System.currentTimeMillis();
+//    private final long minimumDate = System.currentTimeMillis();
+    private final long minimumDate = AppUtils.getTimeStampInMilliSecondsByThisYEAR();
     TextView _textView, _textView2;
     EditText _editText, _editText2;
     TextInputEditText _textInputEditText, _textInputEditText2;
@@ -121,7 +122,14 @@ public class CustomDatePickerDialog implements View.OnClickListener, DatePickerD
         }
 
 
+/*
         if (minimumDate != -1) {
+            dialog.getDatePicker().setMinDate(minimumDate);
+        }
+*/
+        
+        if(dateType == CustomDatePickerDialog.START_DATE)
+        {
             dialog.getDatePicker().setMinDate(minimumDate);
         }
 
@@ -141,7 +149,7 @@ public class CustomDatePickerDialog implements View.OnClickListener, DatePickerD
 
         if (dateType == END_DATE && !TextUtils.isEmpty(startDate)) {
             //add remaining day in start date and set it as max date selection limit
-
+            long minLimit =  AppUtils.getDateFromString(AppUtils.getConvertedDateFromOneFormatToOther(startDate, AppUtils.FORMAT15, AppUtils.FORMAT3) + " 00:00:00"/*+AppUtils.getCurrentTimeOfDayWithSeconds()*/, AppUtils.FORMAT14).getTime();
             long maxdate;
             if ((int) remaining_leave_count > 1) {
                 //                dialog.getDatePicker().setMaxDate(System.currentTimeMillis()+ 30L * 24 * 60 * 60 * 1000);
@@ -149,10 +157,8 @@ public class CustomDatePickerDialog implements View.OnClickListener, DatePickerD
             } else {
                 maxdate = System.currentTimeMillis() + AppUtils.getDateDifference(AppUtils.getDateFromString(AppUtils.getCurrentDateGMT5String() + " " + AppUtils.getCurrentTimeOfDayWithSeconds(), AppUtils.FORMAT14), AppUtils.getDateFromString(AppUtils.getConvertedDateFromOneFormatToOther(startDate, AppUtils.FORMAT15, AppUtils.FORMAT3) + " 00:00:00" /*+ AppUtils.getCurrentTimeOfDayWithSeconds()*/, AppUtils.FORMAT14));
             }
-            dialog.getDatePicker().setMaxDate(maxdate);
-
-            long minLimit =  AppUtils.getDateFromString(AppUtils.getConvertedDateFromOneFormatToOther(startDate, AppUtils.FORMAT15, AppUtils.FORMAT3) + " 00:00:00"/*+AppUtils.getCurrentTimeOfDayWithSeconds()*/, AppUtils.FORMAT14).getTime();
             dialog.getDatePicker().setMinDate(minLimit);
+            dialog.getDatePicker().setMaxDate(maxdate);
         }
 
         dialog.show();

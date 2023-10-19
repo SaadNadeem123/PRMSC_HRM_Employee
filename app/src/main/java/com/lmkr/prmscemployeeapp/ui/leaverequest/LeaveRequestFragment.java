@@ -435,7 +435,6 @@ public class LeaveRequestFragment extends Fragment {
                 }
             }
 
-
             removeSpinnerListeners();
 
             LeaveCount selected = leaveType;

@@ -9,11 +9,14 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.database.AppDatabase;
 import com.lmkr.prmscemployeeapp.databinding.FragmentPersonalBinding;
 import com.lmkr.prmscemployeeapp.ui.activities.SplashActivity;
+import com.lmkr.prmscemployeeapp.ui.fragments.ChangePasswordFragment;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
 
@@ -63,6 +66,12 @@ public class personalFragment extends Fragment {
             SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_LOGGED_IN, false, getActivity());
             AppUtils.switchActivity(getActivity(), SplashActivity.class, null);
             finishAffinity(getActivity());
+        });
+        
+        binding.changePassword.setOnClickListener(v -> {
+            ChangePasswordFragment changePasswordFragment = ChangePasswordFragment.getInstance();
+            changePasswordFragment.setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Dialog_NoTitle);
+            changePasswordFragment.show(getActivity().getSupportFragmentManager(), "ChangePasswordFragment");
         });
 
         binding.copyButton.setOnClickListener(v -> {

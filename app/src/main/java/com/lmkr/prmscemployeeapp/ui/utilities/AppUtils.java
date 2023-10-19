@@ -1117,6 +1117,13 @@ public class AppUtils {
     public static long getCurrentTimeStampInMilliSeconds() {
         return System.currentTimeMillis();
     }
+    
+    public static long getTimeStampInMilliSecondsByThisYEAR() {
+        Calendar firstDayOfCurrentYear = Calendar.getInstance();
+        firstDayOfCurrentYear.set(Calendar.DATE, 1);
+        firstDayOfCurrentYear.set(Calendar.MONTH, 0);
+        return firstDayOfCurrentYear.getTimeInMillis();
+    }
 
     public static long getlongFromStringDate(String timestamp, String dateFormat) {
         //Specifying the pattern of input date and time
@@ -1669,9 +1676,9 @@ public class AppUtils {
         return color;
     }
 
-    public static int getAppBuildVersionCode() {
+   /* public static int getAppBuildVersionCode() {
         return BuildConfig.VERSION_CODE;
-    }
+    }*/
 
     public static String getAppBuildVersionName() {
         return BuildConfig.VERSION_NAME;
