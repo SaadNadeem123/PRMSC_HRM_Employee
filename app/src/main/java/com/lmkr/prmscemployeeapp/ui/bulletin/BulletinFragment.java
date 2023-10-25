@@ -1,6 +1,7 @@
 package com.lmkr.prmscemployeeapp.ui.bulletin;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.lmkr.prmscemployeeapp.data.webservice.api.ApiManager;
 import com.lmkr.prmscemployeeapp.databinding.FragmentBulletinBinding;
 import com.lmkr.prmscemployeeapp.ui.adapter.BulletinRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.viewModel.BulletinViewModel;
@@ -37,16 +39,29 @@ public class BulletinFragment extends Fragment {
         bulletinViewModel.getBulletinList().observe(getViewLifecycleOwner(), bulletinList -> {
             adapter.setBulletinList(bulletinList);
         });
-
-        bulletinViewModel.fetchBulletinData();
-
-
+        
         return view;
     }
-
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshApiCalls();
+    }
+    
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+    
+    public void refreshApiCalls() {
+        ApiManager.getInstance().getToken();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                bulletinViewModel.fetchBulletinData();
+            }
+        }, 1000);
     }
 }

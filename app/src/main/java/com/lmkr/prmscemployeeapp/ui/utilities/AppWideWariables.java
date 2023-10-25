@@ -30,4 +30,6 @@ public class AppWideWariables {
     public static final String REJECTED = "rejected";
 	public static final String BUNDLE_TITLE_BODY ="body" ;
 	
+	public static final String NOTIFICATION = "notification";
+	
 }

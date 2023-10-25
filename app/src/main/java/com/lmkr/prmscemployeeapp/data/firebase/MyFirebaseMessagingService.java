@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
@@ -19,6 +20,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lmkr.prmscemployeeapp.R;
+import com.lmkr.prmscemployeeapp.ui.activities.MainActivity;
 import com.lmkr.prmscemployeeapp.ui.activities.NotificationActivity;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
@@ -72,11 +74,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 		startActivity(dialogIntent);
 		
 */
-
+		
+		
+		// Check if message contains a notification payload.
+		if (remoteMessage.getNotification() != null) {
+			Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+			String notificationTitle = remoteMessage.getNotification().getTitle();
+			String notificationBody = remoteMessage.getNotification().getBody();
+			if (remoteMessage.getNotification().getBody() != null) {
+				try{
+					sendNotification(notificationTitle,notificationBody);
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		// Check if message contains a data payload.
 		if (remoteMessage.getData().size() > 0) {
 			Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-			
+			Intent dialogIntent = new Intent(MyFirebaseMessagingService.this , NotificationActivity.class);
+			dialogIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			dialogIntent.putExtras(new Bundle());
+			startActivity(dialogIntent);
+/*
 			if (true) { //Check if data needs to be processed by long running job
 		// For long-running tasks (10 seconds or more) use WorkManager.
 				scheduleJob();
@@ -84,27 +107,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 				// Handle message within 10 seconds
 				handleNow();
 			}
-			
+*/
+		
+		
 		}
 		
-		// Check if message contains a notification payload.
-		if (remoteMessage.getNotification() != null) {
-			Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-			String notificationBody = remoteMessage.getNotification().getBody();
-			if (remoteMessage.getNotification().getBody() != null) {
-				try{
-					
-					FirebaseObject firebaseObject = new Gson().fromJson(notificationBody,new TypeToken<FirebaseObject>(){}.getType());
-					sendNotification(firebaseObject,notificationBody,remoteMessage);
-					
-//					sendNotification(notificationBody);
-				}
-				catch(Exception e)
-				{
-				
-				}
-			}
-		}
+		
 		
 		// Also if you intend on generating your own notifications as a result of a received FCM
 		// message, here is where that should be initiated. See sendNotification method below.
@@ -171,18 +179,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 	 *
 	 * @param messageBody FCM message body received.
 	 */
-	private void sendNotification(String messageBody) {
+	private void sendNotification(String title,String messageBody) {
 		Intent intent = new Intent(this, NotificationActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		Bundle bundle = new Bundle();
+		bundle.putBoolean(AppWideWariables.NOTIFICATION,true);
+		intent.putExtras(bundle);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-				PendingIntent.FLAG_IMMUTABLE);
+				PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 		
 		String channelId = getString(R.string.default_notification_channel_id);
 		Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 		NotificationCompat.Builder notificationBuilder =
 				new NotificationCompat.Builder(this, channelId)
 						.setSmallIcon(R.drawable.ic_stat_ic_notification_icon)
-						.setContentTitle(getString(R.string.fcm_message))
+//						.setContentTitle(getString(R.string.fcm_message))
+						.setContentTitle(title)
 						.setContentText(messageBody)
 						.setAutoCancel(true)
 						.setSound(defaultSoundUri)
@@ -214,9 +226,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 		NotificationCompat.Builder notificationBuilder =
 				new NotificationCompat.Builder(this, channelId)
 						.setSmallIcon(R.drawable.ic_stat_ic_notification_icon)
-						.setContentTitle(firebaseObject.getType())
+						.setContentTitle("")
+//						.setContentTitle(firebaseObject.getTitle())
 //						.setContentTitle(getString(R.string.fcm_message))
-						.setContentText(firebaseObject.getMessage())
+						.setContentText("")
+//						.setContentText(firebaseObject.getBody())
 						.setAutoCancel(true)
 						.setSound(defaultSoundUri)
 						.setContentIntent(pendingIntent);

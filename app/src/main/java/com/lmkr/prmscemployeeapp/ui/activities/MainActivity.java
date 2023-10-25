@@ -22,7 +22,6 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
@@ -30,13 +29,10 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.R;
-import com.lmkr.prmscemployeeapp.data.firebase.FirebaseTokenListener;
 import com.lmkr.prmscemployeeapp.data.webservice.TokenBoundService;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiManager;
@@ -44,6 +40,7 @@ import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.databinding.ActivityMainBinding;
+import com.lmkr.prmscemployeeapp.ui.bulletin.BulletinFragment;
 import com.lmkr.prmscemployeeapp.ui.home.HomeFragment;
 import com.lmkr.prmscemployeeapp.ui.leaverequest.LeaveRequestFragment;
 import com.lmkr.prmscemployeeapp.ui.locationUtils.LocationService;
@@ -140,6 +137,8 @@ public class MainActivity extends BaseActivity {
 				((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
 			} else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
 				((LeaveRequestFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
+			} else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
+				((BulletinFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
 			} /*else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof MyInfoFragment) {
                 ((MyInfoFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
             }*/
@@ -271,9 +270,11 @@ public class MainActivity extends BaseActivity {
 					((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
 				} else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
 					((LeaveRequestFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
+				} else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
+					((BulletinFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
 				} else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof MyInfoFragment) {
-				}
 				
+				}
 			}
 		} , 1000);
 	}
@@ -291,7 +292,6 @@ public class MainActivity extends BaseActivity {
 				//Write your code if there's no result
 			}
 		}
-		
 	}
 	
 	@Override
@@ -329,7 +329,7 @@ public class MainActivity extends BaseActivity {
 		mProgressDialog.show();
 		
 		JsonObject body = new JsonObject();
-		body.addProperty("device_name" ,Build.MANUFACTURER+" "+ Build.MODEL);
+		body.addProperty("device_name" , Build.MANUFACTURER + " " + Build.MODEL);
 		body.addProperty("device_token" , token);
 //		body.addProperty("device_token" , SharedPreferenceHelper.getString(SharedPreferenceHelper.FIRE_BASE_TOKEN , MainActivity.this));
 		
@@ -382,7 +382,7 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 		if (ActivityCompat.checkSelfPermission(this , android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this , android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 			ActivityCompat.requestPermissions(this , PermissionsRequest.LOCATION_PERMISSIONS , PermissionsRequest.LOCATION_REQUEST_CODE);
 		} else {
@@ -416,7 +416,9 @@ public class MainActivity extends BaseActivity {
 	}
 	
 	private void UpdateFirebaseToken() {
-		FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+		
+		FirebaseMessaging.getInstance().subscribeToTopic("PRMSC");
+		/*FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
 			@Override
 			public void onComplete(@NonNull Task<String> task) {
 				if(!task.isSuccessful()){
@@ -426,7 +428,7 @@ public class MainActivity extends BaseActivity {
 				String token = task.getResult();
 				callApiUpdateFirebaseToken(token);
 			}
-		});
+		});*/
 		
 /*
 		FirebaseTokenListener.getInstance().getFirebaseUpdatedToken().observe(MainActivity.this, new Observer<String>() {
@@ -456,6 +458,23 @@ public class MainActivity extends BaseActivity {
 			unregisterReceiver(messageReceiver);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		if (intent.getExtras().getBoolean(AppWideWariables.NOTIFICATION)) {
+			if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
+				if (navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
+					refreshApiCalls();
+				} else {
+					binding.navView.setSelectedItemId(binding.navView.getMenu().getItem(2).getItemId());
+				}
+			}
+		}
+		else {
+			refreshApiCalls();
 		}
 	}
 	
