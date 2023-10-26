@@ -55,7 +55,11 @@
 
         <activity
             android:name=".ui.activities.NotificationActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.PRMSCEmployeeApp.SplashScreen" />
         <activity
             android:name=".ui.myinfo.addContact.AddContactActivity"
             android:exported="false"

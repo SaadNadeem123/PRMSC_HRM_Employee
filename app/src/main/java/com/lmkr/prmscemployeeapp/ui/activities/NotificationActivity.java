@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.messaging.RemoteMessage;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 
-public class NotificationActivity extends AppCompatActivity {
+public class NotificationActivity extends BaseFullScreenActivity {
 	
 	private Activity context;
 	
@@ -91,6 +91,31 @@ public class NotificationActivity extends AppCompatActivity {
 		
 		switchToMainActivity();
 		
+	}
+	
+	@Override
+	public void initializeViews() {
+	
+	}
+	
+	@Override
+	public void setListeners() {
+	
+	}
+	
+	@Override
+	public void handleIntent() {
+	
+	}
+	
+	@Override
+	public void callApi() {
+	
+	}
+	
+	@Override
+	public void internetConnectionChangeListener(boolean isConnected) {
+	
 	}
 	
 	private void switchToMainActivity() {

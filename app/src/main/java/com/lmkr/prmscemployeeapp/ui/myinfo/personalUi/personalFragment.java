@@ -12,8 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.database.AppDatabase;
+import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
 import com.lmkr.prmscemployeeapp.databinding.FragmentPersonalBinding;
 import com.lmkr.prmscemployeeapp.ui.activities.SplashActivity;
 import com.lmkr.prmscemployeeapp.ui.fragments.ChangePasswordFragment;
@@ -62,6 +64,12 @@ public class personalFragment extends Fragment {
                     AppDatabase.getInstance(getActivity()).clearAllTables();
                 }
             }).start();
+            if(ApiCalls.BASE_URL.equals(ApiCalls.BASE_URL_LIVE)) {
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("PRMSC");
+            }
+            else if(ApiCalls.BASE_URL.equals(ApiCalls.BASE_URL_LIVE)) {
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("PRMSC-DEV");
+            }
             SharedPreferenceHelper.clearPrefrences(getActivity());
             SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_LOGGED_IN, false, getActivity());
             AppUtils.switchActivity(getActivity(), SplashActivity.class, null);

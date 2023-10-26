@@ -389,7 +389,6 @@ public class MainActivity extends BaseActivity {
 			bindService();
 		}
 		
-		UpdateFirebaseToken();
 		
 		binding = ActivityMainBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
@@ -413,11 +412,17 @@ public class MainActivity extends BaseActivity {
 			}
 		});
 		
+		UpdateFirebaseToken();
 	}
 	
 	private void UpdateFirebaseToken() {
 		
-		FirebaseMessaging.getInstance().subscribeToTopic("PRMSC");
+		if(ApiCalls.BASE_URL.equals(ApiCalls.BASE_URL_LIVE)) {
+			FirebaseMessaging.getInstance().subscribeToTopic("PRMSC");
+		}
+		else if(ApiCalls.BASE_URL.equals(ApiCalls.BASE_URL_DEV)) {
+			FirebaseMessaging.getInstance().subscribeToTopic("PRMSC-DEV");
+		}
 		/*FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
 			@Override
 			public void onComplete(@NonNull Task<String> task) {
@@ -441,7 +446,16 @@ public class MainActivity extends BaseActivity {
 			}
 		});
 */
-	
+		
+		if (getIntent()!=null && getIntent().getExtras()!=null && getIntent().getExtras().containsKey(AppWideWariables.NOTIFICATION) && getIntent().getExtras().getBoolean(AppWideWariables.NOTIFICATION)) {
+			if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
+				if (navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
+
+				} else {
+					binding.navView.setSelectedItemId(binding.navView.getMenu().getItem(2).getItemId());
+				}
+			}
+		}
 	}
 	
 	
@@ -464,12 +478,12 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		if (intent.getExtras().getBoolean(AppWideWariables.NOTIFICATION)) {
+		if (getIntent()!=null && getIntent().getExtras()!=null && getIntent().getExtras().containsKey(AppWideWariables.NOTIFICATION) && getIntent().getExtras().getBoolean(AppWideWariables.NOTIFICATION)) {
 			if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
 				if (navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
 					refreshApiCalls();
 				} else {
-					binding.navView.setSelectedItemId(binding.navView.getMenu().getItem(2).getItemId());
+//					binding.navView.setSelectedItemId(binding.navView.getMenu().getItem(2).getItemId());
 				}
 			}
 		}

@@ -1,10 +1,13 @@
 package com.lmkr.prmscemployeeapp.data.firebase;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -181,37 +184,59 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 	 */
 	private void sendNotification(String title,String messageBody) {
 		Intent intent = new Intent(this, NotificationActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		Bundle bundle = new Bundle();
-		bundle.putBoolean(AppWideWariables.NOTIFICATION,true);
-		intent.putExtras(bundle);
+//		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		intent.putExtra(AppWideWariables.NOTIFICATION,true);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-				PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+				PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+//				PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 		
 		String channelId = getString(R.string.default_notification_channel_id);
 		Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+		AudioAttributes audioAttributes = new AudioAttributes.Builder()
+				.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+				.setUsage(AudioAttributes.USAGE_NOTIFICATION).build();
 		NotificationCompat.Builder notificationBuilder =
 				new NotificationCompat.Builder(this, channelId)
 						.setSmallIcon(R.drawable.ic_stat_ic_notification_icon)
 //						.setContentTitle(getString(R.string.fcm_message))
 						.setContentTitle(title)
 						.setContentText(messageBody)
-						.setAutoCancel(true)
 						.setSound(defaultSoundUri)
+						.setDefaults(Notification.DEFAULT_ALL)
+//						.setFullScreenIntent(pendingIntent, true)
+						.setPriority(NotificationCompat.PRIORITY_MAX)
 						.setContentIntent(pendingIntent);
 		
-		NotificationManager notificationManager =
-				(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		Notification notification = notificationBuilder.build();
 		
+		int notifyId = (int) System.currentTimeMillis();
 		// Since android Oreo notification channel is needed.
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			NotificationChannel channel = new NotificationChannel(channelId,
 					"Channel human readable title",
-					NotificationManager.IMPORTANCE_DEFAULT);
-			notificationManager.createNotificationChannel(channel);
+					NotificationManager.IMPORTANCE_HIGH);
+			channel.enableVibration(true);
+			channel.enableLights(true);
+			channel.setLightColor(Color.GREEN);
+			channel.enableVibration(true);
+			channel.setSound(defaultSoundUri,audioAttributes);
+			channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+			channel.setShowBadge(true);
+			channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+			NotificationManager notificationManager = getSystemService(NotificationManager.class);
+			if (notificationManager != null) {
+				notificationManager.createNotificationChannel(channel);
+				notificationManager.notify(notifyId, notification);
+			}
 		}
-		
-		notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+		else{
+			NotificationManager mNotifyMgr =   (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+			if (mNotifyMgr != null) {
+				mNotifyMgr.notify(notifyId, notification);
+			}
+		}
+//		notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
 	}
 	private void sendNotification(FirebaseObject firebaseObject, String body , RemoteMessage remoteMessage) {
 		Intent intent = new Intent(this, NotificationActivity.class);

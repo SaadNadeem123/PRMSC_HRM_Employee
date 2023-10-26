@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.data.database.AppDatabase;
@@ -244,6 +245,12 @@ public class ChangePasswordFragment extends BaseDialogFragment {
 				AppDatabase.getInstance(getActivity()).clearAllTables();
 			}
 		}).start();
+		if(ApiCalls.BASE_URL.equals(ApiCalls.BASE_URL_LIVE)) {
+			FirebaseMessaging.getInstance().unsubscribeFromTopic("PRMSC");
+		}
+		else if(ApiCalls.BASE_URL.equals(ApiCalls.BASE_URL_LIVE)) {
+			FirebaseMessaging.getInstance().unsubscribeFromTopic("PRMSC-DEV");
+		}
 		SharedPreferenceHelper.clearPrefrences(getActivity());
 		SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_LOGGED_IN , false , getActivity());
 		AppUtils.switchActivity(getActivity() , SplashActivity.class , null);

@@ -26,7 +26,6 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 if (SharedPreferenceHelper.getBoolean(SharedPreferenceHelper.IS_LOGGED_IN, SplashActivity.this)) {
                     AppUtils.switchActivity(SplashActivity.this, NotificationActivity.class, getIntent().getExtras());
-//                    AppUtils.switchActivity(SplashActivity.this, Notification.class, getIntent().getExtras());
                 } else {
                     AppUtils.switchActivity(SplashActivity.this, LoginActivity.class, null);
                 }
