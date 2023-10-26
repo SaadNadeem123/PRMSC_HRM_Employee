@@ -446,16 +446,7 @@ public class MainActivity extends BaseActivity {
 			}
 		});
 */
-		
-		if (getIntent()!=null && getIntent().getExtras()!=null && getIntent().getExtras().containsKey(AppWideWariables.NOTIFICATION) && getIntent().getExtras().getBoolean(AppWideWariables.NOTIFICATION)) {
-			if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
-				if (navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
-
-				} else {
-					binding.navView.setSelectedItemId(binding.navView.getMenu().getItem(2).getItemId());
-				}
-			}
-		}
+		handleIntent();
 	}
 	
 	
@@ -477,19 +468,8 @@ public class MainActivity extends BaseActivity {
 	
 	@Override
 	protected void onNewIntent(Intent intent) {
+		handleIntent();
 		super.onNewIntent(intent);
-		if (getIntent()!=null && getIntent().getExtras()!=null && getIntent().getExtras().containsKey(AppWideWariables.NOTIFICATION) && getIntent().getExtras().getBoolean(AppWideWariables.NOTIFICATION)) {
-			if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
-				if (navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
-					refreshApiCalls();
-				} else {
-//					binding.navView.setSelectedItemId(binding.navView.getMenu().getItem(2).getItemId());
-				}
-			}
-		}
-		else {
-			refreshApiCalls();
-		}
 	}
 	
 	@Override
@@ -504,7 +484,28 @@ public class MainActivity extends BaseActivity {
 	
 	@Override
 	public void handleIntent() {
-	
+		Intent intent = getIntent();
+		boolean isNotification = false;
+		try {
+			isNotification = intent.getBooleanExtra(AppWideWariables.NOTIFICATION , false);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		if (isNotification) {
+			if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
+				if (navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
+					refreshApiCalls();
+				} else {
+					binding.navView.setSelectedItemId(binding.navView.getMenu().getItem(2).getItemId());
+				}
+			}
+		}
+		else {
+			refreshApiCalls();
+		}
 	}
 	
 	@Override

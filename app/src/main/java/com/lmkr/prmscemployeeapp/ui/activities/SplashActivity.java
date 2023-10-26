@@ -15,22 +15,24 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
+    
+        Bundle b = getIntent().getExtras();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (SharedPreferenceHelper.getBoolean(SharedPreferenceHelper.IS_LOGGED_IN, SplashActivity.this)) {
-                    AppUtils.switchActivity(SplashActivity.this, NotificationActivity.class, getIntent().getExtras());
+                    AppUtils.switchActivity(SplashActivity.this, MainActivity.class, b);
                 } else {
                     AppUtils.switchActivity(SplashActivity.this, LoginActivity.class, null);
                 }
                 finish();
             }
         },3000);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 }

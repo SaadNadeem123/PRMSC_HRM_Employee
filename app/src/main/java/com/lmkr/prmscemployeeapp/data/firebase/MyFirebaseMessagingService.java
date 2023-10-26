@@ -22,9 +22,11 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.lmkr.prmscemployeeapp.App;
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.ui.activities.MainActivity;
 import com.lmkr.prmscemployeeapp.ui.activities.NotificationActivity;
+import com.lmkr.prmscemployeeapp.ui.activities.SplashActivity;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
 
@@ -98,10 +100,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 		// Check if message contains a data payload.
 		if (remoteMessage.getData().size() > 0) {
 			Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-			Intent dialogIntent = new Intent(MyFirebaseMessagingService.this , NotificationActivity.class);
-			dialogIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			/*Intent dialogIntent = new Intent(MyFirebaseMessagingService.this , NotificationActivity.class);
+			dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			dialogIntent.putExtras(new Bundle());
-			startActivity(dialogIntent);
+			startActivity(dialogIntent);*/
 /*
 			if (true) { //Check if data needs to be processed by long running job
 		// For long-running tasks (10 seconds or more) use WorkManager.
@@ -182,14 +184,77 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 	 *
 	 * @param messageBody FCM message body received.
 	 */
+	
+	/*
+
 	private void sendNotification(String title,String messageBody) {
-		Intent intent = new Intent(this, NotificationActivity.class);
+		Intent intent = new Intent(this, MainActivity.class);
 //		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		intent.putExtra(AppWideWariables.NOTIFICATION,true);
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0  Request code, intent,PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+//				PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+	
+	String channelId = getString(R.string.default_notification_channel_id);
+	Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+	AudioAttributes audioAttributes = new AudioAttributes.Builder()
+			.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+			.setUsage(AudioAttributes.USAGE_NOTIFICATION).build();
+	NotificationCompat.Builder notificationBuilder =
+			new NotificationCompat.Builder(this, channelId)
+					.setSmallIcon(R.drawable.ic_stat_ic_notification_icon)
+//						.setContentTitle(getString(R.string.fcm_message))
+					.setContentTitle(title)
+					.setContentText(messageBody)
+					.setSound(defaultSoundUri)
+					.setDefaults(Notification.DEFAULT_ALL)
+//						.setFullScreenIntent(pendingIntent, true)
+					.setPriority(NotificationCompat.PRIORITY_MAX)
+					.setContentIntent(pendingIntent);
+	
+	Notification notification = notificationBuilder.build();
+	
+	int notifyId = (int) System.currentTimeMillis();
+	// Since android Oreo notification channel is needed.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+		NotificationChannel channel = new NotificationChannel(channelId,
+				"Channel human readable title",
+				NotificationManager.IMPORTANCE_HIGH);
+		channel.enableVibration(true);
+		channel.enableLights(true);
+		channel.setLightColor(Color.GREEN);
+		channel.enableVibration(true);
+		channel.setSound(defaultSoundUri,audioAttributes);
+		channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+		channel.setShowBadge(true);
+		channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+		NotificationManager notificationManager = getSystemService(NotificationManager.class);
+		if (notificationManager != null) {
+			notificationManager.createNotificationChannel(channel);
+			notificationManager.notify(notifyId, notification);
+		}
+	}
+		else{
+		NotificationManager mNotifyMgr =   (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+		if (mNotifyMgr != null) {
+			mNotifyMgr.notify(notifyId, notification);
+		}
+	}
+//		notificationManager.notify(0, notificationBuilder.build());
+}
+	 */
+	
+	private void sendNotification(String title,String messageBody) {
+		
+		int notifyId = (int) System.currentTimeMillis();
+		Intent intent = new Intent(App.getInstance(), SplashActivity.class);
+		intent.putExtra(AppWideWariables.NOTIFICATION,true);
+//		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, notifyId /* Request code */, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 //				PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+		
 		
 		String channelId = getString(R.string.default_notification_channel_id);
 		Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -210,7 +275,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 		
 		Notification notification = notificationBuilder.build();
 		
-		int notifyId = (int) System.currentTimeMillis();
 		// Since android Oreo notification channel is needed.
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			NotificationChannel channel = new NotificationChannel(channelId,
