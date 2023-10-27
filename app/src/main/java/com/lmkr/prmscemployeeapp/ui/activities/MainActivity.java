@@ -107,13 +107,24 @@ public class MainActivity extends BaseActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// do your stuff related to start activity
-			if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
-				if (navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
-					refreshApiCalls();
-				} else {
+			new Handler().postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					try{
+					if(navHostFragment!=null) {
+						if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
+							if (navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
+								refreshApiCalls();
+							} else {
 //					binding.navView.setSelectedItemId(binding.navView.getMenu().getItem(2).getItemId());
-				}
-			}
+							}
+						}
+					}
+					}catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+		}} , 1000);
 		}
 	};
 	private ProgressBar loadingProgressBar;
@@ -228,7 +239,7 @@ public class MainActivity extends BaseActivity {
 		}
 		
 		bindTokenService();
-		
+		registerReceiver(broadcastReceiver,new IntentFilter("com.from.notification"));
 		refreshApiCalls();
 	}
 	
@@ -287,16 +298,22 @@ public class MainActivity extends BaseActivity {
 		new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof HomeFragment) {
-					((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
-				} else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
-					((LeaveRequestFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
-				} else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
-					((BulletinFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
-				} else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof MyInfoFragment) {
-				
-				}
-			}
+				if(navHostFragment!=null) {
+					try {
+						if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof HomeFragment) {
+							((HomeFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
+						} else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof LeaveRequestFragment) {
+							((LeaveRequestFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
+						} else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
+							((BulletinFragment) navHostFragment.getChildFragmentManager().getFragments().get(0)).refreshApiCalls();
+						} else if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0 && navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof MyInfoFragment) {
+						
+						}
+					}catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+				}			}
 		} , 1000);
 	}
 	
@@ -324,6 +341,7 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onPause() {
 		unbindServiceToken();
+		unregisterReceiver(broadcastReceiver);
 		super.onPause();
 	}
 	
@@ -432,7 +450,6 @@ public class MainActivity extends BaseActivity {
 		});
 		
 		UpdateFirebaseToken();
-		registerReceiver(broadcastReceiver,new IntentFilter("com.from.notification"));
 		
 		
 	}

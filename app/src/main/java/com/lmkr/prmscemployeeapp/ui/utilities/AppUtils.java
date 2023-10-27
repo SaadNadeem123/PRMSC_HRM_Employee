@@ -588,13 +588,13 @@ public class AppUtils {
         String diff = "";
 
         if (elapsedDays > 0) {
-            diff = elapsedDays + "Day(s) ago";
+            diff = elapsedDays + " Day(s) ago";
         }
         else if (elapsedHours > 0) {
-            diff = elapsedHours + "Hour(s) ago";
+            diff = elapsedHours + " Hour(s) ago";
         }
         else if (elapsedMinutes > 0) {
-            diff = elapsedMinutes + "Min(s) ago";
+            diff = elapsedMinutes + " Min(s) ago";
         }
         else if (elapsedSeconds > 0) {
             diff = "Now";
