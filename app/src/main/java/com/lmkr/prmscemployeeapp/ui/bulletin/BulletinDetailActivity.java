@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.lmkr.prmscemployeeapp.R;
 import com.lmkr.prmscemployeeapp.databinding.ActivityBulletinDetailBinding;
+import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 
 public class BulletinDetailActivity extends AppCompatActivity {
 
@@ -24,9 +25,12 @@ public class BulletinDetailActivity extends AppCompatActivity {
         if (bundle != null) {
             String title = bundle.getString("title");
             String description = bundle.getString("description");
+            String date = bundle.getString("date");
 
             binding.title.setText(title);
             binding.description.setText(description);
+            binding.date.setText(AppUtils.getDifferenceBetweenDates(this,date,AppUtils.getCurrentDateTimeString()));
+    
         }
 
     }

@@ -588,6 +588,19 @@ public class AppUtils {
         String diff = "";
 
         if (elapsedDays > 0) {
+            diff = elapsedDays + "Day(s) ago";
+        }
+        else if (elapsedHours > 0) {
+            diff = elapsedHours + "Hour(s) ago";
+        }
+        else if (elapsedMinutes > 0) {
+            diff = elapsedMinutes + "Min(s) ago";
+        }
+        else if (elapsedSeconds > 0) {
+            diff = "Now";
+        }
+/*
+        if (elapsedDays > 0) {
             diff += elapsedDays + "d ";
         }
         if (elapsedHours > 0) {
@@ -599,6 +612,7 @@ public class AppUtils {
         if (elapsedSeconds > 0) {
             diff += elapsedSeconds + "s";
         }
+*/
 
         /*String[] countDown = diff.split(" ");
 
@@ -1085,7 +1099,19 @@ public class AppUtils {
         }
     }
 
-    public static String getCurrentTimeStampGMT5() {
+    public static String getCurrentDateTimeString() {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT21);
+            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+            return dateFormat.format(new Date());
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
+
+public static String getCurrentTimeStampGMT5() {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT19);
             dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+5"));
@@ -1749,7 +1775,7 @@ public class AppUtils {
 
     public static String getCurrentDateTimeGMT5String() {
 
-        SimpleDateFormat sdf = new SimpleDateFormat(FORMAT14, Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat(FORMAT21, Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("GMT+5"));
         return sdf.format(new Date());
     }
@@ -2530,9 +2556,30 @@ public class AppUtils {
 
     public static String formatDate(String inputDate) {
         try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(inputDate);
+            Date date = new SimpleDateFormat(FORMAT21).parse(inputDate);
             SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM d yyyy");
+//            Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(inputDate);
+//            SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM d yyyy");
             return outputFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+    public static String getDifferenceBetweenDates(Context context,String startDate,String endDate) {
+        try {
+            Date sdate = new SimpleDateFormat(FORMAT21).parse(startDate);
+            Date edate = new SimpleDateFormat(FORMAT21).parse(endDate);
+            long diff = edate.getTime() - sdate.getTime();
+//            System.out.println ("Days: " + TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
+            if(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)<=0)
+            {
+                return printCountDownDifference(context,startDate,endDate);
+            }
+            else {
+                SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM d yyyy");
+                return outputFormat.format(sdate);
+            }
         } catch (ParseException e) {
             e.printStackTrace();
             return "";

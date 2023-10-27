@@ -7,11 +7,15 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
@@ -99,12 +103,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 		
 		// Check if message contains a data payload.
 		if (remoteMessage.getData().size() > 0) {
+			
+			Intent intentNotification = new Intent();
+			intentNotification.setAction("com.from.notification");
+			sendBroadcast(intentNotification);
+			
 			Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-			/*Intent dialogIntent = new Intent(MyFirebaseMessagingService.this , NotificationActivity.class);
-			dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-			dialogIntent.putExtras(new Bundle());
-			startActivity(dialogIntent);*/
-/*
+			/*try{
+				Intent dialogIntent = new Intent(MyFirebaseMessagingService.this , MainActivity.class);
+				dialogIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				dialogIntent.putExtra(AppWideWariables.NOTIFICATION , true);
+				startActivity(dialogIntent);
+			}
+			catch(Exception e) {
+				Intent dialogIntent = new Intent(MyFirebaseMessagingService.this , MainActivity.class);
+				dialogIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP| Intent.FLAG_ACTIVITY_CLEAR_TASK);
+				dialogIntent.putExtra(AppWideWariables.NOTIFICATION , true);
+				startActivity(dialogIntent);
+			}*/
+			
+			/*
 			if (true) { //Check if data needs to be processed by long running job
 		// For long-running tasks (10 seconds or more) use WorkManager.
 				scheduleJob();
@@ -185,76 +203,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 	 * @param messageBody FCM message body received.
 	 */
 	
-	/*
 
-	private void sendNotification(String title,String messageBody) {
-		Intent intent = new Intent(this, MainActivity.class);
-//		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		intent.putExtra(AppWideWariables.NOTIFICATION,true);
-		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0  Request code, intent,PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-//				PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
-	
-	String channelId = getString(R.string.default_notification_channel_id);
-	Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-	AudioAttributes audioAttributes = new AudioAttributes.Builder()
-			.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-			.setUsage(AudioAttributes.USAGE_NOTIFICATION).build();
-	NotificationCompat.Builder notificationBuilder =
-			new NotificationCompat.Builder(this, channelId)
-					.setSmallIcon(R.drawable.ic_stat_ic_notification_icon)
-//						.setContentTitle(getString(R.string.fcm_message))
-					.setContentTitle(title)
-					.setContentText(messageBody)
-					.setSound(defaultSoundUri)
-					.setDefaults(Notification.DEFAULT_ALL)
-//						.setFullScreenIntent(pendingIntent, true)
-					.setPriority(NotificationCompat.PRIORITY_MAX)
-					.setContentIntent(pendingIntent);
-	
-	Notification notification = notificationBuilder.build();
-	
-	int notifyId = (int) System.currentTimeMillis();
-	// Since android Oreo notification channel is needed.
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-		NotificationChannel channel = new NotificationChannel(channelId,
-				"Channel human readable title",
-				NotificationManager.IMPORTANCE_HIGH);
-		channel.enableVibration(true);
-		channel.enableLights(true);
-		channel.setLightColor(Color.GREEN);
-		channel.enableVibration(true);
-		channel.setSound(defaultSoundUri,audioAttributes);
-		channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-		channel.setShowBadge(true);
-		channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-		NotificationManager notificationManager = getSystemService(NotificationManager.class);
-		if (notificationManager != null) {
-			notificationManager.createNotificationChannel(channel);
-			notificationManager.notify(notifyId, notification);
-		}
-	}
-		else{
-		NotificationManager mNotifyMgr =   (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-		if (mNotifyMgr != null) {
-			mNotifyMgr.notify(notifyId, notification);
-		}
-	}
-//		notificationManager.notify(0, notificationBuilder.build());
-}
-	 */
-	
 	private void sendNotification(String title,String messageBody) {
 		
 		int notifyId = (int) System.currentTimeMillis();
-		Intent intent = new Intent(App.getInstance(), SplashActivity.class);
+		Intent intent = new Intent(App.getInstance(), MainActivity.class);
 		intent.putExtra(AppWideWariables.NOTIFICATION,true);
 //		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, notifyId /* Request code */, intent,
-				PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-//				PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+//				PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+				PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 		
+		Spannable titleBold = new SpannableString(title);
+		titleBold.setSpan(new StyleSpan(Typeface.BOLD), 0, title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+// ...
 		
 		String channelId = getString(R.string.default_notification_channel_id);
 		Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -265,7 +229,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 				new NotificationCompat.Builder(this, channelId)
 						.setSmallIcon(R.drawable.ic_stat_ic_notification_icon)
 //						.setContentTitle(getString(R.string.fcm_message))
-						.setContentTitle(title)
+						.setContentTitle(titleBold)
 						.setContentText(messageBody)
 						.setSound(defaultSoundUri)
 						.setDefaults(Notification.DEFAULT_ALL)

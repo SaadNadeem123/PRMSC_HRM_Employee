@@ -73,6 +73,7 @@ public class NotificationActivity extends BaseFullScreenActivity {
 						finish();
 						*/
 						
+						
 						switchToMainActivity();
 					}
 				})
@@ -89,7 +90,7 @@ public class NotificationActivity extends BaseFullScreenActivity {
 		alert.setTitle("Notification");
 		alert.show();
 		
-		switchToMainActivity();
+//		switchToMainActivity(true);
 		
 	}
 	
@@ -121,8 +122,10 @@ public class NotificationActivity extends BaseFullScreenActivity {
 	private void switchToMainActivity() {
 		Intent dialogIntent = new Intent(NotificationActivity.this , MainActivity.class);
 		dialogIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
 		if(getIntent().getExtras()!=null) {
 			dialogIntent.putExtras(getIntent().getExtras());
+			dialogIntent.putExtra(AppWideWariables.NOTIFICATION , true);
 		}
 		startActivity(dialogIntent);
 		finish();

@@ -1,96 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/_120sdp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="@dimen/_70sdp"
+    android:elevation="@dimen/_10sdp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="@dimen/_5sdp"
+    app:cardElevation="3dp"
+    app:cardMaxElevation="3dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
 
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_100sdp"
-        android:layout_marginStart="@dimen/_5sdp"
-        android:layout_marginEnd="@dimen/_5sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:elevation="@dimen/_10sdp"
-        app:cardCornerRadius="@dimen/_10sdp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/_5sdp"
+        android:background="@android:color/white">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/white">
+        <ImageView
+            android:id="@+id/profileImage"
+            android:layout_width="@dimen/_10sdp"
+            android:layout_height="@dimen/_10sdp"
+            android:background="@null"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:elevation="@dimen/_5sdp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/bulletin_selected"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/app_green" />
 
-            <ImageView
-                android:id="@+id/profileImage"
-                android:layout_width="@dimen/_60sdp"
-                android:layout_height="@dimen/_60sdp"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:background="@drawable/profile_circular_border_imageview"
-                android:contentDescription="@string/profile_image"
-                android:elevation="@dimen/_5sdp"
-                android:padding="@dimen/_16sdp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/profile"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <androidx.appcompat.widget.AppCompatCheckedTextView
+            android:id="@+id/titleBulletin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:background="@android:color/white"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="@string/warning"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12sdp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/profileImage"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-            <androidx.appcompat.widget.AppCompatCheckedTextView
-                android:id="@+id/titleBulletin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:background="@android:color/white"
-                android:text="@string/warning"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_15sdp"
-                android:textStyle="bold"
-                android:maxLines="1"
-                android:ellipsize="end"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/profileImage"
-                app:layout_constraintTop_toTopOf="@+id/profileImage" />
+        <androidx.appcompat.widget.AppCompatCheckedTextView
+            android:id="@+id/descriptionBulletin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:background="@android:color/white"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/warning"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/profileImage"
+            app:layout_constraintTop_toBottomOf="@+id/titleBulletin" />
 
-            <androidx.appcompat.widget.AppCompatCheckedTextView
-                android:id="@+id/descriptionBulletin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:background="@android:color/white"
-                android:text="@string/warning"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_10sdp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/profileImage"
-                app:layout_constraintTop_toBottomOf="@+id/titleBulletin" />
-
-            <androidx.appcompat.widget.AppCompatCheckedTextView
-                android:id="@+id/dateBulletin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:background="@android:color/white"
-                android:text="@string/warning"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_10sdp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/profileImage"
-                app:layout_constraintTop_toBottomOf="@+id/descriptionBulletin" />
+        <TextView
+            android:id="@+id/dateBulletin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:background="@android:color/white"
+            android:text="hh:mm:ss dd-mm-yyyy"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_8sdp"
+            android:textStyle="bold"
+            android:includeFontPadding="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/descriptionBulletin" />
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.cardview.widget.CardView>
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

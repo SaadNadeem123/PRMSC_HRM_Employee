@@ -141,5 +141,6 @@
     <string name="wrong_current_password">\"Current Password is not correct!\"</string>
     <string name="password_match_error">\"Confirm Password is different from New Password!\"</string>
     <string name="password_format_error"><![CDATA[Password must be at least 8 characters and must contain an upper case character, a lower case character, a numeric character, and a special character #?!@$%^&*-]]></string>
+    <string name="announcements">Announcements</string>
 
 </resources>

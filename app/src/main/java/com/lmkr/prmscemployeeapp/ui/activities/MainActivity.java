@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
@@ -99,6 +100,20 @@ public class MainActivity extends BaseActivity {
 				}
 			}
 			
+		}
+	};
+	
+	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// do your stuff related to start activity
+			if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
+				if (navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
+					refreshApiCalls();
+				} else {
+//					binding.navView.setSelectedItemId(binding.navView.getMenu().getItem(2).getItemId());
+				}
+			}
 		}
 	};
 	private ProgressBar loadingProgressBar;
@@ -200,6 +215,12 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		if (Build.VERSION.SDK_INT >= 33) {
+			if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+				ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS},101);
+			}
+		}
 		
 		Log.i("RESUME = " , "RESUME");
 		if (!AppUtils.canGetLocation(MainActivity.this)) {
@@ -388,8 +409,6 @@ public class MainActivity extends BaseActivity {
 		} else {
 			bindService();
 		}
-		
-		
 		binding = ActivityMainBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 		
@@ -413,6 +432,9 @@ public class MainActivity extends BaseActivity {
 		});
 		
 		UpdateFirebaseToken();
+		registerReceiver(broadcastReceiver,new IntentFilter("com.from.notification"));
+		
+		
 	}
 	
 	private void UpdateFirebaseToken() {
@@ -468,7 +490,28 @@ public class MainActivity extends BaseActivity {
 	
 	@Override
 	protected void onNewIntent(Intent intent) {
-		handleIntent();
+//		handleIntent();
+		boolean isNotification = false;
+		try {
+			isNotification = intent.getBooleanExtra(AppWideWariables.NOTIFICATION , false);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		if (isNotification) {
+			if (navHostFragment.getChildFragmentManager() != null && navHostFragment.getChildFragmentManager().getFragments() != null && navHostFragment.getChildFragmentManager().getFragments().size() > 0) {
+				if (navHostFragment.getChildFragmentManager().getFragments().get(0) instanceof BulletinFragment) {
+					refreshApiCalls();
+				} else {
+//					binding.navView.setSelectedItemId(binding.navView.getMenu().getItem(2).getItemId());
+				}
+			}
+		}
+		else {
+			refreshApiCalls();
+		}
 		super.onNewIntent(intent);
 	}
 	

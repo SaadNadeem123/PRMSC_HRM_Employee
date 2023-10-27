@@ -65,7 +65,9 @@
             android:theme="@style/Theme.PRMSCEmployeeApp.AddContactActivity" />
         <activity
             android:name=".ui.bulletin.BulletinDetailActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.PRMSCEmployeeApp.Fullscreen"/>
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 

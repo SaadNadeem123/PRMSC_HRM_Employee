@@ -45,6 +45,8 @@ public class BulletinRecyclerAdapter extends RecyclerView.Adapter<BulletinRecycl
         holder.titleBulletin.setText(bulletin.getTitle());
         holder.descriptionBulletin.setText(bulletin.getDescription());
         holder.dateBulletin.setText(AppUtils.formatDate(bulletin.getDate()));
+//        holder.dateBulletin.setText(AppUtils.printCountDownDifference(context,bulletin.getDate(),AppUtils.getCurrentDateTimeGMT5String()));
+        holder.dateBulletin.setText(AppUtils.getDifferenceBetweenDates(context,bulletin.getDate(),AppUtils.getCurrentDateTimeString()));
 
         holder.cardView.setOnClickListener(v -> {
 
@@ -52,6 +54,7 @@ public class BulletinRecyclerAdapter extends RecyclerView.Adapter<BulletinRecycl
             Bundle bundle = new Bundle();
             bundle.putString("title", bulletin.getTitle());
             bundle.putString("description", bulletin.getDescription());
+            bundle.putString("date", bulletin.getDate());
 
             intent.putExtras(bundle);
             context.startActivity(intent);
