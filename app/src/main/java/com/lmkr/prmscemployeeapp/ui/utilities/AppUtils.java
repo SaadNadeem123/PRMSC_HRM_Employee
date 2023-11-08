@@ -2054,22 +2054,23 @@ public class AppUtils {
 		}
 		return Date2.after(Date1);
 	}
-	public static boolean compareDatesforLateCheck(String compareDate , String currentDate) {
+	public static boolean compareDatesforLateCheck(String timeLimit, String ccurentTime) {
 		SimpleDateFormat sdf = new SimpleDateFormat(FORMAT14);
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT+5"));
 		Date Date1 = null;
 		try {
-			Date1 = sdf.parse(currentDate);
+			Date1 = sdf.parse(timeLimit);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		Date Date2 = null;
 		try {
-			Date2 = sdf.parse(compareDate);
+			Date2 = sdf.parse(ccurentTime);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		return Date2.after(Date1);
+		boolean response = Date2.after(Date1);
+		return response;
 	}
 	
 	public static int sortDates(String oldDate , String compareDate) {
@@ -2862,15 +2863,19 @@ public class AppUtils {
 		return matcher.matches();
 	}
 	
-	public static boolean isLate(Context context) {
+	public static boolean isLate(Context context , String checkinTime) {
 		for (UserConfiguration userConfiguration : SharedPreferenceHelper.getLoggedinUser(context).getConfiguration()) {
 			if (userConfiguration.getType().equals(AppWideWariables.CONFIGURATION_TYPE_LATE_TIME))
 			{
-				return AppUtils.compareDatesforLateCheck(AppUtils.getCurrentDate() + " " + userConfiguration.getValue() , AppUtils.getCurrentTimeStampGMT5(AppUtils.FORMAT14));
+				boolean response = AppUtils.compareDatesforLateCheck(AppUtils.getCurrentDate() + " " + userConfiguration.getValue(), checkinTime);
+				return response;
 			}
-			
 		}
 		return false;
+	}
+	
+	public static String getAttendanceTime() {
+		return getCurrentTimeStampGMT5(FORMAT14);
 	}
 	
 }

@@ -253,6 +253,7 @@ public class SharedPreferenceHelper {
 
         remove(AppWideWariables.IS_IN_GEOFENCE, context);
         remove(AppWideWariables.FACE_LOCK_PATH, context);
+        remove(AppWideWariables.ATTENDANCE_TIME , context);
     }
 
 }

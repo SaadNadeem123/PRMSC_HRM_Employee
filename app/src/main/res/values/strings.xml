@@ -156,6 +156,6 @@
     <string name="why_you_get_late">Why are you late?</string>
     <string name="comment">Comment</string>
     <string name="reason">Reason</string>
-    <string name="comments_length">Reason must be atleast 10 characters long!</string>
+    <string name="comments_length">Reason must be atleast 10 characters and maximum 250 characters!</string>
 
 </resources>

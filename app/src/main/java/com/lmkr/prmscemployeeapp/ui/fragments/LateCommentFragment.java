@@ -112,7 +112,7 @@ public class LateCommentFragment extends BaseDialogFragment {
 		boolean shouldProceed = true;
 		
 		
-		if (binding.reason.getText().toString().isEmpty()|| binding.reason.getText().toString().length() < 10) {
+		if (binding.reason.getText().toString().isEmpty()|| binding.reason.getText().toString().length() < 10|| binding.reason.getText().toString().length() > 250) {
 			binding.reason.setError(getString(R.string.comments_length));
 			shouldProceed = false;
 		}

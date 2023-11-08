@@ -114,6 +114,12 @@ class CameraXActivity : AppCompatActivity() {
                     try {
 //                        callCheckInApi(name, output.savedUri)
                         SharedPreferenceHelper.saveString(AppWideWariables.FACE_LOCK_PATH,output.savedUri.toString(),this@CameraXActivity)
+
+                        SharedPreferenceHelper.saveString(
+                            AppWideWariables.ATTENDANCE_TIME,
+                            AppUtils.getAttendanceTime(),
+                            this@CameraXActivity
+                        );
                         finish()
 
 //                        callCheckInApi();

@@ -69,7 +69,7 @@ public class LeaveManagementDetailActivity extends BaseFullScreenActivity {
 				binding.image.setImageResource(R.drawable.casual_leaves);
 				break;
 		}
-		switch (leaveManagementModel.getStatus()) {
+		switch (leaveManagementModel.getStatus().toLowerCase()) {
 			case AppWideWariables.PENDING:
 				binding.status.setBackgroundColor(getColor(R.color.grey_dark));
 				binding.statusLabel.setTextColor(getColor(R.color.grey_dark));
@@ -179,6 +179,14 @@ public class LeaveManagementDetailActivity extends BaseFullScreenActivity {
 						//tv.setText("Code :" + response.code());
 						return;
 					}
+				}
+				else {
+					new Handler().postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
+						}
+					} , 2000);
 				}
 			}
 			

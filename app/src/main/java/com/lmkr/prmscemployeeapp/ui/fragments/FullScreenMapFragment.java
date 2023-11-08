@@ -75,7 +75,6 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
             if (intent.hasExtra(LocationService.MESSAGE)) {
                 String s = intent.getStringExtra(LocationService.MESSAGE);
                 if (s == "1") {
-
                     updateCurrentLocation();
                 }
             }
@@ -222,6 +221,7 @@ public class FullScreenMapFragment extends BaseDialogFragment implements OnMapRe
                         getActivity().startActivity(new Intent(getActivity(), CameraXActivity.class));
                     } else {
                         SharedPreferenceHelper.saveBoolean(AppWideWariables.IS_IN_GEOFENCE, true, getActivity());
+                        SharedPreferenceHelper.saveString(AppWideWariables.ATTENDANCE_TIME , AppUtils.getAttendanceTime(), getActivity());
                         ((MainActivity) getActivity()).refreshApiCalls();
 //                    callCheckInApi();
                     }

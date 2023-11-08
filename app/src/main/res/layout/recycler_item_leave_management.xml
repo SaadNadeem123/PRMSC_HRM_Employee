@@ -107,7 +107,6 @@
                     android:layout_height="wrap_content"
                     android:background="@color/white"
                     android:gravity="center"
-                    android:inputType="textCapWords"
                     android:padding="10dp"
                     android:textSize="@dimen/_12sdp"
                     android:textStyle="bold" />

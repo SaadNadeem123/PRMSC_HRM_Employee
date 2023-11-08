@@ -48,4 +48,6 @@ public class AppWideWariables {
 	
 	public static final String CONFIGURATION_TYPE_LATE_TIME = "Late Time" ;
 	
+	public static final String ATTENDANCE_TIME = "attendanceTime";
+	
 }

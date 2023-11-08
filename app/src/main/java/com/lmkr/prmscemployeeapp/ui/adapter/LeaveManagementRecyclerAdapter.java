@@ -141,7 +141,7 @@ public class LeaveManagementRecyclerAdapter extends RecyclerView.Adapter<LeaveMa
             status = binding.status;
             statusLabel = binding.statusLabel;
             
-            AppUtils.setRippleAnimation(context, binding.cardView);
+            AppUtils.setRippleAnimation(context, binding.getRoot());
     
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
