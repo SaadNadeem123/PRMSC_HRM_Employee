@@ -247,9 +247,11 @@ public class ChangePasswordFragment extends BaseDialogFragment {
 		}).start();
 		if(ApiCalls.BASE_URL.equals(ApiCalls.BASE_URL_LIVE)) {
 			FirebaseMessaging.getInstance().unsubscribeFromTopic("PRMSC");
-		}
-		else if(ApiCalls.BASE_URL.equals(ApiCalls.BASE_URL_LIVE)) {
 			FirebaseMessaging.getInstance().unsubscribeFromTopic("PRMSC-DEV");
+		}
+		else if(ApiCalls.BASE_URL.equals(ApiCalls.BASE_URL_DEV)) {
+			FirebaseMessaging.getInstance().unsubscribeFromTopic("PRMSC-DEV");
+			FirebaseMessaging.getInstance().unsubscribeFromTopic("PRMSC");
 		}
 		SharedPreferenceHelper.clearPrefrences(getActivity());
 		SharedPreferenceHelper.saveBoolean(SharedPreferenceHelper.IS_LOGGED_IN , false , getActivity());
