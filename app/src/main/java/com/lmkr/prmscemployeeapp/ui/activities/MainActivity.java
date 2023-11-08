@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +31,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonObject;
@@ -139,7 +142,6 @@ public class MainActivity extends BaseActivity {
 				if (s == "1") {
 					latitude = SharedPreferenceHelper.getString("lat" , MainActivity.this);
 					longitude = SharedPreferenceHelper.getString("long" , MainActivity.this);
-
 //                    AppUtils.makeNotification("Lat -> " + latitude + " , Long -> " + longitude, MainActivity.this);
 //                    AppUtils.hideNotification(MainActivity.this);
 					try {
@@ -233,6 +235,11 @@ public class MainActivity extends BaseActivity {
 			}
 		}
 		
+		if(!AppUtils.isDateTimeAuto(this))
+		{
+			return;
+		}
+		
 		Log.i("RESUME = " , "RESUME");
 		if (!AppUtils.canGetLocation(MainActivity.this)) {
 			AppUtils.showLocationSettingsAlert(MainActivity.this);
@@ -241,6 +248,8 @@ public class MainActivity extends BaseActivity {
 		bindTokenService();
 		registerReceiver(broadcastReceiver,new IntentFilter("com.from.notification"));
 		refreshApiCalls();
+		
+		
 	}
 	
 	
@@ -383,7 +392,7 @@ public class MainActivity extends BaseActivity {
 			@Override
 			public void onResponse(Call<ApiBaseResponse> call , Response<ApiBaseResponse> response) {
 				Log.i("response" , response.toString());
-				if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST , response , MainActivity.this)) {
+				if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_GET , response , MainActivity.this)) {
 					
 					if (!response.isSuccessful()) {
 						//tv.setText("Code :" + response.code());
@@ -394,7 +403,6 @@ public class MainActivity extends BaseActivity {
 				new Handler().postDelayed(new Runnable() {
 					@Override
 					public void run() {
-						
 						if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
 					}
 				} , 2000);
@@ -409,13 +417,11 @@ public class MainActivity extends BaseActivity {
 				new Handler().postDelayed(new Runnable() {
 					@Override
 					public void run() {
-						
 						if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
 					}
 				} , 2000);
 			}
 		});
-		
 	}
 	
 	@Override
@@ -427,17 +433,18 @@ public class MainActivity extends BaseActivity {
 		} else {
 			bindService();
 		}
+		
 		binding = ActivityMainBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 		
-		BottomNavigationView navView = findViewById(R.id.nav_view);
-		// Passing each menu ID as a set of Ids because each
-		// menu should be considered as top level destinations.
-//        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-//                R.id.navigation_home, R.id.navigation_timeoff, R.id.navigation_bulletin, R.id.navigation_myinfo)
-//                .build();
+		binding.navView.setItemIconTintList(null);
+		if(SharedPreferenceHelper.getLoggedinUser(MainActivity.this).getTeamMemberCount().get(0).getTeamMember()>1) {
+			binding.navView.getMenu().getItem(AppWideWariables.TAB_INDEX_LEAVE_MANAGEMENT).setVisible(true);
+		}
+		else {
+			binding.navView.getMenu().getItem(AppWideWariables.TAB_INDEX_LEAVE_MANAGEMENT).setVisible(false);
+		}
 		navController = Navigation.findNavController(this , R.id.nav_host_fragment_activity_main);
-//        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 		NavigationUI.setupWithNavController(binding.navView , navController);
 		
 		navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
@@ -462,7 +469,7 @@ public class MainActivity extends BaseActivity {
 		else if(ApiCalls.BASE_URL.equals(ApiCalls.BASE_URL_DEV)) {
 			FirebaseMessaging.getInstance().subscribeToTopic("PRMSC-DEV");
 		}
-		/*FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+		FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
 			@Override
 			public void onComplete(@NonNull Task<String> task) {
 				if(!task.isSuccessful()){
@@ -472,7 +479,7 @@ public class MainActivity extends BaseActivity {
 				String token = task.getResult();
 				callApiUpdateFirebaseToken(token);
 			}
-		});*/
+		});
 		
 /*
 		FirebaseTokenListener.getInstance().getFirebaseUpdatedToken().observe(MainActivity.this, new Observer<String>() {
