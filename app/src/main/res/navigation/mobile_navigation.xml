@@ -15,13 +15,20 @@
         android:id="@+id/navigation_timeoff"
         android:name="com.lmkr.prmscemployeeapp.ui.leaverequest.LeaveRequestFragment"
         android:label="@string/title_timeoff"
-        tools:layout="@layout/content_fragment_leave_request" />
+        tools:layout="@layout/fragment_leave_request" />
 
     <fragment
         android:id="@+id/navigation_bulletin"
         android:name="com.lmkr.prmscemployeeapp.ui.bulletin.BulletinFragment"
         android:label="@string/title_bulletin"
         tools:layout="@layout/fragment_bulletin" />
+
+     <fragment
+        android:id="@+id/navigation_leave_mngt"
+        android:name="com.lmkr.prmscemployeeapp.ui.leaveanagement.LeaveManagementFragment"
+        android:label="@string/title_leave_mngt"
+        tools:layout="@layout/fragment_leave_management" />
+
     <fragment
         android:id="@+id/navigation_myinfo"
         android:name="com.lmkr.prmscemployeeapp.ui.myinfo.MyInfoFragment"

@@ -58,6 +58,9 @@ public class LeavesProgressRecyclerAdapter extends RecyclerView.Adapter<LeavesPr
             case AppWideWariables.LEAVE_TYPE_ANNUAL:
                 holder.image.setImageResource(R.drawable.annual_leaves);
                 break;
+            default:
+                holder.image.setImageResource(R.drawable.casual_leaves);
+                break;
         }
 
         ObjectAnimator anim = ObjectAnimator.ofInt(holder.progressBar, "progress", Math.round((leaveCount.getRemaining() * 100) / leaveCount.getTotal()));

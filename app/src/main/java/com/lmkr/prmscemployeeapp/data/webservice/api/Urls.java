@@ -5,6 +5,7 @@ import com.lmkr.prmscemployeeapp.data.webservice.models.AddContactModel;
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.AttendanceHistoryResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.CreateLeaveRequestResponse;
+import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveManagementRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.data.webservice.models.EmergencyApiResponse;
@@ -32,6 +33,9 @@ public interface Urls {
 
     @GET("employee/request/leave")
     Call<LeaveRequestResponse> getLeaveRequest(@Header("Authorization") String standardHeaders);
+
+    @GET("employee/manager/leaverequest")
+    Call<LeaveManagementRequestResponse> getLeaveRequestManager(@Header("Authorization") String standardHeaders);
 
     @POST("employee/login")
     Call<UserData> loginUserApi(@Body JsonObject body);
@@ -103,5 +107,11 @@ public interface Urls {
 
     @GET("employee/news")
     Call<BulletinResponse> getBulletinList();
-
+    
+    @PUT("employee/leaveapproval/{id}")
+	Call<ApiBaseResponse> approveRejectLeave(
+            @Header("Authorization") String bearerToken,
+            @Path("id") int leaveRequestId,
+            @Body JsonObject body);
+	
 }

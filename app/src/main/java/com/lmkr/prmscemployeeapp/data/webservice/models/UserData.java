@@ -9,6 +9,7 @@ public class UserData extends ApiBaseResponse{
     private List<LeaveRequestCount> leaveRequestCount;
     private List<TeamMemberCount> teamMemberCount;
     private List<Locations> latLngArray;
+    private List<UserConfiguration> configuration;
     private String token;
 
     public List<Locations> getLatLngArray() {
@@ -58,5 +59,14 @@ public class UserData extends ApiBaseResponse{
     public void setToken(String token) {
         this.token = token;
     }
+    
+    public List<UserConfiguration> getConfiguration() {
+        return configuration;
+    }
+    
+    public void setConfiguration(List<UserConfiguration> configuration) {
+        this.configuration = configuration;
+    }
+    
 }
 

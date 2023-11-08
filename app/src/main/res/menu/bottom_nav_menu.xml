@@ -14,8 +14,16 @@
     <item
         android:id="@+id/navigation_bulletin"
         android:icon="@drawable/bulletin"
-        android:title="@string/title_bulletin" />
-<item
+        android:title="@string/title_bulletin"
+        />
+    <item
+        android:id="@+id/navigation_leave_mngt"
+        android:icon="@drawable/leave_mngt"
+        android:title="@string/title_leave_mngt"
+        android:visible="false"
+        />
+
+    <item
         android:id="@+id/navigation_myinfo"
         android:icon="@drawable/my_info"
         android:title="@string/title_myinfo" />

@@ -5,7 +5,8 @@
     <string name="stop_capture">Stop Capture</string>
     <string name="title_home">Home</string>
     <string name="title_timeoff">Time Off</string>
-    <string name="title_bulletin">Bulletin</string>
+    <!--    <string name="title_bulletin">Bulletin</string>-->
+    <string name="title_bulletin">Announcement</string>
     <string name="title_myinfo">My Info</string>
     <string name="prmsc_employee">PRMSC Employee</string>
     <string name="title_activity_login">LoginActivity</string>
@@ -142,5 +143,19 @@
     <string name="password_match_error">\"Confirm Password is different from New Password!\"</string>
     <string name="password_format_error"><![CDATA[Password must be at least 8 characters and must contain an upper case character, a lower case character, a numeric character, and a special character #?!@$%^&*-]]></string>
     <string name="announcements">Announcements</string>
+    <string name="title_leave_mngt">Leave Mngt</string>
+    <string name="days">Days</string>
+    <string name="day">Day</string>
+    <string name="title_leave_management">Leave Management</string>
+    <string name="reject">Reject</string>
+    <string name="approve">Approve</string>
+    <string name="comments">Comments...</string>
+    <string name="approved">Approved</string>
+    <string name="provide_comments">Please provides comments!</string>
+    <string name="late_commer">Late Commer</string>
+    <string name="why_you_get_late">Why are you late?</string>
+    <string name="comment">Comment</string>
+    <string name="reason">Reason</string>
+    <string name="comments_length">Reason must be atleast 10 characters long!</string>
 
 </resources>

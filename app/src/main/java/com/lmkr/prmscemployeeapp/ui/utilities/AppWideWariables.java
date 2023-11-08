@@ -31,5 +31,21 @@ public class AppWideWariables {
 	public static final String BUNDLE_TITLE_BODY ="body" ;
 	
 	public static final String NOTIFICATION = "notification";
+
+
+	public static final int TAB_INDEX_HOME = 0;
+	public static final int TAB_INDEX_LEAVE_REQUEST = 1;
+	public static final int TAB_INDEX_BULLETIN = 2;
+	public static final int TAB_INDEX_LEAVE_MANAGEMENT = 3;
+	public static final int TAB_INDEX_MY_INFO = 4;
+	
+	
+	public static final String LEAVE_MANAGEMENT_OBJECT_KEY = "leaveManagementObjectKey";
+	
+	public static final String PENDING_LEAVE = "1";
+	public static final String APPROVE_LEAVE = "2";
+	public static final String REJECT_LEAVE = "3";
+	
+	public static final String CONFIGURATION_TYPE_LATE_TIME = "Late Time" ;
 	
 }

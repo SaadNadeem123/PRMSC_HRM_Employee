@@ -26,16 +26,18 @@
             android:layout_margin="20dp"
             android:textSize="@dimen/_15sdp"
             android:background="@color/white"
-            android:text="@string/announcements"/>
+            android:text="@string/title_leave_mngt"
+            android:visibility="gone"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:itemCount="10"
+            android:layout_marginTop="@dimen/_16sdp"
             android:layout_marginStart="@dimen/_5sdp"
             android:layout_marginEnd="@dimen/_5sdp"
-            tools:listitem="@layout/recycler_item_bulletin"
+            tools:listitem="@layout/recycler_item_leave_management"
             android:background="@android:color/white" />
 
     </LinearLayout>

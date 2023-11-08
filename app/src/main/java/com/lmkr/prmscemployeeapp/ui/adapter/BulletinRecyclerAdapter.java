@@ -34,7 +34,7 @@ public class BulletinRecyclerAdapter extends RecyclerView.Adapter<BulletinRecycl
     @NonNull
     @Override
     public BulletinViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bulletin, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_bulletin , parent, false);
         return new BulletinViewHolder(itemView);
     }
 
@@ -46,7 +46,7 @@ public class BulletinRecyclerAdapter extends RecyclerView.Adapter<BulletinRecycl
         holder.descriptionBulletin.setText(bulletin.getDescription());
         holder.dateBulletin.setText(AppUtils.formatDate(bulletin.getDate()));
 //        holder.dateBulletin.setText(AppUtils.printCountDownDifference(context,bulletin.getDate(),AppUtils.getCurrentDateTimeGMT5String()));
-        holder.dateBulletin.setText(AppUtils.getDifferenceBetweenDates(context,bulletin.getDate(),AppUtils.getCurrentDateTimeString()));
+        holder.dateBulletin.setText(AppUtils.getDifferenceBetweenDates(context,bulletin.getDate(),AppUtils.getCurrentTimeStampGMT5(AppUtils.FORMAT21)));
 
         holder.cardView.setOnClickListener(v -> {
 

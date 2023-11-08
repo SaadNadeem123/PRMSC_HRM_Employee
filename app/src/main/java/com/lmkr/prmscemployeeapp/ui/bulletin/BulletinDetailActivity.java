@@ -16,11 +16,10 @@ public class BulletinDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding= ActivityBulletinDetailBinding.inflate(getLayoutInflater());
+        binding = ActivityBulletinDetailBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-
-
+        
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String title = bundle.getString("title");
@@ -29,8 +28,7 @@ public class BulletinDetailActivity extends AppCompatActivity {
 
             binding.title.setText(title);
             binding.description.setText(description);
-            binding.date.setText(AppUtils.getDifferenceBetweenDates(this,date,AppUtils.getCurrentDateTimeString()));
-    
+            binding.date.setText(AppUtils.getDifferenceBetweenDates(this,date,AppUtils.getCurrentTimeStampGMT5(AppUtils.FORMAT21)));
         }
 
     }
