@@ -157,5 +157,7 @@
     <string name="comment">Comment</string>
     <string name="reason">Reason</string>
     <string name="comments_length">Reason must be atleast 10 characters and maximum 250 characters!</string>
+    <string name="pending">Pending</string>
+    <string name="rejected">Rejected</string>
 
 </resources>

@@ -86,14 +86,17 @@ public class LeaveManagementRecyclerAdapter extends RecyclerView.Adapter<LeaveMa
             case AppWideWariables.PENDING:
                 holder.status.setBackgroundColor(context.getColor(R.color.grey_dark));
                 holder.statusLabel.setTextColor(context.getColor(R.color.grey_dark));
+                holder.statusLabel.setText(context.getString(R.string.pending));
                 break;
             case AppWideWariables.APPROVED:
                 holder.status.setBackgroundColor(context.getColor(R.color.app_green));
                 holder.statusLabel.setTextColor(context.getColor(R.color.app_green));
+                holder.statusLabel.setText(context.getString(R.string.approved));
                 break;
             case AppWideWariables.REJECTED:
                 holder.status.setBackgroundColor(context.getColor(R.color.red));
                 holder.statusLabel.setTextColor(context.getColor(R.color.red));
+                holder.statusLabel.setText(context.getString(R.string.rejected));
                 break;
         }
         holder.statusLabel.setText(leaveManagementModel.getStatus());
