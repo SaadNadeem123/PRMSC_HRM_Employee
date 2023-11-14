@@ -63,6 +63,15 @@ public class AttendanceHistoryRecyclerAdapter extends RecyclerView.Adapter<Atten
         else {
             holder.lLCheckout.setVisibility(View.GONE);
         }
+        
+        if(attendanceHistory.getLateReason()!=null && !TextUtils.isEmpty(attendanceHistory.getLateReason()))
+        {
+            holder.reason.setText(attendanceHistory.getLateReason());
+            holder.lLReason.setVisibility(View.VISIBLE);
+        }
+        else{
+            holder.lLReason.setVisibility(View.GONE);
+        }
         holder.timeCheckin.setText(AppUtils.getConvertedDateFromOneFormatToOther(attendanceHistory.getCheckin_time(), AppUtils.FORMAT19, AppUtils.FORMAT5));
     }
 
@@ -81,7 +90,9 @@ public class AttendanceHistoryRecyclerAdapter extends RecyclerView.Adapter<Atten
         TextView timeCheckin;
         TextView dateLabel;
         TextView timeCheckout;
+        TextView reason;
         LinearLayout lLCheckout;
+        LinearLayout lLReason;
 
         public ViewHolder(RecyclerItemAttendanceHistoryBinding binding) {
             super(binding.getRoot());
@@ -89,6 +100,8 @@ public class AttendanceHistoryRecyclerAdapter extends RecyclerView.Adapter<Atten
             dateLabel = binding.dateLabel;
             timeCheckout = binding.timeCheckout;
             lLCheckout = binding.llCheckout;
+            lLReason = binding.llLateReason;
+            reason = binding.reason;
         }
     }
 }

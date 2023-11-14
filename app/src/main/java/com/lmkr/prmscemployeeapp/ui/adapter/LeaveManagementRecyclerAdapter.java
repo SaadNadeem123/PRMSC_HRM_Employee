@@ -99,7 +99,6 @@ public class LeaveManagementRecyclerAdapter extends RecyclerView.Adapter<LeaveMa
                 holder.statusLabel.setText(context.getString(R.string.rejected));
                 break;
         }
-        holder.statusLabel.setText(leaveManagementModel.getStatus());
     }
 
     @Override

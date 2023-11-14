@@ -154,18 +154,65 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/comments"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:background="@color/white"
-                    android:gravity="start"
-                    android:padding="5dp"
-                    android:text="EmployeeName"
-                    android:textColor="@color/grey_overlay_dark"
-                    android:textSize="@dimen/_12sdp" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/comments_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:background="@color/white"
+                        android:gravity="start"
+                        android:padding="5dp"
+                        android:textStyle="bold"
+                        android:text="@string/comment"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12sdp" />
+
+                    <TextView
+                        android:id="@+id/comments"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:background="@color/white"
+                        android:gravity="start"
+                        android:padding="5dp"
+                        android:text="EmployeeName"
+                        android:textColor="@color/grey_overlay_dark"
+                        android:textSize="@dimen/_12sdp" />
+
+                    <TextView
+                        android:id="@+id/rejected_reason_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:background="@color/white"
+                        android:gravity="start"
+                        android:padding="5dp"
+                        android:textStyle="bold"
+                        android:text="@string/rejected_reason"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12sdp" />
+
+                    <TextView
+                        android:id="@+id/rejected_reason"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:background="@color/white"
+                        android:gravity="start"
+                        android:padding="5dp"
+                        android:text=""
+                        android:textColor="@color/grey_overlay_dark"
+                        android:textSize="@dimen/_12sdp" />
+                </LinearLayout>
             </ScrollView>
         </LinearLayout>
 
@@ -173,21 +220,21 @@
             android:id="@+id/bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:background="@drawable/bottom_background"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/approver_comments"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="@dimen/_5sdp"
                 android:background="@drawable/edit_text_background"
                 android:hint="@string/comments"
-                android:padding="5dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="@dimen/_5sdp"
-                android:layout_marginRight="@dimen/_5sdp"
                 android:inputType="textCapSentences"
+                android:padding="5dp"
                 android:textColor="@color/grey_dark"
                 android:textColorHint="@color/grey_dark"
                 android:textCursorDrawable="@null" />

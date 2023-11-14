@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b2a11c6181e717fb94e4a20d6c1b5937",
+    "identityHash": "802aa91880a6463a3cb19cdbe6c1ffdf",
     "entities": [
       {
         "tableName": "AttendanceHistory",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `employee_id` INTEGER NOT NULL, `checkin_time` TEXT, `checkout_time` TEXT, `String` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `employee_id` INTEGER NOT NULL, `checkin_time` TEXT, `checkout_time` TEXT, `String` INTEGER NOT NULL, `lateReason` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -37,6 +37,12 @@
             "columnName": "String",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "lateReason",
+            "columnName": "lateReason",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -254,7 +260,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b2a11c6181e717fb94e4a20d6c1b5937')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '802aa91880a6463a3cb19cdbe6c1ffdf')"
     ]
   }
 }

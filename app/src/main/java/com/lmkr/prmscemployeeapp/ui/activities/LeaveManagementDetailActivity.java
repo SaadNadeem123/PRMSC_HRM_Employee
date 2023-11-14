@@ -46,6 +46,21 @@ public class LeaveManagementDetailActivity extends BaseFullScreenActivity {
 		if (leaveManagementModel == null) {
 			return;
 		}
+		
+		if(leaveManagementModel.getStatus().toLowerCase().equals(AppWideWariables.PENDING)) {
+			binding.bottom.setVisibility(View.VISIBLE);
+			binding.rejectedReasonLabel.setVisibility(View.GONE);
+			binding.rejectedReason.setVisibility(View.GONE);
+			binding.rejectedReason.setText("");
+		}
+		else
+		{
+			binding.bottom.setVisibility(View.GONE);
+			binding.rejectedReasonLabel.setVisibility(View.VISIBLE);
+			binding.rejectedReason.setVisibility(View.VISIBLE);
+			binding.rejectedReason.setText(leaveManagementModel.getApprover_reason());
+		}
+		
 		binding.year.setText(AppUtils.getConvertedDateFromOneFormatToOther(leaveManagementModel.getFrom_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_MONTH_YEAR));
 		binding.year.setVisibility(View.VISIBLE);
 		
@@ -69,6 +84,7 @@ public class LeaveManagementDetailActivity extends BaseFullScreenActivity {
 				binding.image.setImageResource(R.drawable.casual_leaves);
 				break;
 		}
+
 		switch (leaveManagementModel.getStatus().toLowerCase()) {
 			case AppWideWariables.PENDING:
 				binding.status.setBackgroundColor(getColor(R.color.grey_dark));

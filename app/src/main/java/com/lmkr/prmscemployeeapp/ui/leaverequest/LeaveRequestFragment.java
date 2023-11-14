@@ -40,10 +40,13 @@ import com.lmkr.prmscemployeeapp.data.webservice.api.ApiManager;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.CreateLeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveCount;
+import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveManagementModel;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveRequestResponse;
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData;
 import com.lmkr.prmscemployeeapp.databinding.FragmentLeaveRequestBinding;
+import com.lmkr.prmscemployeeapp.ui.activities.LeaveManagementDetailActivity;
 import com.lmkr.prmscemployeeapp.ui.adapter.AttachmentsRecyclerAdapter;
+import com.lmkr.prmscemployeeapp.ui.adapter.LeaveManagementRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.ui.adapter.LeaveRequestRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.ui.adapter.LeaveTypeSpinnerAdapter;
 import com.lmkr.prmscemployeeapp.ui.adapter.LeavesRemainingRecyclerAdapter;
@@ -99,7 +102,6 @@ public class LeaveRequestFragment extends Fragment {
             loadLeaveRequestData();
         }
     };
-
     private LeaveRequestViewModel leaveRequestViewModel;
     private LeaveCount leaveType = null;
     private final TextWatcher textChangeListenerFromDate = new TextWatcher() {
@@ -217,6 +219,14 @@ public class LeaveRequestFragment extends Fragment {
     private void loadLeaveRequestData() {
         binding.recyclerViewLeaveRequest.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         LeaveRequestRecyclerAdapter adapter = new LeaveRequestRecyclerAdapter(getActivity(), leaveRequests);
+        adapter.setListener(new LeaveRequestRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void OnItemClickListener(LeaveRequest leaveRequest) {
+                if(leaveRequest.getStatus().toLowerCase().equals(AppWideWariables.REJECTED)) {
+                    AppUtils.makeNotification(leaveRequest.getApprover_reason(),getActivity());
+                }
+            }
+        });
         binding.recyclerViewLeaveRequest.setAdapter(adapter);
     }
 
@@ -409,7 +419,6 @@ public class LeaveRequestFragment extends Fragment {
 
         resetViews();
         refreshApiCalls();
-
         setListeners();
     }
 
@@ -419,11 +428,13 @@ public class LeaveRequestFragment extends Fragment {
             if (binding == null) {
                 return;
             }
+            
             UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
 
             if (binding.recyclerviewLeaveProgress != null) {
                 binding.recyclerviewLeaveProgress.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
                 LeavesRemainingRecyclerAdapter adapter = new LeavesRemainingRecyclerAdapter(getActivity(), userData.getLeaveCount());
+               
                 binding.recyclerviewLeaveProgress.setAdapter(adapter);
             }
             lc.clear();

@@ -12,6 +12,16 @@ public class AttendanceHistory {
     private String checkin_time;                  //": "2023-07-17T06:34:59.000Z",
     private String checkout_time;                 //": null,
     private int String;                   //": null
+    private String lateReason;                    //": null
+    
+    
+    public java.lang.String getLateReason() {
+        return lateReason;
+    }
+    
+    public void setLateReason(java.lang.String lateReason) {
+        this.lateReason = lateReason;
+    }
 
     public int getId() {
         return id;

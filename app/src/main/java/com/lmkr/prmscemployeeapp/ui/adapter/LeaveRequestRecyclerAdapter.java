@@ -23,6 +23,7 @@ public class LeaveRequestRecyclerAdapter extends RecyclerView.Adapter<LeaveReque
 	
 	Context context;
 	List<LeaveRequest> list;
+	private static LeaveRequestRecyclerAdapter.OnItemClickListener listener;
 	HashMap<String, Integer> header = new HashMap<>();
 	
 	public LeaveRequestRecyclerAdapter(Context context , List<LeaveRequest> list) {
@@ -90,8 +91,15 @@ public class LeaveRequestRecyclerAdapter extends RecyclerView.Adapter<LeaveReque
 				holder.statusLabel.setText(context.getString(R.string.rejected));
 				break;
 		}
-		holder.statusLabel.setText(leaveRequest.getStatus());
 		
+	}
+	
+	public interface OnItemClickListener {
+		void OnItemClickListener(LeaveRequest leaveRequest);
+	}
+	
+	public void setListener(LeaveRequestRecyclerAdapter.OnItemClickListener listener) {
+		this.listener = listener;
 	}
 	
 	@Override
@@ -116,6 +124,16 @@ public class LeaveRequestRecyclerAdapter extends RecyclerView.Adapter<LeaveReque
 			image = binding.image;
 			status = binding.status;
 			statusLabel = binding.statusLabel;
+			
+			binding.getRoot().setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					int pos = getAdapterPosition();
+					if (listener != null && pos != RecyclerView.NO_POSITION) {
+						listener.OnItemClickListener(list.get(pos));
+					}
+				}
+			});
 		}
 		
 	}
