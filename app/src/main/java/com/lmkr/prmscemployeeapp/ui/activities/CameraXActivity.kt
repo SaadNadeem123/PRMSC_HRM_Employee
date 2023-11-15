@@ -20,30 +20,16 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import com.google.gson.JsonObject
-import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls
-import com.lmkr.prmscemployeeapp.data.webservice.api.Urls
-import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse
 import com.lmkr.prmscemployeeapp.data.webservice.models.UserData
 import com.lmkr.prmscemployeeapp.databinding.ActivityCameraXBinding
 import com.lmkr.prmscemployeeapp.ui.cameraxUtils.FaceContourDetectionProcessor
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 
 class CameraXActivity : AppCompatActivity() {
@@ -109,18 +95,14 @@ class CameraXActivity : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val path = getRealPathFromURI1(output.savedUri!!)
+                    val path = getRealPathFromURI(output.savedUri!!)
 
                     val msg = "Photo capture succeeded: $path"
 
-//                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
 
                     try {
-//                        callCheckInApi(name, output.savedUri)
-                        SharedPreferenceHelper.saveString(AppWideWariables.FACE_LOCK_PATH,
-                            path.toString(),this@CameraXActivity)
-//                        SharedPreferenceHelper.saveString(AppWideWariables.FACE_LOCK_PATH,output.savedUri.toString(),this@CameraXActivity)
+                        SharedPreferenceHelper.saveString(AppWideWariables.FACE_LOCK_PATH,path.toString(),this@CameraXActivity)
 
                         SharedPreferenceHelper.saveString(
                             AppWideWariables.ATTENDANCE_TIME,
@@ -129,7 +111,6 @@ class CameraXActivity : AppCompatActivity() {
                         );
                         finish()
 
-//                        callCheckInApi();
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -138,7 +119,7 @@ class CameraXActivity : AppCompatActivity() {
             })
     }
 
-    private fun getRealPathFromURI1(contentURI: Uri): String? {
+    private fun getRealPathFromURI(contentURI: Uri): String? {
         //Log.e("in","conversion"+contentURI.getPath());
         val path: String?
         val cursor = contentResolver
@@ -192,224 +173,6 @@ class CameraXActivity : AppCompatActivity() {
         }.run()
     }
 
-    // And to convert the image URI to the direct file system path of the image file
-    open fun getRealPathFromURI(contentUri: Uri?): String? {
-
-        // can post image
-        val proj = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor = contentResolver.query(
-            contentUri!!, proj,  // Which columns to return
-            null,  // WHERE clause; which rows to return (all rows)
-            null,  // WHERE clause selection arguments (none)
-            null
-        ) // Order-by clause (ascending by name)
-        val column_index = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        cursor.moveToFirst()
-        return cursor.getString(column_index)
-    }
-
-
-    private fun callCheckInApi() {
-        if (!AppUtils.checkNetworkState(this@CameraXActivity)) {
-            return
-        }
-        val retrofit = Retrofit.Builder().baseUrl(ApiCalls.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val urls = retrofit.create(Urls::class.java)
-        val body = JsonObject()
-        val userData = SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)
-        body.addProperty("employee_id", userData.basicData[0].id)
-        body.addProperty("checkin_time", AppUtils.getCurrentDateTimeGMT5String())
-        body.addProperty("lat", 0)
-        body.addProperty("longitude", 0)
-        body.addProperty("source", AppWideWariables.SOURCE_MOBILE)
-        body.addProperty("file_name", "")
-        body.addProperty("file_path", "")
-
-//        File file;// = // initialize file here
-
-//        MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
-        val call = urls.checkIn(
-            AppUtils.getStandardHeaders(
-                SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)
-            ), body
-        )
-        call.enqueue(object : Callback<ApiBaseResponse?> {
-            override fun onResponse(
-                call: Call<ApiBaseResponse?>, response: Response<ApiBaseResponse?>
-            ) {
-                Log.i("response", response.toString())
-                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST,response, this@CameraXActivity)) {
-                    if (!response.isSuccessful) {
-//                    tv.setText("Code :" + response.code());
-                        return
-                    }
-
-                    finish(); }
-            }
-
-            override fun onFailure(call: Call<ApiBaseResponse?>, t: Throwable) {
-                t.printStackTrace()
-                AppUtils.ApiError(t, this@CameraXActivity)
-//                AppUtils.makeNotification(t.toString(), this@CameraXActivity)
-                Log.i("response", t.toString())
-                //                tv.setText(t.getMessage());
-            }
-        })
-    }
-
-
-    private fun callCheckOutApi() {
-        if (!AppUtils.checkNetworkState(this@CameraXActivity)) {
-            return
-        }
-        val retrofit = Retrofit.Builder().baseUrl(ApiCalls.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-        val urls = retrofit.create(Urls::class.java)
-        val body = JsonObject()
-        val userData = SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)
-        body.addProperty("checkout_time", AppUtils.getCurrentDateTimeGMT5String())
-        val call = urls.checkout(
-            AppUtils.getStandardHeaders(
-                SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)
-            ), userData.basicData[0].id.toString(), body
-        )
-        call.enqueue(object : Callback<ApiBaseResponse?> {
-            override fun onResponse(
-                call: Call<ApiBaseResponse?>,
-                response: Response<ApiBaseResponse?>
-            ) {
-                Log.i("response", response.toString())
-                if (!AppUtils.isErrorResponse(
-                        AppWideWariables.API_METHOD_POST,
-                        response,
-                        this@CameraXActivity
-                    )
-                ) {
-                    if (!response.isSuccessful) {
-                        return
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<ApiBaseResponse?>, t: Throwable) {
-                t.printStackTrace()
-                AppUtils.ApiError(t, this@CameraXActivity)
-//                AppUtils.makeNotification(t.toString(), this@CameraXActivity)
-                Log.i("response", t.toString())
-            }
-        })
-    }
-
-    private fun callCheckInApi(name: String, savedUri: Uri?) {
-        if (!AppUtils.checkNetworkState(this@CameraXActivity)) {
-            return
-        }
-
-        val user = SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)
-
-        /*
-         * Get the column indexes of the data in the Cursor,
-         * move to the first row in the Cursor, get the data,
-         * and display it.
-         */
-//        val file = File("/storage/emulated/0/Pictures/CameraX-Image/$name")
-//        val file = FileUtils.getPath(this@CameraXActivity, savedUri)
-        val file = getRealPathFromURI(savedUri)
-
-        val filePart = MultipartBody.Part.createFormData(
-            "file", name, RequestBody.create(
-                MediaType.parse("image/*"), file
-            )
-        )
-
-        val httpClient = OkHttpClient.Builder().retryOnConnectionFailure(true)
-            .connectTimeout(30, TimeUnit.MINUTES).readTimeout(30, TimeUnit.MINUTES).writeTimeout(
-                30, TimeUnit.MINUTES
-            ) //                .addInterceptor(new NetInterceptor())
-            /*                .addInterceptor(new Interceptor() {
-                    @Override
-                    public okhttp3.Response intercept(Chain chain) throws IOException {
-                        Request request = chain.request();
-                        String token = user.getToken();
-                        request = request.newBuilder()
-                                .addHeader("Authorization", token)
-                                .build();
-                        return chain.proceed(request);
-                    }
-                })*/.build()
-
-        val retrofit = Retrofit.Builder().baseUrl(ApiCalls.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).client(httpClient).build()
-        val urls = retrofit.create(Urls::class.java)/* val body = JsonObject()
-         body.addProperty("employee_id", userData!!.basicData[0].id)
-         body.addProperty("checkin_time", AppUtils.getCurrentDateTimeGMT5String())
-         body.addProperty("lat", SharedPreferenceHelper.getString("lat", this@CameraXActivity))
-         body.addProperty(
-             "longitude", SharedPreferenceHelper.getString("long", this@CameraXActivity)
-         )
-         body.addProperty("source", AppWideWariables.SOURCE_MOBILE)
-         body.addProperty("file_name", name)
-         body.addProperty("file_path", "")*/
-
-        val employee_id: RequestBody = RequestBody.create(
-            MediaType.parse("text/plain"), user.basicData.get(0).id.toString() + ""
-        )
-        val checkin_time: RequestBody = RequestBody.create(
-            MediaType.parse("text/plain"), AppUtils.getCurrentDateTimeGMT5String()
-        )
-        val lat: RequestBody = RequestBody.create(
-            MediaType.parse("text/plain"),
-            SharedPreferenceHelper.getString("lat", this@CameraXActivity)
-        )
-        val longitude: RequestBody = RequestBody.create(
-            MediaType.parse("text/plain"),
-            SharedPreferenceHelper.getString("long", this@CameraXActivity)
-        )
-        val source: RequestBody =
-            RequestBody.create(MediaType.parse("text/plain"), AppWideWariables.SOURCE_MOBILE)
-        val comments: RequestBody = RequestBody.create(MediaType.parse("text/plain"), "")
-        val file_name: RequestBody = RequestBody.create(MediaType.parse("text/plain"), name)
-        val file_path: RequestBody = RequestBody.create(MediaType.parse("text/plain"), "path")
-
-
-        val call = urls.checkInMultipart(
-            AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(this@CameraXActivity)),
-            filePart,
-            employee_id,
-            checkin_time,
-            comments,
-            lat,
-            longitude,
-            source
-        )
-        call.enqueue(object : Callback<ApiBaseResponse?> {
-            override fun onResponse(
-                call: Call<ApiBaseResponse?>, response: Response<ApiBaseResponse?>
-            ) {
-                Log.i("response", response.toString())
-
-                if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST,response, this@CameraXActivity)) {
-
-                    if (!response.isSuccessful) {
-//                    tv.setText("Code :" + response.code());
-                        return
-                    }
-                    SharedPreferenceHelper.saveBoolean(
-                        AppWideWariables.IS_CHECKED_IN, true, this@CameraXActivity
-                    )
-                }
-            }
-
-            override fun onFailure(call: Call<ApiBaseResponse?>, t: Throwable) {
-                t.printStackTrace()
-                AppUtils.ApiError(t, this@CameraXActivity)
-//                AppUtils.makeNotification(t.toString(), this@CameraXActivity)
-                Log.i("response", t.toString())
-                //                tv.setText(t.getMessage());
-            }
-        })
-    }
 
     private fun captureVideo() {}
 
