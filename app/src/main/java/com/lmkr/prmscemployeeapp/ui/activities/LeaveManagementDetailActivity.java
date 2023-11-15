@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.google.gson.JsonObject;
 import com.lmkr.prmscemployeeapp.R;
+import com.lmkr.prmscemployeeapp.data.database.models.LeaveRequest;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiCalls;
 import com.lmkr.prmscemployeeapp.data.webservice.api.Urls;
 import com.lmkr.prmscemployeeapp.data.webservice.models.ApiBaseResponse;
@@ -29,6 +30,7 @@ public class LeaveManagementDetailActivity extends BaseFullScreenActivity {
 	
 	private ActivityLeaveManagementDetailBinding binding;
 	private LeaveManagementModel leaveManagementModel = null;
+	private LeaveRequest leaveRequest = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,63 +45,122 @@ public class LeaveManagementDetailActivity extends BaseFullScreenActivity {
 	@Override
 	public void initializeViews() {
 		
-		if (leaveManagementModel == null) {
-			return;
+		if (leaveManagementModel != null) {
+			binding.title.setText(getResources().getString(R.string.title_leave_management));
+			if (leaveManagementModel.getStatus().toLowerCase().equals(AppWideWariables.PENDING)) {
+				binding.bottom.setVisibility(View.VISIBLE);
+				binding.rejectedReasonLabel.setVisibility(View.GONE);
+				binding.rejectedReason.setVisibility(View.GONE);
+				binding.rejectedReason.setText("");
+			} else {
+				binding.bottom.setVisibility(View.GONE);
+				binding.rejectedReasonLabel.setVisibility(View.VISIBLE);
+				binding.rejectedReason.setVisibility(View.VISIBLE);
+				binding.rejectedReason.setText(leaveManagementModel.getApprover_reason());
+			}
+			
+			binding.year.setText(AppUtils.getConvertedDateFromOneFormatToOther(leaveManagementModel.getFrom_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_MONTH_YEAR));
+			binding.year.setVisibility(View.VISIBLE);
+			
+			String days = leaveManagementModel.getTotal_days()>=1?((int)leaveManagementModel.getTotal_days())+"":leaveManagementModel.getTotal_days()+"";
+			String totaldays = days + " " + (leaveManagementModel.getTotal_days() > 1 ? getString(R.string.days) : getString(R.string.day));
+			binding.date.setText(AppUtils.getConvertedDateFromOneFormatToOther(leaveManagementModel.getFrom_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_DAY) + " - " + AppUtils.getConvertedDateFromOneFormatToOther(leaveManagementModel.getTo_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_DAY) + " (" + totaldays + ")");
+			binding.leaveType.setText(leaveManagementModel.getLeave_type_name());
+			binding.comments.setText(leaveManagementModel.getReason());
+			binding.name.setText(leaveManagementModel.getEmployee_name());
+			
+			switch (leaveManagementModel.getLeave_type_name()) {
+				case AppWideWariables.LEAVE_TYPE_CASUAL:
+					binding.image.setImageResource(R.drawable.casual_leaves);
+					break;
+				case AppWideWariables.LEAVE_TYPE_SICK:
+					binding.image.setImageResource(R.drawable.sick_leaves);
+					break;
+				case AppWideWariables.LEAVE_TYPE_ANNUAL:
+					binding.image.setImageResource(R.drawable.annual_leaves);
+					break;
+				default:
+					binding.image.setImageResource(R.drawable.casual_leaves);
+					break;
+			}
+			
+			switch (leaveManagementModel.getStatus()) {
+				case AppWideWariables.PENDING:
+					binding.status.setBackgroundColor(getColor(R.color.grey_dark));
+					binding.statusLabel.setTextColor(getColor(R.color.grey_dark));
+					binding.statusLabel.setText(getString(R.string.pending));
+					break;
+				case AppWideWariables.APPROVED:
+					binding.status.setBackgroundColor(getColor(R.color.app_green));
+					binding.statusLabel.setTextColor(getColor(R.color.app_green));
+					binding.statusLabel.setText(getString(R.string.approved));
+					break;
+				case AppWideWariables.REJECTED:
+					binding.status.setBackgroundColor(getColor(R.color.red));
+					binding.statusLabel.setTextColor(getColor(R.color.red));
+					binding.statusLabel.setText(getString(R.string.rejected));
+					break;
+			}
+		}
+		else if (leaveRequest != null) {
+			
+			binding.title.setText(getResources().getString(R.string.title_leave_request));
+			if (leaveRequest.getStatus().toLowerCase().equals(AppWideWariables.PENDING)) {
+				binding.bottom.setVisibility(View.VISIBLE);
+				binding.rejectedReasonLabel.setVisibility(View.GONE);
+				binding.rejectedReason.setVisibility(View.GONE);
+				binding.rejectedReason.setText("");
+			} else {
+				binding.bottom.setVisibility(View.GONE);
+				binding.rejectedReasonLabel.setVisibility(View.VISIBLE);
+				binding.rejectedReason.setVisibility(View.VISIBLE);
+				binding.rejectedReason.setText(leaveRequest.getApprover_reason());
+			}
+			
+			binding.year.setText(AppUtils.getConvertedDateFromOneFormatToOther(leaveRequest.getFrom_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_MONTH_YEAR));
+			binding.year.setVisibility(View.VISIBLE);
+			
+			String days = leaveRequest.getTotal_days()>=1?((int)leaveRequest.getTotal_days())+"":leaveRequest.getTotal_days()+"";
+			String totaldays = days + " " + (leaveRequest.getTotal_days() > 1 ? getString(R.string.days) : getString(R.string.day));
+			binding.date.setText(AppUtils.getConvertedDateFromOneFormatToOther(leaveRequest.getFrom_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_DAY) + " - " + AppUtils.getConvertedDateFromOneFormatToOther(leaveRequest.getTo_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_DAY) + " (" + totaldays + ")");
+			binding.leaveType.setText(leaveRequest.getLeave_type_name());
+			binding.comments.setText(leaveRequest.getReason());
+			binding.name.setText(leaveRequest.getEmployee_name());
+			
+			switch (leaveRequest.getLeave_type_name()) {
+				case AppWideWariables.LEAVE_TYPE_CASUAL:
+					binding.image.setImageResource(R.drawable.casual_leaves);
+					break;
+				case AppWideWariables.LEAVE_TYPE_SICK:
+					binding.image.setImageResource(R.drawable.sick_leaves);
+					break;
+				case AppWideWariables.LEAVE_TYPE_ANNUAL:
+					binding.image.setImageResource(R.drawable.annual_leaves);
+					break;
+				default:
+					binding.image.setImageResource(R.drawable.casual_leaves);
+					break;
+			}
+			
+			switch (leaveRequest.getStatus()) {
+				case AppWideWariables.PENDING:
+					binding.status.setBackgroundColor(getColor(R.color.grey_dark));
+					binding.statusLabel.setTextColor(getColor(R.color.grey_dark));
+					binding.statusLabel.setText(getString(R.string.pending));
+					break;
+				case AppWideWariables.APPROVED:
+					binding.status.setBackgroundColor(getColor(R.color.app_green));
+					binding.statusLabel.setTextColor(getColor(R.color.app_green));
+					binding.statusLabel.setText(getString(R.string.approved));
+					break;
+				case AppWideWariables.REJECTED:
+					binding.status.setBackgroundColor(getColor(R.color.red));
+					binding.statusLabel.setTextColor(getColor(R.color.red));
+					binding.statusLabel.setText(getString(R.string.rejected));
+					break;
+			}
 		}
 		
-		if(leaveManagementModel.getStatus().toLowerCase().equals(AppWideWariables.PENDING)) {
-			binding.bottom.setVisibility(View.VISIBLE);
-			binding.rejectedReasonLabel.setVisibility(View.GONE);
-			binding.rejectedReason.setVisibility(View.GONE);
-			binding.rejectedReason.setText("");
-		}
-		else
-		{
-			binding.bottom.setVisibility(View.GONE);
-			binding.rejectedReasonLabel.setVisibility(View.VISIBLE);
-			binding.rejectedReason.setVisibility(View.VISIBLE);
-			binding.rejectedReason.setText(leaveManagementModel.getApprover_reason());
-		}
-		
-		binding.year.setText(AppUtils.getConvertedDateFromOneFormatToOther(leaveManagementModel.getFrom_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_MONTH_YEAR));
-		binding.year.setVisibility(View.VISIBLE);
-		
-		String totaldays = leaveManagementModel.getTotal_days() + " " + (leaveManagementModel.getTotal_days() > 1 ? getString(R.string.days) : getString(R.string.day));
-		binding.date.setText(AppUtils.getConvertedDateFromOneFormatToOther(leaveManagementModel.getFrom_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_DAY) + " - " + AppUtils.getConvertedDateFromOneFormatToOther(leaveManagementModel.getTo_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_DAY) + " (" + totaldays + ")");
-		binding.leaveType.setText(leaveManagementModel.getLeave_type_name());
-		binding.comments.setText(leaveManagementModel.getReason());
-		binding.name.setText(leaveManagementModel.getEmployee_name());
-		
-		switch (leaveManagementModel.getLeave_type_name()) {
-			case AppWideWariables.LEAVE_TYPE_CASUAL:
-				binding.image.setImageResource(R.drawable.casual_leaves);
-				break;
-			case AppWideWariables.LEAVE_TYPE_SICK:
-				binding.image.setImageResource(R.drawable.sick_leaves);
-				break;
-			case AppWideWariables.LEAVE_TYPE_ANNUAL:
-				binding.image.setImageResource(R.drawable.annual_leaves);
-				break;
-			default:
-				binding.image.setImageResource(R.drawable.casual_leaves);
-				break;
-		}
-
-		switch (leaveManagementModel.getStatus().toLowerCase()) {
-			case AppWideWariables.PENDING:
-				binding.status.setBackgroundColor(getColor(R.color.grey_dark));
-				binding.statusLabel.setTextColor(getColor(R.color.grey_dark));
-				break;
-			case AppWideWariables.APPROVED:
-				binding.status.setBackgroundColor(getColor(R.color.app_green));
-				binding.statusLabel.setTextColor(getColor(R.color.app_green));
-				break;
-			case AppWideWariables.REJECTED:
-				binding.status.setBackgroundColor(getColor(R.color.red));
-				binding.statusLabel.setTextColor(getColor(R.color.red));
-				break;
-		}
-		binding.statusLabel.setText(leaveManagementModel.getStatus());
 	}
 	
 	@Override
@@ -146,16 +207,14 @@ public class LeaveManagementDetailActivity extends BaseFullScreenActivity {
 			}
 		}
 		
-		if(TextUtils.isEmpty(reason))
-		{
-			AppUtils.makeNotification(getString(R.string.provide_comments),LeaveManagementDetailActivity.this);
+		if (TextUtils.isEmpty(reason)) {
+			AppUtils.makeNotification(getString(R.string.provide_comments) , LeaveManagementDetailActivity.this);
 			return;
 		}
 		
 		if (!AppUtils.checkNetworkState(LeaveManagementDetailActivity.this)) {
 			return;
 		}
-		
 		
 		UserData user = SharedPreferenceHelper.getLoggedinUser(LeaveManagementDetailActivity.this);
 		
@@ -174,9 +233,9 @@ public class LeaveManagementDetailActivity extends BaseFullScreenActivity {
 		
 		Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
 		
-		Urls jsonPlaceHolderApi = retrofit.create(Urls.class);
+		Urls jsonPlacebindingApi = retrofit.create(Urls.class);
 		
-		Call<ApiBaseResponse> call = jsonPlaceHolderApi.approveRejectLeave(AppUtils.getStandardHeaders(user), leaveManagementModel.getId(), body);
+		Call<ApiBaseResponse> call = jsonPlacebindingApi.approveRejectLeave(AppUtils.getStandardHeaders(user) , leaveManagementModel.getId() , body);
 		
 		call.enqueue(new Callback<ApiBaseResponse>() {
 			@Override
@@ -195,8 +254,7 @@ public class LeaveManagementDetailActivity extends BaseFullScreenActivity {
 						//tv.setText("Code :" + response.code());
 						return;
 					}
-				}
-				else {
+				} else {
 					new Handler().postDelayed(new Runnable() {
 						@Override
 						public void run() {
@@ -219,6 +277,7 @@ public class LeaveManagementDetailActivity extends BaseFullScreenActivity {
 	@Override
 	public void handleIntent() {
 		leaveManagementModel = (LeaveManagementModel) getIntent().getExtras().getSerializable(AppWideWariables.LEAVE_MANAGEMENT_OBJECT_KEY);
+		leaveRequest = (LeaveRequest) getIntent().getExtras().getSerializable(AppWideWariables.LEAVE_REQUEST_OBJECT_KEY);
 	}
 	
 	@Override

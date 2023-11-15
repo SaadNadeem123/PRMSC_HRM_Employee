@@ -109,11 +109,18 @@ class CameraXActivity : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-//                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                    val path = getRealPathFromURI1(output.savedUri!!)
+
+                    val msg = "Photo capture succeeded: $path"
+
+//                    val msg = "Photo capture succeeded: ${output.savedUri}"
+                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+
                     try {
 //                        callCheckInApi(name, output.savedUri)
-                        SharedPreferenceHelper.saveString(AppWideWariables.FACE_LOCK_PATH,output.savedUri.toString(),this@CameraXActivity)
+                        SharedPreferenceHelper.saveString(AppWideWariables.FACE_LOCK_PATH,
+                            path.toString(),this@CameraXActivity)
+//                        SharedPreferenceHelper.saveString(AppWideWariables.FACE_LOCK_PATH,output.savedUri.toString(),this@CameraXActivity)
 
                         SharedPreferenceHelper.saveString(
                             AppWideWariables.ATTENDANCE_TIME,
@@ -131,6 +138,19 @@ class CameraXActivity : AppCompatActivity() {
             })
     }
 
+    private fun getRealPathFromURI1(contentURI: Uri): String? {
+        //Log.e("in","conversion"+contentURI.getPath());
+        val path: String?
+        val cursor = contentResolver
+            .query(contentURI, null, null, null, null)
+        path = if (cursor == null) contentURI.path else {
+            cursor.moveToFirst()
+            val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+            cursor.getString(idx)
+        }
+        cursor?.close()
+        return path
+    }
 
     fun importFile(returnIntent: Intent) {
         Thread {
@@ -348,6 +368,7 @@ class CameraXActivity : AppCompatActivity() {
         )
         val source: RequestBody =
             RequestBody.create(MediaType.parse("text/plain"), AppWideWariables.SOURCE_MOBILE)
+        val comments: RequestBody = RequestBody.create(MediaType.parse("text/plain"), "")
         val file_name: RequestBody = RequestBody.create(MediaType.parse("text/plain"), name)
         val file_path: RequestBody = RequestBody.create(MediaType.parse("text/plain"), "path")
 
@@ -357,11 +378,10 @@ class CameraXActivity : AppCompatActivity() {
             filePart,
             employee_id,
             checkin_time,
+            comments,
             lat,
             longitude,
-            source,
-            file_name,
-            file_path
+            source
         )
         call.enqueue(object : Callback<ApiBaseResponse?> {
             override fun onResponse(
@@ -412,8 +432,8 @@ class CameraXActivity : AppCompatActivity() {
                 .setTargetResolution(Size(720,1280))
                 .build()
             // Select back camera as a default
-//            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+//            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
 
 
             imageAnalyzer = ImageAnalysis.Builder()

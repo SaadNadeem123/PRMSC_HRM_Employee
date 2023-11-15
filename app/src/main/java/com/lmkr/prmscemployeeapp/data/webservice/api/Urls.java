@@ -46,9 +46,7 @@ public interface Urls {
     @POST("employee/firebasedevice/create")
     Call<ApiBaseResponse> updateFirebaseToken(@Header("Authorization") String standardHeaders,@Body JsonObject body);
 
-    @PUT("attendance/attendance/{UserID}")
-    Call<ApiBaseResponse> checkout(@Header("Authorization") String standardHeaders,@Path("UserID") String user_id,@Body JsonObject body);
-
+    
     @Multipart
     @POST("employee/leaverequest/create")
     Call<CreateLeaveRequestResponse> leaveRequestMultipart(
@@ -68,6 +66,10 @@ public interface Urls {
             @Part("source")RequestBody source,
             @Part("first_approver")RequestBody first_approver,
             @Part("status") RequestBody status);
+    
+    
+    @POST("attendance/attendance")
+    Call<ApiBaseResponse> checkIn(@Header("Authorization") String standardHeaders, @Body JsonObject body);
 
     @Multipart
     @POST("attendance/attendance")
@@ -75,14 +77,14 @@ public interface Urls {
                                            @Part MultipartBody.Part file,
                                            @Part("employee_id")RequestBody employee_id,
                                            @Part("checkin_time")RequestBody checkin_time,
+                                           @Part("comments")RequestBody lateComment,
                                            @Part("lat")RequestBody lat,
                                            @Part("longitude")RequestBody longitude,
-                                           @Part("source")RequestBody source,
-                                           @Part("file_name")RequestBody file_name,
-                                           @Part("file_path")RequestBody file_path);
-
-    @POST("attendance/attendance")
-    Call<ApiBaseResponse> checkIn(@Header("Authorization") String standardHeaders, @Body JsonObject body);
+                                           @Part("source")RequestBody source);
+    
+    @PUT("attendance/attendance/{UserID}")
+    Call<ApiBaseResponse> checkout(@Header("Authorization") String standardHeaders,@Path("UserID") String user_id,@Body JsonObject body);
+    
 
     @GET("employee/emergencycontact/{id}")
     Call<EmergencyApiResponse> getEmergencyContact(

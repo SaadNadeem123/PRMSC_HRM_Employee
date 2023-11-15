@@ -3,6 +3,7 @@ package com.lmkr.prmscemployeeapp.ui.home;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +40,7 @@ import com.lmkr.prmscemployeeapp.ui.adapter.AttendanceHistoryRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.ui.adapter.LeavesProgressRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.ui.fragments.FullScreenMapFragment;
 import com.lmkr.prmscemployeeapp.ui.fragments.LateCommentFragment;
+import com.lmkr.prmscemployeeapp.ui.utilities.AlertDialogUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
@@ -46,9 +48,15 @@ import com.lmkr.prmscemployeeapp.viewModel.AttendanceHistoryViewModel;
 import com.lmkr.prmscemployeeapp.viewModel.AttendanceHistoryViewModelFactory;
 import com.lmkr.prmscemployeeapp.viewModel.LateCommentAttendanceViewModelListener;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -95,6 +103,16 @@ public class HomeFragment extends Fragment {
 		
 		binding.contentHome.recyclerViewAttendanceHistory.setLayoutManager(new LinearLayoutManager(getActivity() , LinearLayoutManager.VERTICAL , false));
 		AttendanceHistoryRecyclerAdapter adapter = new AttendanceHistoryRecyclerAdapter(getActivity() , attendanceHistories);
+		adapter.setListener(new AttendanceHistoryRecyclerAdapter.OnItemClickListener() {
+			@Override
+			public void OnItemClickListener(AttendanceHistory attendanceHistory) {
+				if (attendanceHistory.getLateReason() != null && !TextUtils.isEmpty(attendanceHistory.getLateReason())) {
+					AlertDialogUtils.showPopUpMessageDialog(getContext() , getString(R.string.late_reason) , attendanceHistory.getLateReason() , null);
+				}
+			}
+		});
+
+//		binding.contentHome.recyclerViewAttendanceHistory.addItemDecoration(new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL));
 		binding.contentHome.recyclerViewAttendanceHistory.setAdapter(adapter);
 		
 		updateCheckInCheckOutProgress(SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getCheckout_check() , isCheckedIn , isCheckedOut , attendanceHistory);
@@ -126,7 +144,6 @@ public class HomeFragment extends Fragment {
 				} else {
 					binding.checkin.setVisibility(View.VISIBLE);
 				}
-				
 				
 				objectAnimator = ObjectAnimator.ofInt(binding.circleAnimation , "progress" , 1000).setDuration(3000);
 				objectAnimator.addListener(new Animator.AnimatorListener() {
@@ -254,16 +271,7 @@ public class HomeFragment extends Fragment {
 			binding.animationTick.cancelAnimation();
 			binding.animationTick.setVisibility(View.GONE);
 		}
-	}	private final Observer<? super String> lateCommentObserver = new Observer<String>() {
-		@Override
-		public void onChanged(String comment) {
-			lateComment = comment;
-			LateCommentAttendanceViewModelListener.getInstance().getComment().removeObserver(lateCommentObserver);
-			if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
-				callCheckInApi();
-			}
-		}
-	};
+	}
 	
 	public View onCreateView(@NonNull LayoutInflater inflater , ViewGroup container , Bundle savedInstanceState) {
 		
@@ -306,7 +314,7 @@ public class HomeFragment extends Fragment {
 							} else if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getFacelock().equals("yes")) {
 								getActivity().startActivity(new Intent(getActivity() , CameraXActivity.class));
 							} else {
-								SharedPreferenceHelper.saveString(AppWideWariables.ATTENDANCE_TIME , AppUtils.getAttendanceTime(), getActivity());
+								SharedPreferenceHelper.saveString(AppWideWariables.ATTENDANCE_TIME , AppUtils.getAttendanceTime() , getActivity());
 								allowToProceed();
 							}
 						} else {
@@ -339,19 +347,25 @@ public class HomeFragment extends Fragment {
 		if (binding.checkin.getText().equals(getResources().getString(R.string.checkout))) {
 			callCheckOutApi();
 		} else if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
-			if (AppUtils.isLate(getContext(),SharedPreferenceHelper.getString(AppWideWariables.ATTENDANCE_TIME , getActivity()))) {
+			if (AppUtils.isLate(getContext() , SharedPreferenceHelper.getString(AppWideWariables.ATTENDANCE_TIME , getActivity()))) {
 				LateCommentAttendanceViewModelListener.getInstance().getComment().observe(this , lateCommentObserver);
 				
 				try {
 					LateCommentFragment lateCommentFragment = LateCommentFragment.getInstance();
-					lateCommentFragment.setStyle(DialogFragment.STYLE_NO_FRAME , R.style.Dialog_NoTitle);
-					lateCommentFragment.show(getActivity().getSupportFragmentManager() , "LateCommentFragment");
+					if (!lateCommentFragment.isAdded()) {
+						lateCommentFragment.setStyle(DialogFragment.STYLE_NO_FRAME , R.style.Dialog_NoTitle);
+						lateCommentFragment.show(getActivity().getSupportFragmentManager() , "LateCommentFragment");
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				
 			} else {
-				callCheckInApi();
+				if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getFacelock().equals("yes")) {
+					callCheckInMultiPartApi();
+				} else {
+					callCheckInApi();
+				}
 			}
 		} else {
 		
@@ -368,7 +382,7 @@ public class HomeFragment extends Fragment {
 		JsonObject body = new JsonObject();
 		
 		UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
-		body.addProperty("checkout_time" , SharedPreferenceHelper.getString(AppWideWariables.ATTENDANCE_TIME ,getActivity()));
+		body.addProperty("checkout_time" , SharedPreferenceHelper.getString(AppWideWariables.ATTENDANCE_TIME , getActivity()));
 		Call<ApiBaseResponse> call = urls.checkout(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())) , String.valueOf(userData.getBasicData().get(0).getId()) , body);
 		
 		call.enqueue(new Callback<ApiBaseResponse>() {
@@ -393,7 +407,20 @@ public class HomeFragment extends Fragment {
 				Log.i("response" , t.toString());
 			}
 		});
-	}
+	}	private final Observer<? super String> lateCommentObserver = new Observer<String>() {
+		@Override
+		public void onChanged(String comment) {
+			lateComment = comment;
+			LateCommentAttendanceViewModelListener.getInstance().getComment().removeObserver(lateCommentObserver);
+			if (binding.checkin.getText().equals(getResources().getString(R.string.checkin))) {
+				if (SharedPreferenceHelper.getLoggedinUser(getActivity()).getBasicData().get(0).getFacelock().equals("yes")) {
+					callCheckInMultiPartApi();
+				} else {
+					callCheckInApi();
+				}
+			}
+		}
+	};
 	
 	private void callCheckInApi() {
 		
@@ -415,7 +442,7 @@ public class HomeFragment extends Fragment {
 		
 		
 		body.addProperty("employee_id" , userData.getBasicData().get(0).getId());
-		body.addProperty("checkin_time" , SharedPreferenceHelper.getString(AppWideWariables.ATTENDANCE_TIME ,getActivity()));
+		body.addProperty("checkin_time" , SharedPreferenceHelper.getString(AppWideWariables.ATTENDANCE_TIME , getActivity()));
 //		body.addProperty("checkin_time" , AppUtils.getCurrentDateTimeGMT5String());
 		if (!TextUtils.isEmpty(lateComment)) {
 			body.addProperty("comments" , lateComment);
@@ -457,6 +484,203 @@ public class HomeFragment extends Fragment {
 				AppUtils.ApiError(t , getActivity());
 //                AppUtils.makeNotification(t.toString(), getActivity());
 				Log.i("response" , t.toString());
+//                tv.setText(t.getMessage());
+			}
+		});
+		
+	}
+	
+	private void callCheckInMultiPartApi() {
+		
+		if (!AppUtils.checkNetworkState(getActivity())) {
+			return;
+		}
+		
+		
+		UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
+		
+		ProgressDialog mProgressDialog = new ProgressDialog(getActivity() , R.style.CustomProgressDialog);
+		mProgressDialog.setIndeterminate(true);
+		mProgressDialog.setMessage("Please Wait...");
+		mProgressDialog.setCanceledOnTouchOutside(false);
+		mProgressDialog.setCancelable(false);
+		mProgressDialog.show();
+		
+		String latitude = SharedPreferenceHelper.getString("lat" , getActivity());
+		String longitude = SharedPreferenceHelper.getString("long" , getActivity());
+		
+		
+		RequestBody fpath = null;
+		MultipartBody.Part body = null;
+//		AlertDialogUtils.showPopUpMessageDialog(getActivity(),SharedPreferenceHelper.getFaceLockPath(getActivity()));
+		File file = new File(SharedPreferenceHelper.getFaceLockPath(getActivity()));
+		
+		fpath = RequestBody.create(MediaType.parse("image/jpeg") , file);
+		body = MultipartBody.Part.createFormData("file" , file.getName() , fpath);
+		
+		UserData user = SharedPreferenceHelper.getLoggedinUser(getActivity());
+		
+		RequestBody employee_id = RequestBody.create(MediaType.parse("text/plain") , user.getBasicData().get(0).getId() + "");
+		RequestBody checkin_time = RequestBody.create(MediaType.parse("text/plain") , SharedPreferenceHelper.getString(AppWideWariables.ATTENDANCE_TIME , getActivity()) + "");
+		RequestBody comments = RequestBody.create(MediaType.parse("text/plain") , lateComment);
+		RequestBody lat = RequestBody.create(MediaType.parse("text/plain") , TextUtils.isEmpty(latitude) ? "0" : latitude + "");
+		RequestBody lng = RequestBody.create(MediaType.parse("text/plain") , TextUtils.isEmpty(longitude) ? "0" : longitude + "");
+		RequestBody source = RequestBody.create(MediaType.parse("text/plain") , AppWideWariables.SOURCE_MOBILE);
+		
+		OkHttpClient httpClient = new OkHttpClient.Builder().retryOnConnectionFailure(true).connectTimeout(10 , TimeUnit.MINUTES).readTimeout(10 , TimeUnit.MINUTES).writeTimeout(10 , TimeUnit.MINUTES)
+//                .addInterceptor(new NetInterceptor())
+/*                .addInterceptor(new Interceptor() {
+                    @Override
+                    public okhttp3.Response intercept(Chain chain) throws IOException {
+                        Request request = chain.request();
+                        String token = user.getToken();
+                        request = request.newBuilder()
+                                .addHeader("Authorization", token)
+                                .build();
+                        return chain.proceed(request);
+                    }
+                })*/.build();
+		
+		
+		Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(httpClient).build();
+		
+		Urls urls = retrofit.create(Urls.class);
+		
+		
+		Call<ApiBaseResponse> call = urls.checkInMultipart(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())) , body , employee_id , checkin_time , comments , lat , lng , source);
+		
+		call.enqueue(new Callback<ApiBaseResponse>() {
+			@Override
+			public void onResponse(Call<ApiBaseResponse> call , Response<ApiBaseResponse> response) {
+				Log.i("response" , response.toString());
+				if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST , response , getActivity())) {
+					if (!response.isSuccessful()) {
+//                    tv.setText("Code :" + response.code());
+						return;
+					}
+					
+					SharedPreferenceHelper.resetGeofenceAndFaceLock(getActivity());
+					oneTimeCheckinAnimationCompleted = false;
+					oneTimeCheckoutAnimationCompleted = false;
+					lateComment = "";
+					getAttendanceHistory();
+				}
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
+					}
+				} , 2000);
+			}
+			
+			@Override
+			public void onFailure(Call<ApiBaseResponse> call , Throwable t) {
+				t.printStackTrace();
+				AppUtils.ApiError(t , getActivity());
+				AppUtils.makeNotification(t.toString() , getActivity());
+				Log.i("response" , t.toString());
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
+					}
+				} , 2000);
+//                tv.setText(t.getMessage());
+			}
+		});
+		
+	}
+	
+	private void callCheckOutMultiPartApi() {
+		
+		if (!AppUtils.checkNetworkState(getActivity())) {
+			return;
+		}
+		
+		
+		UserData userData = SharedPreferenceHelper.getLoggedinUser(getActivity());
+		
+		ProgressDialog mProgressDialog = new ProgressDialog(getActivity() , R.style.CustomProgressDialog);
+		mProgressDialog.setIndeterminate(true);
+		mProgressDialog.setMessage("Please Wait...");
+		mProgressDialog.setCanceledOnTouchOutside(false);
+		mProgressDialog.setCancelable(false);
+		mProgressDialog.show();
+		
+		String latitude = SharedPreferenceHelper.getString("lat" , getActivity());
+		String longitude = SharedPreferenceHelper.getString("long" , getActivity());
+		
+		
+		RequestBody fpath = null;
+		MultipartBody.Part body = null;
+//		AlertDialogUtils.showPopUpMessageDialog(getActivity(),SharedPreferenceHelper.getFaceLockPath(getActivity()));
+		File file = new File(SharedPreferenceHelper.getFaceLockPath(getActivity()));
+		
+		fpath = RequestBody.create(MediaType.parse("image/jpeg") , file);
+		body = MultipartBody.Part.createFormData("file" , file.getName() , fpath);
+		
+		UserData user = SharedPreferenceHelper.getLoggedinUser(getActivity());
+		
+		RequestBody checkout_time = RequestBody.create(MediaType.parse("text/plain") , SharedPreferenceHelper.getString(AppWideWariables.ATTENDANCE_TIME , getActivity()) + "");
+		
+		OkHttpClient httpClient = new OkHttpClient.Builder().retryOnConnectionFailure(true).connectTimeout(10 , TimeUnit.MINUTES).readTimeout(10 , TimeUnit.MINUTES).writeTimeout(10 , TimeUnit.MINUTES)
+//                .addInterceptor(new NetInterceptor())
+/*                .addInterceptor(new Interceptor() {
+                    @Override
+                    public okhttp3.Response intercept(Chain chain) throws IOException {
+                        Request request = chain.request();
+                        String token = user.getToken();
+                        request = request.newBuilder()
+                                .addHeader("Authorization", token)
+                                .build();
+                        return chain.proceed(request);
+                    }
+                })*/.build();
+		
+		
+		Retrofit retrofit = new Retrofit.Builder().baseUrl(ApiCalls.BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(httpClient).build();
+		
+		Urls urls = retrofit.create(Urls.class);
+		
+		
+		Call<ApiBaseResponse> call = urls.checkOutMultipart(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())) , String.valueOf(userData.getBasicData().get(0).getId()) , body , checkout_time);
+		
+		call.enqueue(new Callback<ApiBaseResponse>() {
+			@Override
+			public void onResponse(Call<ApiBaseResponse> call , Response<ApiBaseResponse> response) {
+				Log.i("response" , response.toString());
+				if (!AppUtils.isErrorResponse(AppWideWariables.API_METHOD_POST , response , getActivity())) {
+					if (!response.isSuccessful()) {
+//                    tv.setText("Code :" + response.code());
+						return;
+					}
+					
+					SharedPreferenceHelper.resetGeofenceAndFaceLock(getActivity());
+					oneTimeCheckinAnimationCompleted = false;
+					oneTimeCheckoutAnimationCompleted = false;
+					lateComment = "";
+					getAttendanceHistory();
+				}
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
+					}
+				} , 2000);
+			}
+			
+			@Override
+			public void onFailure(Call<ApiBaseResponse> call , Throwable t) {
+				t.printStackTrace();
+				AppUtils.ApiError(t , getActivity());
+				AppUtils.makeNotification(t.toString() , getActivity());
+				Log.i("response" , t.toString());
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
+					}
+				} , 2000);
 //                tv.setText(t.getMessage());
 			}
 		});

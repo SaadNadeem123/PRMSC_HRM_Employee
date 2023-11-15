@@ -3,8 +3,10 @@ package com.lmkr.prmscemployeeapp.data.database.models;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity(tableName = "LeaveRequest")
-public class LeaveRequest {
+public class LeaveRequest implements Serializable {
 
     @PrimaryKey(autoGenerate = false)
     private int id;                       //": 7,

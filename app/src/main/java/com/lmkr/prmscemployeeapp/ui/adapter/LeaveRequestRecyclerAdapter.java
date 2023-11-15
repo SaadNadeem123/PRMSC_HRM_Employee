@@ -56,8 +56,10 @@ public class LeaveRequestRecyclerAdapter extends RecyclerView.Adapter<LeaveReque
 			holder.year.setText(AppUtils.getConvertedDateFromOneFormatToOther(leaveRequest.getFrom_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_MONTH_YEAR));
 			holder.year.setVisibility(View.VISIBLE);
 		}
-		
-		holder.date.setText(AppUtils.getConvertedDateFromOneFormatToOther(leaveRequest.getFrom_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_DAY) + " - " + AppUtils.getConvertedDateFromOneFormatToOther(leaveRequest.getTo_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_DAY));
+		String days = leaveRequest.getTotal_days()>=1?((int)leaveRequest.getTotal_days())+"":leaveRequest.getTotal_days()+"";
+		String totaldays = days + " " + (leaveRequest.getTotal_days() > 1 ? context.getString(R.string.days) : context.getString(R.string.day));
+		holder.date.setText(AppUtils.getConvertedDateFromOneFormatToOther(leaveRequest.getFrom_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_DAY) + " - " + AppUtils.getConvertedDateFromOneFormatToOther(leaveRequest.getTo_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_DAY) + " (" + totaldays + ")");
+//		holder.date.setText(AppUtils.getConvertedDateFromOneFormatToOther(leaveRequest.getFrom_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_DAY) + " - " + AppUtils.getConvertedDateFromOneFormatToOther(leaveRequest.getTo_date() , AppUtils.FORMAT19 , AppUtils.FORMAT_DAY));
 		holder.leaveType.setText(leaveRequest.getLeave_type_name());
 		
 		switch (leaveRequest.getLeave_type_name()) {

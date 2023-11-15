@@ -41,6 +41,7 @@ public class AppWideWariables {
 	
 	
 	public static final String LEAVE_MANAGEMENT_OBJECT_KEY = "leaveManagementObjectKey";
+	public static final String LEAVE_REQUEST_OBJECT_KEY = "leaveRequestObjectKey";
 	
 	public static final String PENDING_LEAVE = "1";
 	public static final String APPROVE_LEAVE = "2";

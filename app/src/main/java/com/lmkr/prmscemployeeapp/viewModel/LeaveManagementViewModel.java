@@ -27,7 +27,7 @@ public class LeaveManagementViewModel extends ViewModel {
         return leaveManagementList;
     }
 
-    public void fetchBulletinData(String token) {
+    public void fetchLeaveManagementData(String token) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())

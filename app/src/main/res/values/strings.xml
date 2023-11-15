@@ -161,5 +161,8 @@
     <string name="rejected">Rejected</string>
     <string name="rejected_reason">Rejected Reason</string>
     <string name="late_reason">Late Reason</string>
+    <string name="title_leave_request">Leave Request</string>
+    <string name="ok">OK</string>
+    <string name="cancel">CANCEL</string>
 
 </resources>

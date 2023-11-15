@@ -21,8 +21,19 @@
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:src="@drawable/stensil" />
-    </FrameLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/top_margin"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:gravity="center_vertical"
+            android:text="@string/prmsc_employee"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/ll"
@@ -168,10 +179,10 @@
                         android:background="@color/white"
                         android:gravity="start"
                         android:padding="5dp"
-                        android:textStyle="bold"
                         android:text="@string/comment"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_12sdp" />
+                        android:textSize="@dimen/_12sdp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/comments"
@@ -195,10 +206,10 @@
                         android:background="@color/white"
                         android:gravity="start"
                         android:padding="5dp"
-                        android:textStyle="bold"
                         android:text="@string/rejected_reason"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_12sdp" />
+                        android:textSize="@dimen/_12sdp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/rejected_reason"
@@ -222,20 +233,25 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bottom_background"
             android:orientation="vertical"
+            android:paddingTop="@dimen/_10sdp"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/approver_comments"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_marginLeft="@dimen/_5sdp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="@dimen/_5sdp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_10sdp"
                 android:background="@drawable/edit_text_background"
+                android:clickable="true"
+                android:gravity="top|start"
                 android:hint="@string/comments"
-                android:inputType="textCapSentences"
+                android:inputType="textMultiLine"
+                android:minHeight="@dimen/button_height"
+                android:maxLines="4"
+                android:minLines="1"
                 android:padding="5dp"
-                android:textColor="@color/grey_dark"
+                android:textAlignment="textStart"
+                android:textColor="@color/black"
                 android:textColorHint="@color/grey_dark"
                 android:textCursorDrawable="@null" />
 
@@ -245,12 +261,11 @@
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent">
 
-
                 <Button
                     android:id="@+id/reject"
                     android:layout_width="0dp"
                     android:layout_height="?attr/actionBarSize"
-                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginLeft="@dimen/_10sdp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/app_blue"
                     android:text="@string/reject"
@@ -260,8 +275,8 @@
                     android:id="@+id/approve"
                     android:layout_width="0dp"
                     android:layout_height="?attr/actionBarSize"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:layout_marginRight="@dimen/_5sdp"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    android:layout_marginRight="@dimen/_10sdp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/app_blue"
                     android:text="@string/approve"

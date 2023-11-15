@@ -38,6 +38,7 @@ public class BulletinFragment extends Fragment {
         bulletinViewModel = new ViewModelProvider(this).get(BulletinViewModel.class);
         bulletinViewModel.getBulletinList().observe(getViewLifecycleOwner(), bulletinList -> {
             adapter.setBulletinList(bulletinList);
+            binding.progress.setVisibility(View.GONE);
         });
         
         return view;
@@ -60,8 +61,9 @@ public class BulletinFragment extends Fragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                binding.progress.setVisibility(View.VISIBLE);
                 bulletinViewModel.fetchBulletinData();
             }
-        }, 1000);
+        }, 100);
     }
 }

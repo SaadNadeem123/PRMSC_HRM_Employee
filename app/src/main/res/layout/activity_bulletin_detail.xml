@@ -6,19 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".ui.bulletin.BulletinDetailActivity">
 
-    <TextView
+    <FrameLayout
+        android:id="@+id/fl"
         android:layout_width="match_parent"
         android:layout_height="@dimen/top_margin"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        android:gravity="center_vertical"
-        android:text="@string/prmsc_employee"
-        android:textColor="@color/white"
-        android:textSize="20dp"
-        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/ll"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/stensil" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/top_margin"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:gravity="center_vertical"
+            android:text="@string/prmsc_employee"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
+    </FrameLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
@@ -67,7 +82,7 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_15sdp"
+                android:textSize="@dimen/_12sdp"
                 android:textStyle="bold"
                 tools:text="Notification" />
 
@@ -76,13 +91,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
                 android:background="@android:color/white"
                 android:includeFontPadding="false"
                 android:text="hh:mm:ss dd-mm-yyyy"
                 android:textStyle="bold"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_8sdp"/>
+                android:textSize="@dimen/_10sdp"/>
 
         </LinearLayout>
 

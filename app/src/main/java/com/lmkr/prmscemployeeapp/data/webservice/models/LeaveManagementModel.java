@@ -13,7 +13,7 @@ public class LeaveManagementModel implements Serializable {
             private String to_date;                              //": "2023-11-05T19:00:00.000Z",
             private String from_time;                                //": "00:00:00",
             private String to_time;                              //": "00:00:00",
-            private int total_days;                               //": 2,
+            private float total_days;                               //": 0.5,
             // private String attachment;                               //": null,
             private String attachment_name;                              //": null,
             private String reason;                               //": "Test Leave request",
@@ -96,11 +96,11 @@ public class LeaveManagementModel implements Serializable {
         this.to_time = to_time;
     }
     
-    public int getTotal_days() {
+    public float getTotal_days() {
         return total_days;
     }
     
-    public void setTotal_days(int total_days) {
+    public void setTotal_days(float total_days) {
         this.total_days = total_days;
     }
     

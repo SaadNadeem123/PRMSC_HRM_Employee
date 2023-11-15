@@ -10,15 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.lmkr.prmscemployeeapp.data.database.models.LeaveRequest;
 import com.lmkr.prmscemployeeapp.data.webservice.api.ApiManager;
 import com.lmkr.prmscemployeeapp.data.webservice.models.LeaveManagementModel;
 import com.lmkr.prmscemployeeapp.databinding.FragmentLeaveManagementBinding;
 import com.lmkr.prmscemployeeapp.ui.activities.LeaveManagementDetailActivity;
 import com.lmkr.prmscemployeeapp.ui.adapter.LeaveManagementRecyclerAdapter;
-import com.lmkr.prmscemployeeapp.ui.adapter.LeaveRequestRecyclerAdapter;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppUtils;
 import com.lmkr.prmscemployeeapp.ui.utilities.AppWideWariables;
 import com.lmkr.prmscemployeeapp.ui.utilities.SharedPreferenceHelper;
@@ -44,6 +41,10 @@ public class LeaveManagementFragment extends Fragment {
 		return view;
 	}
 	private void loadLeaveManagementData(List<LeaveManagementModel> leaveManagementList) {
+		if(leaveManagementList==null)
+		{
+			leaveManagementList=new ArrayList<>();
+		}
 		adapter = new LeaveManagementRecyclerAdapter(leaveManagementList , getActivity());
 		binding.recyclerView.setAdapter(adapter);
 		binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -57,6 +58,7 @@ public class LeaveManagementFragment extends Fragment {
 				}
 			}
 		});
+		binding.progress.setVisibility(View.GONE);
 	}
 	
 	
@@ -77,9 +79,10 @@ public class LeaveManagementFragment extends Fragment {
 		new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				leaveManagementViewModel.fetchBulletinData(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())));
+				binding.progress.setVisibility(View.VISIBLE);
+				leaveManagementViewModel.fetchLeaveManagementData(AppUtils.getStandardHeaders(SharedPreferenceHelper.getLoggedinUser(getActivity())));
 			}
-		} , 1000);
+		} , 100);
 	}
 	
 }
