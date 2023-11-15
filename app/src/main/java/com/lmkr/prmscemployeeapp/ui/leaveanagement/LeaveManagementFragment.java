@@ -51,11 +51,11 @@ public class LeaveManagementFragment extends Fragment {
 		adapter.setListener(new LeaveManagementRecyclerAdapter.OnItemClickListener() {
 			@Override
 			public void OnItemClickListener(LeaveManagementModel leaveManagementModel) {
-				if(leaveManagementModel.getStatus().toLowerCase().equals(AppWideWariables.PENDING)|| leaveManagementModel.getStatus().toLowerCase().equals(AppWideWariables.REJECTED)) {
+//				if(leaveManagementModel.getStatus().toLowerCase().equals(AppWideWariables.PENDING)|| leaveManagementModel.getStatus().toLowerCase().equals(AppWideWariables.REJECTED)) {
 					Bundle bundle = new Bundle();
 					bundle.putSerializable(AppWideWariables.LEAVE_MANAGEMENT_OBJECT_KEY , leaveManagementModel);
 					AppUtils.switchActivity(getContext() , LeaveManagementDetailActivity.class , bundle);
-				}
+//				}
 			}
 		});
 		binding.progress.setVisibility(View.GONE);

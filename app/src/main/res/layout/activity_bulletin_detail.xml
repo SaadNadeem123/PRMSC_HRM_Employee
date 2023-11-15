@@ -10,7 +10,6 @@
         android:id="@+id/fl"
         android:layout_width="match_parent"
         android:layout_height="@dimen/top_margin"
-        app:layout_constraintBottom_toTopOf="@+id/ll"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -54,6 +53,7 @@
             android:text="@string/announcements"
             android:textAlignment="center"
             android:textColor="@color/black"
+            android:textStyle="bold"
             android:textSize="@dimen/_15sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

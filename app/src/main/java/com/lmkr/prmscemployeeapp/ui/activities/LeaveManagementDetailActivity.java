@@ -106,7 +106,7 @@ public class LeaveManagementDetailActivity extends BaseFullScreenActivity {
 			
 			binding.title.setText(getResources().getString(R.string.title_leave_request));
 			if (leaveRequest.getStatus().toLowerCase().equals(AppWideWariables.PENDING)) {
-				binding.bottom.setVisibility(View.VISIBLE);
+				binding.bottom.setVisibility(View.GONE);
 				binding.rejectedReasonLabel.setVisibility(View.GONE);
 				binding.rejectedReason.setVisibility(View.GONE);
 				binding.rejectedReason.setText("");

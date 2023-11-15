@@ -222,12 +222,12 @@ public class LeaveRequestFragment extends Fragment {
         adapter.setListener(new LeaveRequestRecyclerAdapter.OnItemClickListener() {
             @Override
             public void OnItemClickListener(LeaveRequest leaveRequest) {
-                if(leaveRequest.getStatus().toLowerCase().equals(AppWideWariables.REJECTED)) {
+//                if(leaveRequest.getStatus().toLowerCase().equals(AppWideWariables.REJECTED)) {
 //                    AppUtils.makeNotification(leaveRequest.getApprover_reason(),getActivity());
                     Bundle bundle = new Bundle();
                     bundle.putSerializable(AppWideWariables.LEAVE_REQUEST_OBJECT_KEY , leaveRequest);
                     AppUtils.switchActivity(getContext() , LeaveManagementDetailActivity.class , bundle);
-                }
+//                }
             }
         });
         binding.recyclerViewLeaveRequest.setAdapter(adapter);
