@@ -18,7 +18,7 @@ tools:context=".ui.activities.CameraXActivity">
             android:layout_height="match_parent"
             app:scaleType="fillCenter" />
 
-        <com.lmkr.prmscemployeeapp.ui.cameraxUtils.GraphicOverlay
+        <com.lmkr.prmscemployee.ui.cameraxUtils.GraphicOverlay
             android:id="@+id/graphicOverlayFinder"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

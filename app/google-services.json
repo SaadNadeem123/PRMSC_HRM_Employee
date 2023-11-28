@@ -7,9 +7,47 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:943040220593:android:298bfad8b7516cb8848190",
+        "android_client_info": {
+          "package_name": "com.lmkr.prmscemployee"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWtSZ5cxsIrOE94CW9uUz24KjT6JlAX3I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:943040220593:android:88f30544c46e8514848190",
         "android_client_info": {
           "package_name": "com.lmkr.prmscemployeeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWtSZ5cxsIrOE94CW9uUz24KjT6JlAX3I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:943040220593:android:aa9cd8f66bc5ef01848190",
+        "android_client_info": {
+          "package_name": "com.prmsc"
         }
       },
       "oauth_client": [],

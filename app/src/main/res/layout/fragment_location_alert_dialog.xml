@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:padding="20dp"
     android:layout_margin="50dp"
-    tools:context="com.lmkr.prmscemployeeapp.ui.fragments.LocationAlertDialogFragment">
+    tools:context="com.lmkr.prmscemployee.ui.fragments.LocationAlertDialogFragment">
 
     <TextView
         android:id="@+id/title"

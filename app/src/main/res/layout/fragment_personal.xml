@@ -138,7 +138,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textAction">
 
-                <com.lmkr.prmscemployeeapp.ui.customViews.UnderlineTextView
+                <com.lmkr.prmscemployee.ui.customViews.UnderlineTextView
                     android:id="@+id/changePassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -151,7 +151,7 @@
                     android:textColor="@color/clickable_text_black_to_grey"
                     android:textSize="16sp" />
 
-                <com.lmkr.prmscemployeeapp.ui.customViews.UnderlineTextView
+                <com.lmkr.prmscemployee.ui.customViews.UnderlineTextView
                     android:id="@+id/logout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

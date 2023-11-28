@@ -8,13 +8,13 @@ plugins {
 }
 
 android {
-    namespace 'com.lmkr.prmscemployeeapp'
+    namespace 'com.lmkr.prmscemployee'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.lmkr.prmscemployeeapp"
+        applicationId "com.lmkr.prmscemployee"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -27,10 +27,33 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            storeFile file('D:\\AhmadAbbasZaidi\\workspace\\PRMSC_HRM_Employee\\prmsc_employee_app.jks')
+            storePassword 'Lmkr@12345'
+            keyAlias 'prmsc'
+            keyPassword 'Lmkr@12345'
+            if (project.hasProperty("keyAlias")) {
+                keyAlias project["keyAlias"]
+                keyPassword project["keyPass"]
+                storeFile file(project["storeFilePath"])
+                storePassword project["storePass"]
+            }
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            signingConfig signingConfigs.release
+            if (project.hasProperty("versionCode")) {
+                defaultConfig.versionCode defaultConfig.versionCode + project["versionCode"].toBigInteger()
+                defaultConfig.versionName project["versionName"]
+            }
+        }
+        debug {
+            debuggable = true
         }
     }
     compileOptions {
@@ -146,4 +169,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging'
 
     implementation 'androidx.work:work-runtime:2.7.1'
+    implementation 'com.google.android.play:integrity:1.3.0'
 }
